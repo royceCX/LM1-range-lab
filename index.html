@@ -193,6 +193,7 @@ table.stats tr.excluded-row td{opacity:.7}
 .sess-edit-bar .msg{color:var(--muted);font-size:13px;flex:1 1 180px}
 .sess-edit-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 #sessEditDock{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:80;max-width:none;margin:0;padding:10px 18px;pointer-events:none}
+#sessEditDock[hidden],#sessEditDock:empty{display:none!important}
 #sessEditDock .sess-edit-bar{pointer-events:auto;margin:0;background:var(--elev);box-shadow:0 8px 28px rgba(0,0,0,.45);flex-direction:row;flex-wrap:wrap}
 body.sess-editing-all{padding-bottom:130px}
 @media (max-width:980px){
@@ -2059,12 +2060,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     $$(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + name));
     $$("nav.tabs button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-view") === name));
     window.scrollTo(0, 0);
+    if (name !== "sessions") resetSessEdit();
     if (name === "sessions") renderSessionsView();
-    else {
-      document.body.classList.remove("sess-editing-all");
-      const dock = document.getElementById("sessEditDock");
-      if (dock) dock.innerHTML = "";
-    }
   }
 
   function sessionTally(sess) {
@@ -2116,9 +2113,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 
   function resetSessEdit() {
     sessEdit = { all: false, rows: Object.create(null), meta: false, metaDraft: null };
-    document.body && document.body.classList.remove("sess-editing-all");
-    const dock = document.getElementById("sessEditDock");
-    if (dock) dock.innerHTML = "";
+    hideEditBar();
   }
   let sessEdit = { all: false, rows: Object.create(null), meta: false, metaDraft: null };
 
@@ -2417,6 +2412,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     }
     if (!rows.length) {
       el.innerHTML = '<p class="sess-empty">No shots in this session.</p>';
+      hideEditBar();
       return;
     }
     const flagged = flagShots(rows.map((r, n) => Object.assign({ _sessionId: r.sess.id, _i: r.i, _n: n }, r.sh)));
@@ -2496,18 +2492,36 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     bindSessTable(el);
   }
 
+  function hideEditBar() {
+    const dock = document.getElementById("sessEditDock");
+    if (dock) {
+      dock.innerHTML = "";
+      dock.hidden = true;
+    }
+    document.body.classList.remove("sess-editing-all");
+    document.body.style.paddingBottom = "";
+    const stray = document.getElementById("sessEditBar");
+    if (stray) stray.remove();
+  }
   function placeEditBar() {
+    const shouldShow = !!(sessEdit.all && state.view === "sessions");
+    const rendered = document.querySelector("#sessShotTable #sessEditBar");
+    if (!shouldShow || !rendered) {
+      hideEditBar();
+      return;
+    }
     let dock = document.getElementById("sessEditDock");
     if (!dock) {
       dock = document.createElement("div");
       dock.id = "sessEditDock";
+      dock.hidden = true;
       document.body.appendChild(dock);
       bindEditDockViewport();
     }
-    const bar = document.getElementById("sessEditBar");
     dock.innerHTML = "";
-    if (bar) dock.appendChild(bar);
-    document.body.classList.toggle("sess-editing-all", !!bar);
+    dock.appendChild(rendered);
+    dock.hidden = false;
+    document.body.classList.add("sess-editing-all");
     syncEditDock();
   }
   function bindEditDockViewport() {
@@ -2523,18 +2537,22 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   }
   function syncEditDock() {
     const dock = document.getElementById("sessEditDock");
-    if (!dock) return;
+    if (!dock || dock.hidden || !dock.firstChild) {
+      document.body.style.paddingBottom = "";
+      return;
+    }
     const vv = window.visualViewport;
     if (!vv) {
       dock.style.bottom = "0px";
       dock.style.left = "0px";
       dock.style.width = "100%";
-      return;
+    } else {
+      const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      dock.style.bottom = inset + "px";
+      dock.style.left = (vv.offsetLeft || 0) + "px";
+      dock.style.width = vv.width + "px";
     }
-    const inset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    dock.style.bottom = inset + "px";
-    dock.style.left = (vv.offsetLeft || 0) + "px";
-    dock.style.width = vv.width + "px";
+    document.body.style.paddingBottom = dock.offsetHeight + "px";
   }
 
   function bindSessEditBarActions() {
@@ -2686,6 +2704,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       $("#sessTiles").innerHTML = "";
       $("#sessClubAvgs").innerHTML = "";
       $("#sessShotTable").innerHTML = '<p class="sess-empty">Nothing saved yet.</p>';
+      hideEditBar();
       return;
     }
     renderSessList();
