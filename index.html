@@ -217,6 +217,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 #heroTip .tip-row span{color:var(--muted)}
 #heroTip.pinned{pointer-events:auto}
 .header-actions select#sessionSelect{min-width:220px;font-weight:650;padding:8px 12px;border-color:rgba(62,224,255,.35)}
+#unitMode{flex:0 0 auto}
+#unitMode button{padding:6px 10px}
 
 /* deploy-mobile */
 @media (max-width:640px){
@@ -224,6 +226,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   header.appbar{padding:10px 12px;gap:8px}
   .header-actions{width:100%;justify-content:flex-start;flex-wrap:wrap}
   .header-actions select#sessionSelect{min-width:0;flex:1 1 160px;max-width:100%}
+  #unitMode{flex:0 0 auto}
   #rangeCanvas{min-height:280px}
   .hero-stage,.club-rail{min-height:0}
   body{overflow-x:hidden}
@@ -247,6 +250,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       <button type="button" data-view="sessions">Sessions</button>
     </nav>
     <div class="header-actions">
+      <div class="seg" id="unitMode" role="group" aria-label="Distance units">
+        <button type="button" data-unit="yd" class="active">Yards</button>
+        <button type="button" data-unit="m">Metres</button>
+      </div>
       <select id="sessionSelect" aria-label="Session"></select>
       <button type="button" class="btn ghost" id="btnExportJson">Backup JSON</button>
       <button type="button" class="btn ghost" id="btnImportJson">Restore</button>
@@ -288,7 +295,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       </section>
       <section class="card" id="gapping">
         <h3>Club gapping</h3>
-        <p class="sub">Average carry bars with total distance overlay. Gaps are between consecutive clubs in the bag. Tight &lt; 8 yd, wide &gt; 18 yd.</p>
+        <p class="sub" id="gapSub">Average carry bars with total distance overlay. Gaps are between consecutive clubs in the bag. Tight &lt; 8 yd, wide &gt; 18 yd.</p>
         <div class="chart-box tall" id="gapChart"></div>
       </section>
       <section class="card" id="dispersion">
@@ -318,7 +325,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       </section>
       <section class="card" id="derived">
         <h3>Derived stats</h3>
-        <p class="sub">Carry efficiency is carry yards per mph of club speed. Potential carry scales existing carry by (benchmark smash ÷ actual smash) — smash only, no launch data. Best-N is the top carry percentile for each club.</p>
+        <p class="sub" id="derivedSub">Carry efficiency is carry yards per mph of club speed. Potential carry scales existing carry by (benchmark smash ÷ actual smash) — smash only, no launch data. Best-N is the top carry percentile for each club.</p>
         <div class="table-wrap" id="derivedTable"></div>
       </section>
       <section class="card" id="mishits">
@@ -406,31 +413,31 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
 
   const CLUB_DEFS = [
-    { id: "Driver", color: "#00D4FF", launch: 13, land: 38, smash: 1.5, kind: "wood", short: "D" },
-    { id: "2 Wood", color: "#38BDF8", launch: 13.5, land: 39, smash: 1.49, kind: "wood", short: "2W" },
-    { id: "3 Wood", color: "#3B82F6", launch: 14, land: 40, smash: 1.48, kind: "wood", short: "3W" },
-    { id: "4 Wood", color: "#4F8CFF", launch: 14.5, land: 40, smash: 1.48, kind: "wood", short: "4W" },
-    { id: "5 Wood", color: "#60A5FA", launch: 15, land: 41, smash: 1.47, kind: "wood", short: "5W" },
-    { id: "7 Wood", color: "#7DD3FC", launch: 16, land: 42, smash: 1.46, kind: "wood", short: "7W" },
-    { id: "9 Wood", color: "#93C5FD", launch: 17, land: 42, smash: 1.45, kind: "wood", short: "9W" },
-    { id: "2 Hybrid", color: "#818CF8", launch: 16, land: 41, smash: 1.46, kind: "hybrid", short: "H2" },
-    { id: "3 Hybrid", color: "#8B7CFF", launch: 16.5, land: 42, smash: 1.45, kind: "hybrid", short: "H3" },
-    { id: "4 Hybrid", color: "#9B8CFF", launch: 17, land: 42, smash: 1.45, kind: "hybrid", short: "H4" },
-    { id: "5 Hybrid", color: "#A78BFA", launch: 17.5, land: 43, smash: 1.45, kind: "hybrid", short: "H5" },
-    { id: "6 Hybrid", color: "#C4B5FD", launch: 18, land: 43, smash: 1.44, kind: "hybrid", short: "H6" },
-    { id: "7 Hybrid", color: "#DDD6FE", launch: 18.5, land: 44, smash: 1.43, kind: "hybrid", short: "H7" },
-    { id: "2 Iron", color: "#2DD4BF", launch: 15, land: 41, smash: 1.42, kind: "iron", short: "2i" },
-    { id: "3 Iron", color: "#2DD4BF", launch: 16, land: 42, smash: 1.42, kind: "iron", short: "3i" },
-    { id: "4 Iron", color: "#14B8A6", launch: 17, land: 43, smash: 1.4, kind: "iron", short: "4i" },
-    { id: "5 Iron", color: "#34D399", launch: 18, land: 44, smash: 1.38, kind: "iron", short: "5i" },
-    { id: "6 Iron", color: "#A3E635", launch: 19, land: 45, smash: 1.38, kind: "iron", short: "6i" },
-    { id: "7 Iron", color: "#D4FF3F", launch: 20.5, land: 46, smash: 1.37, kind: "iron", short: "7i" },
-    { id: "8 Iron", color: "#FBBF24", launch: 22, land: 47, smash: 1.36, kind: "iron", short: "8i" },
-    { id: "9 Iron", color: "#FB923C", launch: 24, land: 48, smash: 1.35, kind: "iron", short: "9i" },
-    { id: "PW", color: "#F97316", launch: 26, land: 50, smash: 1.34, kind: "wedge", short: "PW" },
-    { id: "GW", color: "#FB7185", launch: 28, land: 51, smash: 1.32, kind: "wedge", short: "GW" },
-    { id: "SW", color: "#F43F5E", launch: 32, land: 52, smash: 1.28, kind: "wedge", short: "SW" },
-    { id: "LW", color: "#E879F9", launch: 36, land: 54, smash: 1.25, kind: "wedge", short: "LW" }
+    { id: "Driver", color: "#00E8FF", launch: 13, land: 38, smash: 1.5, kind: "wood", short: "D" },
+    { id: "2 Wood", color: "#FF6B00", launch: 13.5, land: 39, smash: 1.49, kind: "wood", short: "2W" },
+    { id: "3 Wood", color: "#7C4DFF", launch: 14, land: 40, smash: 1.48, kind: "wood", short: "3W" },
+    { id: "4 Wood", color: "#C6FF00", launch: 14.5, land: 40, smash: 1.48, kind: "wood", short: "4W" },
+    { id: "5 Wood", color: "#FF2F7A", launch: 15, land: 41, smash: 1.47, kind: "wood", short: "5W" },
+    { id: "7 Wood", color: "#FFCF00", launch: 16, land: 42, smash: 1.46, kind: "wood", short: "7W" },
+    { id: "9 Wood", color: "#1B8CFF", launch: 17, land: 42, smash: 1.45, kind: "wood", short: "9W" },
+    { id: "2 Hybrid", color: "#FF3B1A", launch: 16, land: 41, smash: 1.46, kind: "hybrid", short: "H2" },
+    { id: "3 Hybrid", color: "#67E8F9", launch: 16.5, land: 42, smash: 1.45, kind: "hybrid", short: "H3" },
+    { id: "4 Hybrid", color: "#FF9F14", launch: 17, land: 42, smash: 1.45, kind: "hybrid", short: "H4" },
+    { id: "5 Hybrid", color: "#C084FC", launch: 17.5, land: 43, smash: 1.45, kind: "hybrid", short: "H5" },
+    { id: "6 Hybrid", color: "#4AFF8A", launch: 18, land: 43, smash: 1.44, kind: "hybrid", short: "H6" },
+    { id: "7 Hybrid", color: "#FF6BA8", launch: 18.5, land: 44, smash: 1.43, kind: "hybrid", short: "H7" },
+    { id: "2 Iron", color: "#FFE566", launch: 15, land: 41, smash: 1.42, kind: "iron", short: "2i" },
+    { id: "3 Iron", color: "#5AA9FF", launch: 16, land: 42, smash: 1.42, kind: "iron", short: "3i" },
+    { id: "4 Iron", color: "#FF6B4A", launch: 17, land: 43, smash: 1.4, kind: "iron", short: "4i" },
+    { id: "5 Iron", color: "#00F5C8", launch: 18, land: 44, smash: 1.38, kind: "iron", short: "5i" },
+    { id: "6 Iron", color: "#FF8C32", launch: 19, land: 45, smash: 1.38, kind: "iron", short: "6i" },
+    { id: "7 Iron", color: "#1C4DFF", launch: 20.5, land: 46, smash: 1.37, kind: "iron", short: "7i" },
+    { id: "8 Iron", color: "#FFE135", launch: 22, land: 47, smash: 1.36, kind: "iron", short: "8i" },
+    { id: "9 Iron", color: "#FF1472", launch: 24, land: 48, smash: 1.35, kind: "iron", short: "9i" },
+    { id: "PW", color: "#5CFF6B", launch: 26, land: 50, smash: 1.34, kind: "wedge", short: "PW" },
+    { id: "GW", color: "#4D7CFF", launch: 28, land: 51, smash: 1.32, kind: "wedge", short: "GW" },
+    { id: "SW", color: "#FF3B30", launch: 32, land: 52, smash: 1.28, kind: "wedge", short: "SW" },
+    { id: "LW", color: "#F5C4FF", launch: 36, land: 54, smash: 1.25, kind: "wedge", short: "LW" }
   ];
   const CLUB_INDEX = Object.fromEntries(CLUB_DEFS.map((c, i) => [c.id, i]));
   const CLUB_MAP = Object.fromEntries(CLUB_DEFS.map((c) => [c.id, c]));
@@ -497,6 +504,66 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     return Number(n).toFixed(d == null ? 1 : d);
   }
   function fmt0(n) { return n == null || Number.isNaN(n) ? "—" : String(Math.round(n)); }
+  const YD_TO_M = 0.9144;
+  const UNITS_KEY = "lm1-range-lab-units";
+  function isMetres() { return state.units === "m"; }
+  function toDisp(yd) {
+    if (yd == null || Number.isNaN(Number(yd))) return null;
+    return isMetres() ? Number(yd) * YD_TO_M : Number(yd);
+  }
+  function unitShort() { return isMetres() ? "m" : "yd"; }
+  function unitWord() { return isMetres() ? "metres" : "yards"; }
+  function uSuf() { return " " + unitShort(); }
+  function fmtDist(yd, digits) {
+    const v = toDisp(yd);
+    if (v == null) return "—";
+    return digits == null || digits === 0 ? String(Math.round(v)) : fmt(v, digits);
+  }
+  function signedDist(yd) {
+    const v = toDisp(yd);
+    if (v == null) return "—";
+    const n = Math.round(v);
+    return (n > 0 ? "+" : "") + n + uSuf();
+  }
+  function formatFlagReason(text) {
+    if (!isMetres()) return text;
+    return String(text).replace(/(\d+(?:\.\d+)?)\s*yds?\b/gi, (_, n) => Math.round(Number(n) * YD_TO_M) + " m");
+  }
+  function maxShotYd(shots) {
+    let m = 0;
+    (shots || []).forEach((s) => {
+      [typeof distOf === "function" ? distOf(s) : null, s && s.total, s && s.carry].forEach((d) => {
+        if (d != null && d > m) m = d;
+      });
+    });
+    if (m < 80) m = 120;
+    return m;
+  }
+  function niceMaxDisp(maxYd) {
+    const m = Math.max(0, toDisp(maxYd) || 0);
+    const minField = toDisp(150) || 150;
+    const step = m > 200 ? 50 : 25;
+    return Math.max(Math.ceil(minField / step) * step, Math.ceil((m + step) / step) * step);
+  }
+  function loadUnits() {
+    try {
+      const u = localStorage.getItem(UNITS_KEY);
+      if (u === "m" || u === "yd") state.units = u;
+    } catch (e) {}
+  }
+  function saveUnits() {
+    try { localStorage.setItem(UNITS_KEY, state.units === "m" ? "m" : "yd"); } catch (e) {}
+  }
+  function syncUnitButtons() {
+    $$("#unitMode button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-unit") === (state.units === "m" ? "m" : "yd")));
+  }
+  function updateUnitCopy() {
+    const u = unitShort();
+    const gap = document.getElementById("gapSub");
+    if (gap) gap.innerHTML = "Average carry bars with total distance overlay. Gaps are between consecutive clubs in the bag. Tight &lt; " + fmtDist(8) + " " + u + ", wide &gt; " + fmtDist(18) + " " + u + ".";
+    const der = document.getElementById("derivedSub");
+    if (der) der.innerHTML = "Carry efficiency is carry " + unitWord() + " per mph of club speed. Potential carry scales existing carry by (benchmark smash ÷ actual smash) — smash only, no launch data. Best-N is the top carry percentile for each club.";
+  }
   function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
   function uid(prefix) { return (prefix || "id") + "-" + Math.random().toString(36).slice(2, 9); }
   function todayISO() {
@@ -783,6 +850,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     sessions: [],
     currentId: null,
     excludeMishits: true,
+    units: "yd",
     selectedClubs: null, // null = all
     viewMode: "range",
     distMode: "carry",
@@ -914,19 +982,11 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   function isClubSelected(club) {
     return !state.selectedClubs || state.selectedClubs.has(club);
   }
-  function usedShots() {
-    let shots = allShotsRaw();
-    shots = shots.filter((s) => isClubSelected(s.club));
-    if (state.excludeMishits) shots = shots.filter((s) => !s.flag);
-    return shots;
-  }
-  function shotsForStats() {
-    // used shots, optionally best-N per club by carry
-    const used = usedShots();
+  function applyBestN(shots) {
     const frac = Number(state.bestN);
-    if (!frac || frac >= 1) return used;
+    if (!frac || frac >= 1) return shots;
     const by = new Map();
-    used.forEach((s) => {
+    shots.forEach((s) => {
       if (!by.has(s.club)) by.set(s.club, []);
       by.get(s.club).push(s);
     });
@@ -936,9 +996,19 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       const n = Math.max(1, Math.ceil(ranked.length * frac));
       out.push.apply(out, ranked.slice(0, n));
     });
+    out.sort((a, b) => (a.shotNo || 0) - (b.shotNo || 0) || (a._i || 0) - (b._i || 0) || String(a._sessionDate || "").localeCompare(String(b._sessionDate || "")));
     return out;
   }
-  function distOf(s) { return state.distMode === "total" ? s.total : s.carry; }
+  function usedShots() {
+    let shots = allShotsRaw();
+    shots = shots.filter((s) => isClubSelected(s.club));
+    if (state.excludeMishits) shots = shots.filter((s) => !s.flag);
+    return applyBestN(shots);
+  }
+  function shotsForStats() {
+    return usedShots();
+  }
+    function distOf(s) { return state.distMode === "total" ? s.total : s.carry; }
 
   function clubStats(shots) {
     const by = new Map();
@@ -1002,104 +1072,121 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   }
 
   function niceMaxYds(shots) {
-    let m = 0;
-    shots.forEach((s) => {
-      const d = distOf(s);
-      if (d != null && d > m) m = d;
-      if (s.total != null && s.total > m) m = s.total;
-      if (s.carry != null && s.carry > m) m = s.carry;
-    });
-    if (m < 80) m = 120;
-    const step = m > 200 ? 50 : 25;
-    return Math.max(150, Math.ceil((m + step) / step) * step);
+    return niceMaxDisp(maxShotYd(shots));
   }
 
   function drawRangeSvg(shots) {
     const W = 900, H = 600;
     const padL = 48, padR = 40, padT = 20, padB = 44;
-    const maxYds = niceMaxYds(shots);
+    const maxDist = niceMaxDisp(maxShotYd(shots));
     const grassL = padL, grassR = W - padR;
     const grassTop = padT, grassBot = H - padB;
     const cx = (grassL + grassR) / 2;
-    // Full corridor in yards; dots use about ±14 yd of this
-    const lateralField = 40;
-    const pxPerYdX = (grassR - grassL) / lateralField;
+    // Full corridor; dots use about ±14 yd of this (converted when in metres)
+    const lateralField = toDisp(40);
+    const pxPerX = (grassR - grassL) / lateralField;
+    const dotR = 5.2;
 
-    function yOf(yds) { return grassBot - clamp(yds / maxYds, 0, 1) * (grassBot - grassTop); }
-    function xOf(lat) { return cx + lat * pxPerYdX; }
+    function yOf(disp) {
+      const d = Math.max(0, disp);
+      return grassBot - clamp(d / maxDist, 0, 1) * (grassBot - grassTop);
+    }
+    function xOf(lat) { return cx + lat * pxPerX; }
 
     let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Flat bird’s-eye driving range">';
     svg += '<defs>';
     svg += '<filter id="dotGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    svg += '<clipPath id="rangeFieldClip"><rect x="' + grassL + '" y="' + grassTop + '" width="' + (grassR - grassL) + '" height="' + (grassBot - grassTop) + '"/></clipPath>';
     svg += '</defs>';
     svg += '<rect width="' + W + '" height="' + H + '" fill="#07140c"/>';
 
     // Rectangular mowed stripes — horizontal, no perspective
     const stripe = 10;
-    const y0 = yOf(0), yMax = yOf(maxYds);
-    for (let yds = 0; yds < maxYds; yds += stripe) {
-      const yb = yOf(yds), yt = yOf(Math.min(yds + stripe, maxYds));
-      const col = (Math.floor(yds / stripe) % 2 === 0) ? "#147a3c" : "#0f6330";
+    for (let d = 0; d < maxDist; d += stripe) {
+      const yb = yOf(d), yt = yOf(Math.min(d + stripe, maxDist));
+      const col = (Math.floor(d / stripe) % 2 === 0) ? "#147a3c" : "#0f6330";
       svg += '<rect x="' + grassL + '" y="' + yt.toFixed(1) + '" width="' + (grassR - grassL) + '" height="' + (yb - yt).toFixed(1) + '" fill="' + col + '"/>';
     }
 
-    // Yardage lines straight across
-    for (let yds = 25; yds <= maxYds; yds += 25) {
-      const y = yOf(yds);
-      const major = yds % 50 === 0;
+    const tick = 25;
+    for (let d = tick; d <= maxDist; d += tick) {
+      const y = yOf(d);
+      const major = d % 50 === 0;
       svg += '<line x1="' + grassL + '" y1="' + y.toFixed(1) + '" x2="' + grassR + '" y2="' + y.toFixed(1) + '" stroke="' + (major ? "rgba(255,255,255,.45)" : "rgba(255,255,255,.2)") + '" stroke-width="' + (major ? 1.6 : 0.8) + '"/>';
-      svg += '<text x="' + (grassL - 8) + '" y="' + (y + 4) + '" text-anchor="end" fill="rgba(255,255,255,.85)" font-size="13" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700">' + yds + '</text>';
-      svg += '<text x="' + (grassR + 8) + '" y="' + (y + 4) + '" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="650">' + yds + '</text>';
+      svg += '<text x="' + (grassL - 8) + '" y="' + (y + 4) + '" text-anchor="end" fill="rgba(255,255,255,.85)" font-size="13" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700">' + d + '</text>';
+      svg += '<text x="' + (grassR + 8) + '" y="' + (y + 4) + '" text-anchor="start" fill="rgba(255,255,255,.55)" font-size="12" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="650">' + d + '</text>';
     }
+    svg += '<text x="' + (grassL - 8) + '" y="' + (grassTop + 2) + '" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="11" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700">' + unitShort() + '</text>';
 
     // Centre line (target, not a landing line)
     svg += '<line x1="' + cx + '" y1="' + grassBot + '" x2="' + cx + '" y2="' + grassTop + '" stroke="#f5f0c8" stroke-width="1.1" stroke-dasharray="7 6" opacity=".7"/>';
 
     // Tee
     svg += '<rect x="' + (cx - 28) + '" y="' + (grassBot - 8) + '" width="56" height="14" rx="2" fill="#c9b48a" stroke="#8a7648" stroke-width="1"/>';
-    svg += '<text x="' + cx + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="11" font-family="DM Sans, sans-serif">TEE</text>';
+    svg += '<text x="' + cx + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="11" font-family="DM Sans, sans-serif">TEE · ' + (isMetres() ? "metres" : "yards") + '</text>';
 
     const byClub = new Map();
     shots.forEach((s, i) => {
-      const d = distOf(s);
-      if (d == null) return;
+      const dYd = distOf(s);
+      if (dYd == null) return;
       if (!byClub.has(s.club)) byClub.set(s.club, []);
       const arr = byClub.get(s.club);
-      const lat = spreadLat((s._sessionId || "") + ":" + s.shotNo + ":" + s.club + ":" + i, arr.length);
+      const lat = toDisp(spreadLat((s._sessionId || "") + ":" + s.shotNo + ":" + s.club + ":" + i, arr.length));
+      const d = toDisp(Math.max(0, dYd));
       arr.push({ s, i, d, lat });
     });
     const clubs = Array.from(byClub.keys()).sort(sortClubs);
 
-    // Ellipses enclose each club's actual cluster
+    // Ellipses use P10–P90 so a 0-carry mishit does not blow the cluster out behind the tee.
+    // Also clamp and clip so the shape never extends below the tee line or outside the field.
+    svg += '<g clip-path="url(#rangeFieldClip)">';
     clubs.forEach((club) => {
       const arr = byClub.get(club);
       if (!arr.length) return;
       const ds = arr.map((x) => x.d);
       const lats = arr.map((x) => x.lat);
-      const minD = Math.min.apply(null, ds), maxD = Math.max.apply(null, ds);
-      const minL = Math.min.apply(null, lats), maxL = Math.max.apply(null, lats);
-      const midD = (minD + maxD) / 2;
-      const midL = (minL + maxL) / 2;
-      const ry = Math.max(((maxD - minD) / 2) * 1.2, 3);
-      const rxYd = Math.max(((maxL - minL) / 2) * 1.25, 3.5);
+      const usePct = ds.length >= 4;
+      const dLo = usePct ? quantile(ds, 0.1) : Math.min.apply(null, ds);
+      const dHi = usePct ? quantile(ds, 0.9) : Math.max.apply(null, ds);
+      const lLo = usePct ? quantile(lats, 0.1) : Math.min.apply(null, lats);
+      const lHi = usePct ? quantile(lats, 0.9) : Math.max.apply(null, lats);
+      let midD = (dLo + dHi) / 2;
+      let ry = Math.max(((dHi - dLo) / 2) * 1.2, toDisp(3) || 3);
+      let midL = (lLo + lHi) / 2;
+      const rxYd = Math.max(((lHi - lLo) / 2) * 1.25, toDisp(3.5) || 3.5);
+      if (midD - ry < 0) {
+        const top = midD + ry;
+        midD = Math.max(top / 2, 0);
+        ry = midD;
+      }
+      if (midD + ry > maxDist) {
+        const bot = Math.max(0, midD - ry);
+        midD = (bot + maxDist) / 2;
+        ry = (maxDist - bot) / 2;
+      }
       const color = clubColor(club);
-      svg += '<ellipse class="ellipse" data-club="' + escapeHtml(club) + '" cx="' + xOf(midL).toFixed(1) + '" cy="' + yOf(midD).toFixed(1) + '" rx="' + (rxYd * pxPerYdX).toFixed(1) + '" ry="' + Math.abs(yOf(midD) - yOf(midD + ry)).toFixed(1) + '" fill="' + color + '" fill-opacity=".16" stroke="' + color + '" stroke-width="1.6" stroke-opacity=".85"/>';
+      const cy = yOf(midD);
+      const ryPx = Math.abs(yOf(midD) - yOf(midD + ry));
+      svg += '<ellipse class="ellipse" data-club="' + escapeHtml(club) + '" cx="' + xOf(midL).toFixed(1) + '" cy="' + cy.toFixed(1) + '" rx="' + (rxYd * pxPerX).toFixed(1) + '" ry="' + ryPx.toFixed(1) + '" fill="' + color + '" fill-opacity=".16" stroke="' + color + '" stroke-width="1.6" stroke-opacity=".85"/>';
     });
+    svg += '</g>';
 
     clubs.forEach((club) => {
       const color = clubColor(club);
       byClub.get(club).forEach((x) => {
-        const p = { x: xOf(x.lat), y: yOf(x.d) };
+        // Sit 0-carry / on-tee shots on or just above the tee line, never below the frame
+        const y = Math.min(yOf(x.d), grassBot - dotR);
+        const p = { x: xOf(x.lat), y: y };
         const s = x.s;
         const tip = [
           "Shot " + (s.shotNo == null ? "—" : s.shotNo) + " · " + club,
           "Club speed " + fmt(s.clubSpeed, 1) + " mph",
           "Ball speed " + fmt(s.ballSpeed, 1) + " mph",
           "Smash " + fmt(s.smash, 2),
-          "Carry " + fmt0(s.carry) + " yd",
-          "Total " + fmt0(s.total) + " yd"
+          "Carry " + fmtDist(s.carry) + uSuf(),
+          "Total " + fmtDist(s.total) + uSuf()
         ].join("\n");
-        svg += '<circle class="shot-dot" tabindex="0" role="button" data-i="' + x.i + '" data-club="' + escapeHtml(club) + '" data-tip="' + escapeHtml(tip) + '" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="5.2" fill="' + color + '" stroke="#041208" stroke-width="0.9" filter="url(#dotGlow)" style="cursor:pointer"><title>' + escapeHtml(tip) + '</title></circle>';
+        svg += '<circle class="shot-dot" tabindex="0" role="button" data-i="' + x.i + '" data-club="' + escapeHtml(club) + '" data-tip="' + escapeHtml(tip) + '" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + dotR + '" fill="' + color + '" stroke="#041208" stroke-width="0.9" filter="url(#dotGlow)" style="cursor:pointer"><title>' + escapeHtml(tip) + '</title></circle>';
       });
     });
 
@@ -1120,59 +1207,71 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   function drawFlightSvg(shots) {
     const W = 900, H = 600;
     const padL = 52, padR = 24, padT = 28, padB = 52;
-    const maxYds = niceMaxYds(shots);
-    // estimate max apex
-    let maxH = 40;
+    const maxDist = niceMaxDisp(maxShotYd(shots));
+    // estimate max apex in yards, then convert
+    let maxHYd = 40;
     shots.forEach((s) => {
       const d = distOf(s);
       if (d == null || d <= 0) return;
       const def = clubDef(s.club);
-      for (let t = 0; t <= 1; t += 0.05) maxH = Math.max(maxH, flightY(t, def.launch, def.land, d));
+      for (let t = 0; t <= 1; t += 0.05) maxHYd = Math.max(maxHYd, flightY(t, def.launch, def.land, d));
     });
-    maxH = Math.max(40, Math.ceil((maxH + 8) / 10) * 10);
+    maxHYd = Math.max(40, Math.ceil((maxHYd + 8) / 10) * 10);
+    const maxH = Math.max(toDisp(40) || 40, Math.ceil((toDisp(maxHYd) + 5) / 10) * 10);
 
-    const xOf = (yds) => padL + (yds / maxYds) * (W - padL - padR);
-    const yOf = (h) => (H - padB) - (h / maxH) * (H - padT - padB);
+    const xOf = (disp) => padL + (disp / maxDist) * (W - padL - padR);
+    const yOf = (hDisp) => (H - padB) - (Math.max(0, hDisp) / maxH) * (H - padT - padB);
 
     let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Estimated side-view ball flight">';
-    svg += '<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0b1520"/><stop offset="70%" stop-color="#102018"/><stop offset="100%" stop-color="#0c2818"/></linearGradient></defs>';
+    svg += '<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0b1520"/><stop offset="70%" stop-color="#102018"/><stop offset="100%" stop-color="#0c2818"/></linearGradient>';
+    svg += '<clipPath id="flightFieldClip"><rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (H - padT - padB) + '"/></clipPath></defs>';
     svg += '<rect width="' + W + '" height="' + H + '" fill="url(#sky2)"/>';
     // ground
     svg += '<rect x="0" y="' + (H - padB) + '" width="' + W + '" height="' + padB + '" fill="#0b3a1c"/>';
     svg += '<rect x="0" y="' + (H - padB) + '" width="' + W + '" height="6" fill="#14733a"/>';
 
     // grid
-    for (let yds = 0; yds <= maxYds; yds += 25) {
-      const x = xOf(yds);
-      const major = yds % 50 === 0;
+    const tick = 25;
+    for (let d = 0; d <= maxDist; d += tick) {
+      const x = xOf(d);
+      const major = d % 50 === 0;
       svg += '<line x1="' + x + '" y1="' + padT + '" x2="' + x + '" y2="' + (H - padB) + '" stroke="' + (major ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.06)") + '" stroke-width="1"/>';
-      if (yds > 0) svg += '<text x="' + x + '" y="' + (H - padB + 18) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700">' + yds + '</text>';
+      if (d > 0) svg += '<text x="' + x + '" y="' + (H - padB + 18) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + '</text>';
     }
-    for (let h = 10; h <= maxH; h += 10) {
+    const hStep = 10;
+    for (let h = hStep; h <= maxH; h += hStep) {
       svg += '<line x1="' + padL + '" y1="' + yOf(h) + '" x2="' + (W - padR) + '" y2="' + yOf(h) + '" stroke="rgba(255,255,255,.06)"/>';
-      svg += '<text x="' + (padL - 8) + '" y="' + (yOf(h) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="11" font-family="Barlow Condensed, sans-serif">' + h + ' yd</text>';
+      svg += '<text x="' + (padL - 8) + '" y="' + (yOf(h) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="11" font-family="Barlow Condensed, sans-serif">' + h + " " + unitShort() + '</text>';
     }
-    svg += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="11" font-family="DM Sans, sans-serif">Distance (yd) · estimated apex from typical launch</text>';
+    svg += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="11" font-family="DM Sans, sans-serif">Distance (' + unitShort() + ') · estimated apex from typical launch</text>';
 
-    // paths then roll
+    svg += '<g clip-path="url(#flightFieldClip)">';
     shots.forEach((s, i) => {
-      const d = distOf(s);
-      if (d == null || d <= 0) return;
+      const dYd = distOf(s);
+      if (dYd == null || dYd <= 0) return;
+      const d = toDisp(dYd);
       const def = clubDef(s.club);
       const color = clubColor(s.club);
       const pts = [];
       const steps = 32;
       for (let k = 0; k <= steps; k++) {
         const t = k / steps;
-        pts.push(xOf(t * d).toFixed(1) + "," + yOf(flightY(t, def.launch, def.land, d)).toFixed(1));
+        const h = Math.max(0, toDisp(flightY(t, def.launch, def.land, dYd)));
+        pts.push(xOf(t * d).toFixed(1) + "," + yOf(h).toFixed(1));
       }
       svg += '<polyline class="shot-path" data-i="' + i + '" data-club="' + escapeHtml(s.club) + '" fill="none" stroke="' + color + '" stroke-width="1.6" stroke-opacity=".55" points="' + pts.join(" ") + '"/>';
-      // roll along the ground if showing carry and total > carry
-      if (state.distMode === "carry" && s.total != null && s.total > d) {
-        svg += '<line x1="' + xOf(d) + '" y1="' + yOf(0) + '" x2="' + xOf(s.total) + '" y2="' + yOf(0) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="3 3" stroke-opacity=".7"/>';
+      if (state.distMode === "carry" && s.total != null && s.total > dYd) {
+        svg += '<line x1="' + xOf(d) + '" y1="' + yOf(0) + '" x2="' + xOf(toDisp(s.total)) + '" y2="' + yOf(0) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="3 3" stroke-opacity=".7"/>';
       }
-      const land = { x: xOf(d), y: yOf(0) };
-      svg += '<circle class="shot-dot" data-i="' + i + '" data-club="' + escapeHtml(s.club) + '" cx="' + land.x.toFixed(1) + '" cy="' + land.y.toFixed(1) + '" r="3.4" fill="' + color + '" stroke="#041208" stroke-width=".7"><title>' + escapeHtml(s.club) + " #" + (s.shotNo || "") + " " + fmt0(d) + " yd</title></circle>";
+    });
+    svg += '</g>';
+    shots.forEach((s, i) => {
+      const dYd = distOf(s);
+      if (dYd == null || dYd <= 0) return;
+      const d = toDisp(dYd);
+      const color = clubColor(s.club);
+      const land = { x: xOf(d), y: Math.min(yOf(0), (H - padB) - 3.4) };
+      svg += '<circle class="shot-dot" data-i="' + i + '" data-club="' + escapeHtml(s.club) + '" cx="' + land.x.toFixed(1) + '" cy="' + land.y.toFixed(1) + '" r="3.4" fill="' + color + '" stroke="#041208" stroke-width=".7"><title>' + escapeHtml(s.club) + " #" + (s.shotNo || "") + " " + fmtDist(dYd) + uSuf() + '</title></circle>';
     });
     if (!shots.length) {
       svg += '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="16">No shots to show with the current filters</text>';
@@ -1239,12 +1338,9 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   function renderClubRail() {
     const rail = $("#clubRail");
     const flagged = allShotsRaw();
-    const used = usedShots();
-    const statsAll = clubStats(flagged.filter((s) => !state.excludeMishits || !s.flag));
-    // stats for currently selected (usedShots already club-filtered)
-    const stats = clubStats(used);
-    // For the rail, always list every club in the session (unfiltered by chip), with avg from non-excluded shots of that club
-    const base = clubStats(flagged.filter((s) => !state.excludeMishits || !s.flag));
+    // Rail lists every club in the session (unfiltered by chip); averages follow mishit + Best-N filters
+    const baseShots = applyBestN(flagged.filter((s) => !state.excludeMishits || !s.flag));
+    const base = clubStats(baseShots);
     const allOn = !state.selectedClubs;
     let html = "<h2>Clubs</h2>";
     html += '<button type="button" class="rail-showall' + (allOn ? " active" : "") + '" id="btnShowAll">Show all</button>';
@@ -1261,7 +1357,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       html += '<button type="button" class="rail-chip' + (on && !allOn ? " active" : on ? "" : " dim") + '" data-club="' + escapeHtml(row.club) + '">';
       html += '<span class="rail-swatch" style="background:' + def.color + '"></span>';
       html += '<span><div class="name">' + escapeHtml(def.short || row.club) + '</div><div class="meta">' + escapeHtml(row.club) + ' · ' + row.n + ' shot' + (row.n === 1 ? "" : "s") + '</div></span>';
-      html += '<span class="yards">' + fmt0(row.avgCarry) + '<span>yd</span></span>';
+      html += '<span class="yards">' + fmtDist(row.avgCarry) + '<span>' + unitShort() + '</span></span>';
       html += "</button>";
       if (next && next.avgCarry != null && row.avgCarry != null) {
         const gap = row.avgCarry - next.avgCarry;
@@ -1269,7 +1365,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         if (gap < 1) { cls = " tight"; label = "overlap"; }
         else if (gap < 8) { cls = " tight"; label = "tight gap"; }
         else if (gap > 18) { cls = " wide"; label = "wide gap"; }
-        html += '<div class="rail-gap' + cls + '"><span class="line"></span>' + fmt0(Math.abs(gap)) + ' yd ' + label + '<span class="line"></span></div>';
+        html += '<div class="rail-gap' + cls + '"><span class="line"></span>' + fmtDist(Math.abs(gap)) + ' ' + unitShort() + ' ' + label + '<span class="line"></span></div>';
       }
     });
     html += "</div>";
@@ -1301,9 +1397,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const misreads = raw.filter((s) => s.flag === "misread").length;
     const mishits = raw.filter((s) => s.flag === "mishit").length;
     const excluded = misreads + mishits;
-    const used = raw.length - (state.excludeMishits ? excluded : 0);
+    const used = usedShots().length;
     const el = $("#shotCounts");
-    el.innerHTML = "<strong>" + used + "</strong> used of <strong>" + raw.length + "</strong> shots · <strong>" + excluded + "</strong> flagged (<strong>" + misreads + "</strong> misreads, <strong>" + mishits + "</strong> mishits)";
+    const bestNote = (!state.bestN || state.bestN >= 1) ? "" : (" · top " + Math.round(state.bestN * 100) + "% by carry");
+    el.innerHTML = "<strong>" + used + "</strong> used of <strong>" + raw.length + "</strong> shots · <strong>" + excluded + "</strong> flagged (<strong>" + misreads + "</strong> misreads, <strong>" + mishits + "</strong> mishits)" + bestNote;
     el.className = "badge" + (excluded ? " warn" : "");
   }
 
@@ -1321,11 +1418,11 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const clubs = clubsInPlay(shots);
     const tiles = [
       { k: "Shots", v: String(shots.length), s: (state.excludeMishits ? raw.filter((s) => s.flag).length + " excluded" : "including flagged") },
-      { k: "Peak carry", v: fmt0(peak), u: "yd", s: peakShot ? peakShot.club : "" },
+      { k: "Peak carry", v: fmtDist(peak), u: unitShort(), s: peakShot ? peakShot.club : "" },
       { k: "Avg smash", v: fmt(mean(smash), 2), s: "selected clubs" },
       { k: "Avg club speed", v: fmt(mean(chs), 1), u: "mph", s: "" },
       { k: "Consistency", v: cons == null ? "—" : fmt0(cons), s: "100 = tight carry SD" },
-      { k: "Carry / mph", v: fmt(mean(eff), 2), u: "yd", s: "carry efficiency" }
+      { k: "Carry / mph", v: fmt(toDisp(mean(eff)), 2), u: unitShort(), s: "carry efficiency" }
     ];
     $("#heroTiles").innerHTML = tiles.map((t) =>
       '<div class="tile"><div class="k">' + t.k + '</div><div class="v">' + t.v + (t.u ? '<span class="u">' + t.u + "</span>" : "") + '</div><div class="s">' + (t.s || "") + "</div></div>"
@@ -1345,10 +1442,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const heads = ["Club", "Shots", "Avg carry", "Med carry", "Max carry", "Avg total", "Med total", "Max total", "Club spd", "Ball spd", "Smash", "Roll", "Roll %", "Carry SD", "Consistency", "Window P10–P90"];
     html += heads.map((h) => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>";
     rows.forEach((r) => {
-      const window = (r.p10 != null && r.p90 != null) ? (fmt0(r.p10) + "–" + fmt0(r.p90) + " · " + fmt0(r.p90 - r.p10) + " yd") : "—";
+      const window = (r.p10 != null && r.p90 != null) ? (fmtDist(r.p10) + "–" + fmtDist(r.p90) + " · " + fmtDist(r.p90 - r.p10) + uSuf()) : "—";
       html += "<tr><td><span class='club-dot' style='background:" + clubColor(r.club) + "'></span>" + escapeHtml(r.club) + "</td>";
       html += "<td>" + r.n + " / " + (totalsByClub[r.club] || r.n) + "</td>";
-      html += [fmt0(r.avgCarry), fmt0(r.medCarry), fmt0(r.maxCarry), fmt0(r.avgTotal), fmt0(r.medTotal), fmt0(r.maxTotal), fmt(r.avgChs, 1), fmt(r.avgBall, 1), fmt(r.avgSmash, 2), fmt0(r.avgRoll), fmt(r.avgRollPct, 0) + (r.avgRollPct != null ? "%" : ""), fmt(r.carrySd, 1), r.consistency == null ? "—" : fmt0(r.consistency), window]
+      html += [fmtDist(r.avgCarry), fmtDist(r.medCarry), fmtDist(r.maxCarry), fmtDist(r.avgTotal), fmtDist(r.medTotal), fmtDist(r.maxTotal), fmt(r.avgChs, 1), fmt(r.avgBall, 1), fmt(r.avgSmash, 2), fmtDist(r.avgRoll), fmt(r.avgRollPct, 0) + (r.avgRollPct != null ? "%" : ""), fmt(toDisp(r.carrySd), 1), r.consistency == null ? "—" : fmt0(r.consistency), window]
         .map((v) => "<td>" + v + "</td>").join("");
       html += "</tr>";
     });
@@ -1363,8 +1460,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     rows.forEach((r) => {
       const delta = r.potential != null && r.avgCarry != null ? r.potential - r.avgCarry : null;
       html += "<tr><td><span class='club-dot' style='background:" + clubColor(r.club) + "'></span>" + escapeHtml(r.club) + "</td>";
-      html += "<td>" + fmt(r.efficiency, 2) + " yd/mph</td><td>" + fmt(r.bench, 2) + "</td><td>" + fmt(r.avgSmash, 2) + "</td><td>" + fmt0(r.potential) + " yd</td>";
-      html += "<td>" + (delta == null ? "—" : ("+" + fmt0(delta) + " yd if smash hit benchmark")) + "</td></tr>";
+      html += "<td>" + fmt(toDisp(r.efficiency), 2) + " " + unitShort() + "/mph</td><td>" + fmt(r.bench, 2) + "</td><td>" + fmt(r.avgSmash, 2) + "</td><td>" + fmtDist(r.potential) + uSuf() + "</td>";
+      html += "<td>" + (delta == null ? "—" : ("+" + fmtDist(delta) + uSuf() + " if smash hit benchmark")) + "</td></tr>";
     });
     html += "</tbody></table>";
     $("#derivedTable").innerHTML = html;
@@ -1378,8 +1475,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       html += "<tr><td>" + (s.shotNo == null ? "—" : s.shotNo) + "</td><td>" + escapeHtml(niceDate(s._sessionDate) || s._sessionName || "") + "</td>";
       html += "<td><span class='club-dot' style='background:" + clubColor(s.club) + "'></span>" + escapeHtml(s.club) + "</td>";
       html += "<td><span class='tag " + s.flag + "'>" + s.flag + "</span></td>";
-      html += "<td>" + fmt(s.clubSpeed, 1) + "</td><td>" + fmt(s.ballSpeed, 1) + "</td><td>" + fmt(s.smash, 2) + "</td><td>" + fmt0(s.carry) + "</td><td>" + fmt0(s.total) + "</td>";
-      html += "<td style='text-align:left;white-space:normal;max-width:360px'>" + escapeHtml((s.flagReasons || []).join("; ")) + "</td></tr>";
+      html += "<td>" + fmt(s.clubSpeed, 1) + "</td><td>" + fmt(s.ballSpeed, 1) + "</td><td>" + fmt(s.smash, 2) + "</td><td>" + fmtDist(s.carry) + "</td><td>" + fmtDist(s.total) + "</td>";
+      html += "<td style='text-align:left;white-space:normal;max-width:360px'>" + escapeHtml((s.flagReasons || []).map(formatFlagReason).join("; ")) + "</td></tr>";
     });
     html += "</tbody></table>";
     $("#flagTable").innerHTML = html;
@@ -1395,35 +1492,34 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     if (rows.length < 1) { el.innerHTML = '<p class="empty">Need at least one club.</p>'; return; }
     const W = 920, H = Math.max(240, 28 + rows.length * 42 + 40);
     const padL = 100, padR = 80, padT = 16, padB = 36;
-    const maxD = Math.max.apply(null, rows.map((r) => Math.max(r.avgTotal || 0, r.avgCarry || 0))) || 100;
-    const maxX = Math.ceil((maxD + 15) / 25) * 25;
-    const xOf = (yd) => padL + (yd / maxX) * (W - padL - padR);
+    const maxD = Math.max.apply(null, rows.map((r) => Math.max(toDisp(r.avgTotal) || 0, toDisp(r.avgCarry) || 0))) || 100;
+    const maxX = Math.ceil((maxD + (toDisp(15) || 15)) / 25) * 25;
+    const xOf = (d) => padL + (d / maxX) * (W - padL - padR);
     let inner = "";
     for (let x = 0; x <= maxX; x += 25) {
       inner += '<line x1="' + xOf(x) + '" y1="' + padT + '" x2="' + xOf(x) + '" y2="' + (H - padB) + '" stroke="rgba(160,200,180,.1)"/>';
-      inner += '<text x="' + xOf(x) + '" y="' + (H - 12) + '" text-anchor="middle" fill="#8aa196" font-size="11" font-family="Barlow Condensed,sans-serif">' + x + "</text>";
+      inner += '<text x="' + xOf(x) + '" y="' + (H - 12) + '" text-anchor="middle" fill="#8aa196" font-size="11" font-family="Barlow Condensed,sans-serif">' + x + (x === 0 ? (" " + unitShort()) : "") + "</text>";
     }
     rows.forEach((r, i) => {
       const y = padT + 10 + i * 42;
       const color = clubColor(r.club);
       if (r.avgTotal != null) {
-        inner += '<rect x="' + xOf(0) + '" y="' + (y + 6) + '" width="' + Math.max(0, xOf(r.avgTotal) - xOf(0)) + '" height="16" rx="3" fill="' + color + '" fill-opacity=".22" stroke="' + color + '" stroke-opacity=".5"/>';
+        inner += '<rect x="' + xOf(0) + '" y="' + (y + 6) + '" width="' + Math.max(0, xOf(toDisp(r.avgTotal)) - xOf(0)) + '" height="16" rx="3" fill="' + color + '" fill-opacity=".22" stroke="' + color + '" stroke-opacity=".5"/>';
       }
       if (r.avgCarry != null) {
-        inner += '<rect x="' + xOf(0) + '" y="' + (y + 4) + '" width="' + Math.max(0, xOf(r.avgCarry) - xOf(0)) + '" height="20" rx="4" fill="' + color + '"/>';
-        inner += '<text x="' + (xOf(r.avgCarry) + 8) + '" y="' + (y + 19) + '" fill="#eef6f0" font-size="13" font-family="Barlow Condensed,sans-serif" font-weight="700">' + fmt0(r.avgCarry) + "</text>";
+        inner += '<rect x="' + xOf(0) + '" y="' + (y + 4) + '" width="' + Math.max(0, xOf(toDisp(r.avgCarry)) - xOf(0)) + '" height="20" rx="4" fill="' + color + '"/>';
+        inner += '<text x="' + (xOf(toDisp(r.avgCarry)) + 8) + '" y="' + (y + 19) + '" fill="#eef6f0" font-size="13" font-family="Barlow Condensed,sans-serif" font-weight="700">' + fmtDist(r.avgCarry) + "</text>";
       }
       inner += '<text x="' + (padL - 10) + '" y="' + (y + 18) + '" text-anchor="end" fill="#eef6f0" font-size="13" font-family="DM Sans,sans-serif" font-weight="650">' + escapeHtml(r.club) + "</text>";
       if (i < rows.length - 1 && r.avgCarry != null && rows[i + 1].avgCarry != null) {
         const gap = r.avgCarry - rows[i + 1].avgCarry;
         const col = gap < 1 || gap < 8 ? "#ff4d5a" : gap > 18 ? "#ffb020" : "#8aa196";
         const lab = gap < 1 ? "overlap " : "gap ";
-        inner += '<text x="' + (W - 8) + '" y="' + (y + 36) + '" text-anchor="end" fill="' + col + '" font-size="11">' + lab + fmt0(Math.abs(gap)) + " yd</text>";
+        inner += '<text x="' + (W - 8) + '" y="' + (y + 36) + '" text-anchor="end" fill="' + col + '" font-size="11">' + lab + fmtDist(Math.abs(gap)) + uSuf() + "</text>";
       }
     });
     el.innerHTML = svgWrap(inner, W, H, "Club gapping");
   }
-
   function renderDispersion() {
     const shots = usedShots();
     const el = $("#dispChart");
@@ -1434,13 +1530,13 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const W = 920, rowH = 44, padL = 100, padR = 24, padT = 10, padB = 30;
     const H = padT + padB + clubs.length * rowH;
     let maxD = 0;
-    clubs.forEach((c) => { const a = by.get(c) || []; if (a.length) maxD = Math.max(maxD, Math.max.apply(null, a)); });
-    const maxX = Math.max(100, Math.ceil((maxD + 10) / 25) * 25);
-    const xOf = (yd) => padL + (yd / maxX) * (W - padL - padR);
+    clubs.forEach((c) => { const a = by.get(c) || []; if (a.length) maxD = Math.max(maxD, Math.max.apply(null, a.map((v) => toDisp(v)))); });
+    const maxX = Math.max(100, Math.ceil((maxD + (toDisp(10) || 10)) / 25) * 25);
+    const xOf = (d) => padL + (d / maxX) * (W - padL - padR);
     let inner = "";
     for (let x = 0; x <= maxX; x += 25) {
       inner += '<line x1="' + xOf(x) + '" y1="' + padT + '" x2="' + xOf(x) + '" y2="' + (H - padB) + '" stroke="rgba(160,200,180,.1)"/>';
-      inner += '<text x="' + xOf(x) + '" y="' + (H - 10) + '" text-anchor="middle" fill="#8aa196" font-size="11" font-family="Barlow Condensed,sans-serif">' + x + "</text>";
+      inner += '<text x="' + xOf(x) + '" y="' + (H - 10) + '" text-anchor="middle" fill="#8aa196" font-size="11" font-family="Barlow Condensed,sans-serif">' + x + (x === 0 ? (" " + unitShort()) : "") + "</text>";
     }
     clubs.forEach((club, i) => {
       const vals = (by.get(club) || []).slice().sort((a, b) => a - b);
@@ -1449,18 +1545,17 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       inner += '<text x="' + (padL - 10) + '" y="' + (y + 4) + '" text-anchor="end" fill="#eef6f0" font-size="13">' + escapeHtml(club) + "</text>";
       if (!vals.length) return;
       const p10 = quantile(vals, 0.1), q1 = quantile(vals, 0.25), med = median(vals), q3 = quantile(vals, 0.75), p90 = quantile(vals, 0.9);
-      inner += '<line x1="' + xOf(vals[0]) + '" y1="' + y + '" x2="' + xOf(vals[vals.length - 1]) + '" y2="' + y + '" stroke="' + color + '" stroke-opacity=".4"/>';
-      inner += '<rect x="' + xOf(p10) + '" y="' + (y - 10) + '" width="' + Math.max(2, xOf(p90) - xOf(p10)) + '" height="20" rx="3" fill="' + color + '" fill-opacity=".18" stroke="' + color + '" stroke-opacity=".7"/>';
-      inner += '<rect x="' + xOf(q1) + '" y="' + (y - 8) + '" width="' + Math.max(2, xOf(q3) - xOf(q1)) + '" height="16" rx="2" fill="' + color + '" fill-opacity=".35"/>';
-      inner += '<line x1="' + xOf(med) + '" y1="' + (y - 12) + '" x2="' + xOf(med) + '" y2="' + (y + 12) + '" stroke="#fff" stroke-width="2"/>';
+      inner += '<line x1="' + xOf(toDisp(vals[0])) + '" y1="' + y + '" x2="' + xOf(toDisp(vals[vals.length - 1])) + '" y2="' + y + '" stroke="' + color + '" stroke-opacity=".4"/>';
+      inner += '<rect x="' + xOf(toDisp(p10)) + '" y="' + (y - 10) + '" width="' + Math.max(2, xOf(toDisp(p90)) - xOf(toDisp(p10))) + '" height="20" rx="3" fill="' + color + '" fill-opacity=".18" stroke="' + color + '" stroke-opacity=".7"/>';
+      inner += '<rect x="' + xOf(toDisp(q1)) + '" y="' + (y - 8) + '" width="' + Math.max(2, xOf(toDisp(q3)) - xOf(toDisp(q1))) + '" height="16" rx="2" fill="' + color + '" fill-opacity=".35"/>';
+      inner += '<line x1="' + xOf(toDisp(med)) + '" y1="' + (y - 12) + '" x2="' + xOf(toDisp(med)) + '" y2="' + (y + 12) + '" stroke="#fff" stroke-width="2"/>';
       vals.forEach((v, j) => {
         const jx = jitter("disp:" + club + ":" + j) * 0.35;
-        inner += '<circle cx="' + xOf(v) + '" cy="' + (y + jx) + '" r="2.4" fill="' + color + '" stroke="#071018" stroke-width=".5"/>';
+        inner += '<circle cx="' + xOf(toDisp(v)) + '" cy="' + (y + jx) + '" r="2.4" fill="' + color + '" stroke="#071018" stroke-width=".5"/>';
       });
     });
     el.innerHTML = svgWrap(inner, W, H, "Carry dispersion");
   }
-
   function renderScatter() {
     const shots = usedShots().filter((s) => s.clubSpeed != null && s.ballSpeed != null);
     const el = $("#scatterChart");
@@ -1592,8 +1687,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     return "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ")[Number(p[1]) - 1] || iso;
   }
   function signedYd(n) {
-    const v = Math.round(n);
-    return (v > 0 ? "+" : "") + v + " yd";
+    return signedDist(n);
   }
 
   function renderTrends() {
@@ -1635,14 +1729,14 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       const dV = (A.speed != null && B.speed != null) ? B.speed - A.speed : null;
       const dS = (A.smash != null && B.smash != null) ? B.smash - A.smash : null;
       const bits = [];
-      if (dC != null && Math.abs(dC) >= 2) bits.push("carry " + (dC > 0 ? "up " : "down ") + Math.abs(Math.round(dC)) + " yd");
+      if (dC != null && Math.abs(dC) >= 2) bits.push("carry " + (dC > 0 ? "up " : "down ") + Math.abs(Math.round(toDisp(dC))) + uSuf());
       else bits.push("carry about the same");
       if (dV != null && Math.abs(dV) >= 1) bits.push("club speed " + (dV > 0 ? "up " : "down ") + Math.abs(dV).toFixed(1) + " mph");
       if (dS != null && Math.abs(dS) >= 0.03) bits.push("smash " + (dS > 0 ? "up " : "down ") + Math.abs(dS).toFixed(2));
       const take = clubDef(club).short + " " + bits.join(", ") + " from the " + labF.toLowerCase() + " to the " + labL.toLowerCase() + ".";
       function col(lab, pack, deltas) {
         return '<div class="fl-col"><div class="k">' + lab + " · " + (lab === labF ? first.length : last.length) + ' shots</div>' +
-          '<div class="stat"><span class="lab">Carry</span><span class="val">' + fmt0(pack.carry) + ' <span class="u">yd</span>' + (deltas ? deltaBadge(dC, 0, " yd") : "") + "</span></div>" +
+          '<div class="stat"><span class="lab">Carry</span><span class="val">' + fmtDist(pack.carry) + ' <span class="u">' + unitShort() + '</span>' + (deltas ? deltaBadge(toDisp(dC), 0, uSuf()) : "") + "</span></div>" +
           '<div class="stat"><span class="lab">Club speed</span><span class="val">' + fmt(pack.speed, 1) + (deltas ? deltaBadge(dV, 1) : "") + "</span></div>" +
           '<div class="stat"><span class="lab">Smash</span><span class="val">' + fmt(pack.smash, 2) + (deltas ? deltaBadge(dS, 2) : "") + "</span></div></div>";
       }
@@ -1668,6 +1762,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       let shots = flagShots((sess.shots || []).map((s, i) => Object.assign({ _sessionId: sess.id, _sessionDate: sess.date }, s, { _i: i })));
       shots = shots.filter((s) => isClubSelected(s.club));
       if (state.excludeMishits) shots = shots.filter((s) => !s.flag);
+      shots = applyBestN(shots);
       clubStats(shots).forEach((r) => {
         if (!byClub.has(r.club)) byClub.set(r.club, []);
         byClub.get(r.club).push({
@@ -1707,7 +1802,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         const prev = i > 0 ? rows[i - 1] : null;
         const bar = Math.round(((r.carry || 0) / maxC) * 100);
         html += "<tr><td>" + escapeHtml(niceDate(r.date)) + " <span style='color:var(--dim)'>· " + r.n + "</span></td>";
-        html += '<td class="num" style="color:' + clubColor(club) + '">' + fmt0(r.carry) + " yd" + (prev && r.carry != null && prev.carry != null ? deltaBadge(r.carry - prev.carry, 0, " yd") : "") + '<div class="mini-bar-wrap"><div class="mini-bar" style="width:' + bar + '%;background:' + clubColor(club) + '"></div></div></td>';
+        html += '<td class="num" style="color:' + clubColor(club) + '">' + fmtDist(r.carry) + uSuf() + (prev && r.carry != null && prev.carry != null ? deltaBadge(toDisp(r.carry - prev.carry), 0, uSuf()) : "") + '<div class="mini-bar-wrap"><div class="mini-bar" style="width:' + bar + '%;background:' + clubColor(club) + '"></div></div></td>';
         html += '<td class="num">' + fmt(r.speed, 1) + (prev && r.speed != null && prev.speed != null ? deltaBadge(r.speed - prev.speed, 1) : "") + "</td>";
         html += '<td class="num">' + fmt(r.smash, 2) + (prev && r.smash != null && prev.smash != null ? deltaBadge(r.smash - prev.smash, 2) : "") + "</td></tr>";
       });
@@ -1716,7 +1811,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         const dC = (last.carry != null && first.carry != null) ? last.carry - first.carry : null;
         const dV = (last.speed != null && first.speed != null) ? last.speed - first.speed : null;
         const dS = (last.smash != null && first.smash != null) ? last.smash - first.smash : null;
-        html += '<div class="vs-first"><span>Vs first session (' + escapeHtml(niceDate(first.date)) + ")</span><span>carry " + deltaBadge(dC, 0, " yd") + "</span><span>speed " + deltaBadge(dV, 1) + "</span><span>smash " + deltaBadge(dS, 2) + "</span></div>";
+        html += '<div class="vs-first"><span>Vs first session (' + escapeHtml(niceDate(first.date)) + ")</span><span>carry " + deltaBadge(toDisp(dC), 0, uSuf()) + "</span><span>speed " + deltaBadge(dV, 1) + "</span><span>smash " + deltaBadge(dS, 2) + "</span></div>";
       }
       html += "</article>";
     });
@@ -1733,6 +1828,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       return;
     }
     destroyCharts();
+    updateUnitCopy();
+    syncUnitButtons();
     renderCounts();
     renderHero();
     renderTiles();
@@ -1908,7 +2005,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       const preview = it.shots.slice(0, 8);
       html += '<div class="table-wrap"><table class="stats"><thead><tr><th>Shot</th><th>Club</th><th>Norm</th><th>Club spd</th><th>Ball spd</th><th>Smash</th><th>Carry</th><th>Total</th></tr></thead><tbody>';
       preview.forEach((s) => {
-        html += "<tr><td>" + (s.shotNo == null ? "—" : s.shotNo) + "</td><td>" + escapeHtml(s.clubRaw) + "</td><td>" + escapeHtml(s.club) + "</td><td>" + fmt(s.clubSpeed, 1) + "</td><td>" + fmt(s.ballSpeed, 1) + "</td><td>" + fmt(s.smash, 2) + "</td><td>" + fmt0(s.carry) + "</td><td>" + fmt0(s.total) + "</td></tr>";
+        html += "<tr><td>" + (s.shotNo == null ? "—" : s.shotNo) + "</td><td>" + escapeHtml(s.clubRaw) + "</td><td>" + escapeHtml(s.club) + "</td><td>" + fmt(s.clubSpeed, 1) + "</td><td>" + fmt(s.ballSpeed, 1) + "</td><td>" + fmt(s.smash, 2) + "</td><td>" + fmtDist(s.carry) + "</td><td>" + fmtDist(s.total) + "</td></tr>";
       });
       html += "</tbody></table></div>";
       if (it.shots.length > 8) html += '<p class="preview-meta">Showing 8 of ' + it.shots.length + " rows.</p>";
@@ -2016,6 +2113,14 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     };
     $("#excludeMishits").onchange = () => { state.excludeMishits = $("#excludeMishits").checked; renderAll(); };
     $("#bestN").onchange = () => { state.bestN = Number($("#bestN").value); renderAll(); };
+    $("#unitMode").onclick = (e) => {
+      const b = e.target.closest("button[data-unit]");
+      if (!b) return;
+      state.units = b.getAttribute("data-unit") === "m" ? "m" : "yd";
+      saveUnits();
+      syncUnitButtons();
+      renderAll();
+    };
     $("#viewMode").onclick = (e) => {
       const b = e.target.closest("button[data-mode]");
       if (!b) return;
@@ -2059,7 +2164,9 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 
   function init() {
     loadStore();
+    loadUnits();
     bind();
+    syncUnitButtons();
     fillSessionSelect();
     if (state.sessions.length) {
       showView("range");
