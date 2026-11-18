@@ -1,0 +1,13 @@
+Copyright (c) 2026 Royce CX. All rights reserved.
+
+LM1 Range Lab, including its source code, design, user interface and
+documentation, is proprietary. No licence is granted to copy, modify,
+distribute, sublicense, sell, or create derivative works from this
+software, in whole or in part, without the prior written permission of
+the copyright holder.
+
+Viewing the source on GitHub, or using the hosted site for personal
+viewing, does not grant any rights to reuse it.
+
+Third-party components bundled in index.html (Chart.js) remain under
+their own licences (MIT), as stated in their embedded notices.

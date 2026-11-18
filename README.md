@@ -5,3 +5,7 @@ A single-page visualiser for Shot Scope LM1 range sessions: carry, club and ball
 Open the site, or download `index.html` and open it locally — no server required.
 
 **Add a later session:** import it in the app (paste or TSV), export a JSON backup if you want a copy, then rebuild this `index.html` with the new session included in the embedded data and push it to the `main` branch.
+
+## Licence
+
+Copyright (c) 2026 Royce CX. All rights reserved. See [LICENSE](LICENSE). This repository is public for viewing only; no permission is granted to copy, modify, redistribute or commercialise it.
