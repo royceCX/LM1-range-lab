@@ -126,8 +126,8 @@ main{flex:1;padding:16px 18px 48px;max-width:1440px;width:100%;margin:0 auto}
 
 /* Table */
 .table-wrap{overflow:auto;border-radius:12px;border:1px solid var(--line)}
-table.stats{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
-table.stats th,table.stats td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+table.stats{width:100%;border-collapse:collapse;font-size:13px;min-width:840px}
+table.stats th,table.stats td{padding:7px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
 table.stats th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:650;background:#0d141c;position:sticky;top:0;z-index:1}
 table.stats td:first-child,table.stats th:first-child{text-align:left;position:sticky;left:0;background:var(--elev);font-weight:700}
 table.stats tr:hover td{background:rgba(62,224,255,.04)}
@@ -149,6 +149,56 @@ textarea.paste{width:100%;min-height:280px;background:#0a1016;border:1px dashed 
 .sess-card{background:var(--elev);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .sess-card.active{border-color:rgba(62,224,255,.5);box-shadow:0 0 0 1px rgba(62,224,255,.2)}
 .sess-card h3{margin:0;font-size:16px}
+
+/* Sessions workspace */
+.sess-workspace{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}
+.sess-main{min-width:0;display:flex;flex-direction:column;gap:12px}
+.sess-main .table-wrap{max-height:min(70vh,820px);overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--elev)}
+.sess-meta{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;background:var(--elev);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.sess-meta .field{min-width:160px}
+.sess-meta .sess-meta-actions{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sess-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.sess-tiles .tile{min-height:72px;padding:10px 12px}
+.sess-tiles .tile .v{font-size:26px}
+.sess-club-avgs{display:flex;flex-wrap:wrap;gap:6px}
+.sess-club-avgs span{display:inline-flex;align-items:center;gap:6px;background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:12px;color:var(--muted)}
+.sess-club-avgs b{color:var(--text);font-variant-numeric:tabular-nums}
+.sess-list{background:var(--elev);border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:6px;max-height:min(78vh,920px);overflow:auto;position:sticky;top:70px}
+.sess-list h2{margin:0 6px 4px;font-family:var(--cond);font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:650;white-space:nowrap}
+.sess-item{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:12px;padding:10px 10px;color:inherit}
+.sess-item:hover{background:rgba(255,255,255,.03)}
+.sess-item.active{background:rgba(62,224,255,.08);border-color:rgba(62,224,255,.4);box-shadow:0 0 0 1px rgba(62,224,255,.15)}
+.sess-item .si-date{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:650}
+.sess-item .si-name{font-weight:700;font-size:14px;margin:1px 0 3px}
+.sess-item .si-meta{font-size:12px;color:var(--dim);display:flex;flex-wrap:wrap;gap:4px 10px}
+.sess-item .si-meta strong{color:var(--text);font-weight:650}
+table.stats td input,table.stats td select{width:100%;max-width:92px;background:var(--bg-2);border:1px solid var(--line);border-radius:6px;padding:4px 6px;color:var(--text);font:inherit;font-variant-numeric:tabular-nums}
+table.stats td select{max-width:132px;min-width:104px}
+table.stats td input:focus,table.stats td select:focus{outline:none;border-color:rgba(62,224,255,.6)}
+table.stats tr.edited td{background:rgba(62,224,255,.05)}
+table.stats tr.excluded-row td{opacity:.7}
+.edit-flag{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cyan);margin-right:6px;vertical-align:middle;box-shadow:0 0 8px rgba(62,224,255,.7)}
+.inc-seg{display:inline-flex;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:2px}
+.inc-seg button{background:transparent;border:0;color:var(--muted);padding:3px 7px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.inc-seg button.active.auto{color:var(--text);background:rgba(255,255,255,.08)}
+.inc-seg button.active.in{color:var(--cyan);background:rgba(62,224,255,.12)}
+.inc-seg button.active.out{color:var(--amber);background:rgba(255,176,32,.12)}
+.btn.icon{padding:7px 10px;font-size:18px;line-height:1;min-width:36px}
+.session-switcher{display:flex;align-items:center;gap:6px;flex:1 1 220px;max-width:460px}
+.session-switcher select#sessionSelect{flex:1 1 auto;min-width:0;max-width:none}
+.sess-empty{padding:28px 16px;color:var(--muted)}
+.btn.linkish{background:transparent;border:0;color:var(--cyan);font-weight:650;padding:4px 6px;font-size:12px}
+.tag.excluded{background:rgba(255,176,32,.15);color:var(--amber)}
+.tag.ok{background:rgba(61,255,154,.12);color:var(--green)}
+@media (max-width:640px){
+  .sess-workspace{display:flex;flex-direction:column;gap:12px}
+  .sess-list{order:-1;position:static;max-height:none;flex-direction:row;overflow-x:auto;overflow-y:hidden;width:100%;padding:8px}
+  .sess-list h2{display:none}
+  .sess-item{width:auto;min-width:220px;max-width:260px;flex:0 0 auto}
+  .sess-meta .sess-meta-actions{margin-left:0}
+  .session-switcher{flex:1 1 100%;max-width:none;width:100%}
+}
+
 .sess-actions{display:flex;gap:6px;flex-wrap:wrap}
 
 /* Mishit table */
@@ -254,7 +304,11 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         <button type="button" data-unit="yd" class="active">Yards</button>
         <button type="button" data-unit="m">Metres</button>
       </div>
-      <select id="sessionSelect" aria-label="Session"></select>
+      <div class="session-switcher" id="sessionSwitcher">
+        <button type="button" class="btn icon" id="btnSessPrev" aria-label="Previous session">‹</button>
+        <select id="sessionSelect" aria-label="Session"></select>
+        <button type="button" class="btn icon" id="btnSessNext" aria-label="Next session">›</button>
+      </div>
       <button type="button" class="btn ghost" id="btnExportJson">Backup JSON</button>
       <button type="button" class="btn ghost" id="btnImportJson">Restore</button>
       <input type="file" id="jsonFile" accept=".json,application/json" hidden>
@@ -371,7 +425,15 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         <button type="button" class="btn primary" id="btnExportAll">Export all as JSON</button>
         <span class="badge" id="sessCountBadge"></span>
       </div>
-      <div class="sess-grid" id="sessGrid"></div>
+      <div class="sess-workspace">
+        <div class="sess-main">
+          <div class="sess-meta" id="sessMeta"></div>
+          <div class="sess-tiles" id="sessTiles"></div>
+          <div class="sess-club-avgs" id="sessClubAvgs"></div>
+          <div class="table-wrap" id="sessShotTable"></div>
+        </div>
+        <aside class="sess-list" id="sessList" aria-label="Sessions"></aside>
+      </div>
     </section>
   </main>
 
@@ -510,6 +572,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   function toDisp(yd) {
     if (yd == null || Number.isNaN(Number(yd))) return null;
     return isMetres() ? Number(yd) * YD_TO_M : Number(yd);
+  }
+  function fromDisp(v) {
+    if (v == null || Number.isNaN(Number(v))) return null;
+    return isMetres() ? Number(v) / YD_TO_M : Number(v);
   }
   function unitShort() { return isMetres() ? "m" : "yd"; }
   function unitWord() { return isMetres() ? "metres" : "yards"; }
@@ -862,15 +928,22 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 
   function mergeEmbeddedSessions() {
     if (!Array.isArray(EMBEDDED_SESSIONS) || !EMBEDDED_SESSIONS.length) return;
-    const have = new Set((state.sessions || []).map((s) => String(s.date)));
+    const haveIds = new Set((state.sessions || []).map((s) => String(s.id)));
+    const haveDates = new Set((state.sessions || []).map((s) => String(s.date)));
     let added = 0;
     EMBEDDED_SESSIONS.forEach((sess) => {
-      if (!sess || !sess.date) return;
-      if (have.has(String(sess.date))) return;
-      state.sessions.push(JSON.parse(JSON.stringify(sess)));
-      have.add(String(sess.date));
+      if (!sess) return;
+      // Stored / edited sessions always win — never replace by id or date
+      if (sess.id && haveIds.has(String(sess.id))) return;
+      if (sess.date && haveDates.has(String(sess.date))) return;
+      const copy = JSON.parse(JSON.stringify(sess));
+      ensureOriginal(copy);
+      state.sessions.push(copy);
+      if (copy.id) haveIds.add(String(copy.id));
+      if (copy.date) haveDates.add(String(copy.date));
       added++;
     });
+    (state.sessions || []).forEach(ensureOriginal);
     if (!added && state.currentId) return;
     if (!state.currentId || !(state.currentId === "__all__" || state.sessions.some((s) => s.id === state.currentId))) {
       const latest = state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)))[0];
@@ -890,6 +963,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         }
       }
     } catch (e) { console.warn("Could not read localStorage", e); }
+    (state.sessions || []).forEach(ensureOriginal);
     mergeEmbeddedSessions();
   }
   function saveStore() {
@@ -999,10 +1073,15 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     out.sort((a, b) => (a.shotNo || 0) - (b.shotNo || 0) || (a._i || 0) - (b._i || 0) || String(a._sessionDate || "").localeCompare(String(b._sessionDate || "")));
     return out;
   }
+  function shotExcluded(s) {
+    if (s.includeOverride === "exclude") return true;
+    if (s.includeOverride === "include") return false;
+    return !!(state.excludeMishits && s.flag);
+  }
   function usedShots() {
     let shots = allShotsRaw();
     shots = shots.filter((s) => isClubSelected(s.club));
-    if (state.excludeMishits) shots = shots.filter((s) => !s.flag);
+    shots = shots.filter((s) => !shotExcluded(s));
     return applyBestN(shots);
   }
   function shotsForStats() {
@@ -1339,7 +1418,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const rail = $("#clubRail");
     const flagged = allShotsRaw();
     // Rail lists every club in the session (unfiltered by chip); averages follow mishit + Best-N filters
-    const baseShots = applyBestN(flagged.filter((s) => !state.excludeMishits || !s.flag));
+    const baseShots = applyBestN(flagged.filter((s) => !shotExcluded(s)));
     const base = clubStats(baseShots);
     const allOn = !state.selectedClubs;
     let html = "<h2>Clubs</h2>";
@@ -1761,7 +1840,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     dates.forEach((sess) => {
       let shots = flagShots((sess.shots || []).map((s, i) => Object.assign({ _sessionId: sess.id, _sessionDate: sess.date }, s, { _i: i })));
       shots = shots.filter((s) => isClubSelected(s.club));
-      if (state.excludeMishits) shots = shots.filter((s) => !s.flag);
+      shots = shots.filter((s) => !shotExcluded(s));
       shots = applyBestN(shots);
       clubStats(shots).forEach((r) => {
         if (!byClub.has(r.club)) byClub.set(r.club, []);
@@ -1845,17 +1924,98 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   }
 
   /* ---------------- Import / sessions UI ---------------- */
+  function coreShot(sh) {
+    return {
+      shotNo: sh.shotNo != null && sh.shotNo !== "" ? sh.shotNo : null,
+      clubRaw: sh.clubRaw || sh.club || "",
+      club: sh.club || "",
+      clubSpeed: sh.clubSpeed != null && sh.clubSpeed !== "" ? Number(sh.clubSpeed) : null,
+      ballSpeed: sh.ballSpeed != null && sh.ballSpeed !== "" ? Number(sh.ballSpeed) : null,
+      smash: sh.smash != null && sh.smash !== "" ? Number(sh.smash) : null,
+      carry: sh.carry != null && sh.carry !== "" ? Number(sh.carry) : null,
+      total: sh.total != null && sh.total !== "" ? Number(sh.total) : null
+    };
+  }
+  function ensureOriginal(sess) {
+    if (!sess || sess.original) return sess;
+    sess.original = {
+      name: sess.name,
+      date: sess.date,
+      shots: (sess.shots || []).map(coreShot)
+    };
+    return sess;
+  }
+  function valuesEqual(a, b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    if (typeof a === "number" || typeof b === "number") return Number(a) === Number(b);
+    return String(a) === String(b);
+  }
+  function rowIsEdited(sess, i) {
+    const sh = sess.shots && sess.shots[i];
+    if (!sh) return false;
+    if (sh.edited) return true;
+    const o = sess.original && sess.original.shots && sess.original.shots[i];
+    if (!o) return false;
+    return ["shotNo", "club", "clubSpeed", "ballSpeed", "smash", "carry", "total"].some((k) => !valuesEqual(sh[k], o[k]));
+  }
+  function impliedSmash(clubSpeed, ballSpeed) {
+    if (clubSpeed == null || ballSpeed == null || !Number(clubSpeed)) return null;
+    return Math.round((ballSpeed / clubSpeed) * 100) / 100;
+  }
+  function sessionsSorted() {
+    return state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(a.id).localeCompare(String(b.id)));
+  }
+  function sessionNavItems() {
+    const list = sessionsSorted();
+    if (list.length > 1) return [{ id: "__all__", name: "All sessions" }].concat(list);
+    return list;
+  }
+  function setCurrentSession(id, opts) {
+    opts = opts || {};
+    if (id !== "__all__" && id && !state.sessions.some((s) => s.id === id)) return;
+    const changed = state.currentId !== id;
+    state.currentId = id || null;
+    if (changed && !opts.keepClubs) state.selectedClubs = null;
+    saveStore();
+    if (opts.silent) {
+      fillSessionSelect();
+      return;
+    }
+    renderAll();
+    if (state.view === "sessions") renderSessionsView();
+  }
+  function stepSession(dir) {
+    const items = sessionNavItems();
+    if (!items.length) return;
+    let i = items.findIndex((s) => s.id === state.currentId);
+    if (i < 0) i = 0;
+    const next = i + dir;
+    if (next < 0 || next >= items.length) return;
+    setCurrentSession(items[next].id);
+  }
+  function syncSessionNavButtons() {
+    const items = sessionNavItems();
+    const i = items.findIndex((s) => s.id === state.currentId);
+    const prev = $("#btnSessPrev");
+    const next = $("#btnSessNext");
+    if (prev) prev.disabled = !items.length || i <= 0;
+    if (next) next.disabled = !items.length || i < 0 || i >= items.length - 1;
+  }
+
   function fillSessionSelect() {
     const sel = $("#sessionSelect");
+    if (!sel) return;
     const cur = state.currentId;
     const opts = [];
     if (state.sessions.length > 1) opts.push('<option value="__all__">All sessions</option>');
-    state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date))).forEach((s) => {
+    sessionsSorted().forEach((s) => {
       opts.push('<option value="' + escapeHtml(s.id) + '">' + escapeHtml(s.name || niceDate(s.date)) + " · " + (s.shots || []).length + " shots</option>");
     });
     sel.innerHTML = opts.join("") || '<option value="">No sessions</option>';
     sel.value = cur && (cur === "__all__" || state.sessions.some((s) => s.id === cur)) ? cur : (state.sessions[0] ? state.sessions[0].id : "");
     if (sel.value && sel.value !== state.currentId) state.currentId = sel.value;
+    syncSessionNavButtons();
   }
 
   function showView(name) {
@@ -1863,72 +2023,359 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     $$(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + name));
     $$("nav.tabs button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-view") === name));
     window.scrollTo(0, 0);
-    if (name === "sessions") renderSessionGrid();
+    if (name === "sessions") renderSessionsView();
+  }
+
+  function sessionTally(sess) {
+    const shots = flagShots((sess.shots || []).map((sh, i) => Object.assign({}, sh, { _i: i })));
+    let used = 0, flagN = 0;
+    const carries = [];
+    shots.forEach((s) => {
+      if (s.flag) flagN++;
+      if (shotExcluded(s)) return;
+      used++;
+      if (s.carry != null) carries.push(s.carry);
+    });
+    return { n: (sess.shots || []).length, used, flagN, avgCarry: mean(carries) };
+  }
+
+  function renderSessList() {
+    const el = $("#sessList");
+    if (!el) return;
+    const items = sessionNavItems();
+    if (!items.length) {
+      el.innerHTML = "<h2>Sessions</h2><p class='sess-empty'>Nothing saved yet.</p>";
+      return;
+    }
+    let html = "<h2>Sessions</h2>";
+    items.forEach((s) => {
+      const all = s.id === "__all__";
+      const active = (s.id === state.currentId) || (!state.currentId && all) ? " active" : "";
+      let dateLbl, name, meta;
+      if (all) {
+        const n = state.sessions.reduce((a, x) => a + (x.shots || []).length, 0);
+        dateLbl = "Combined";
+        name = "All sessions";
+        meta = "<span><strong>" + state.sessions.length + "</strong> sessions</span><span><strong>" + n + "</strong> shots</span>";
+      } else {
+        const t = sessionTally(s);
+        dateLbl = niceDate(s.date);
+        name = s.name || dateLbl;
+        meta = "<span><strong>" + t.n + "</strong> shots</span><span><strong>" + t.used + "</strong> used</span>" +
+          (t.flagN ? "<span><strong>" + t.flagN + "</strong> flagged</span>" : "") +
+          (t.avgCarry != null ? "<span>avg " + fmtDist(t.avgCarry) + uSuf() + "</span>" : "");
+      }
+      html += '<button type="button" class="sess-item' + active + '" data-sess-id="' + escapeHtml(s.id) + '">';
+      html += '<div class="si-date">' + escapeHtml(dateLbl) + "</div>";
+      html += '<div class="si-name">' + escapeHtml(name) + "</div>";
+      html += '<div class="si-meta">' + meta + "</div></button>";
+    });
+    el.innerHTML = html;
+  }
+
+  function editingSession() {
+    if (state.currentId === "__all__") return null;
+    const s = state.sessions.find((x) => x.id === state.currentId);
+    return s || null;
+  }
+
+  function renderSessMeta() {
+    const el = $("#sessMeta");
+    if (!el) return;
+    const sess = editingSession();
+    if (!sess) {
+      el.innerHTML = '<p class="sub" style="margin:0">All sessions are shown together. Pick a session on the right to edit its name, date or shots. Nothing is deleted from here.</p>';
+      return;
+    }
+    ensureOriginal(sess);
+    const dirty = (sess.original && (sess.name !== sess.original.name || sess.date !== sess.original.date)) ||
+      (sess.shots || []).some((_, i) => rowIsEdited(sess, i)) ||
+      (sess.shots || []).some((sh) => sh.includeOverride);
+    let html = '<label class="field">Session name <input type="text" id="sessEditName" value="' + escapeHtml(sess.name || "") + '"></label>';
+    html += '<label class="field">Date <input type="date" id="sessEditDate" value="' + escapeHtml(sess.date || "") + '"></label>';
+    html += '<div class="sess-meta-actions">';
+    html += '<button type="button" class="btn" id="btnSessCsv">Export CSV</button>';
+    html += '<button type="button" class="btn" id="btnRevertSession"' + (dirty ? "" : " disabled") + ">Revert to original</button>";
+    html += "</div>";
+    el.innerHTML = html;
+    $("#sessEditName").onchange = $("#sessEditName").onblur = () => {
+      const v = $("#sessEditName").value.trim();
+      if (!v || v === sess.name) return;
+      sess.name = v;
+      saveStore();
+      fillSessionSelect();
+      renderSessList();
+    };
+    $("#sessEditDate").onchange = () => {
+      const v = $("#sessEditDate").value;
+      if (!v || v === sess.date) return;
+      sess.date = v;
+      saveStore();
+      fillSessionSelect();
+      renderSessList();
+      renderAll();
+    };
+    $("#btnSessCsv").onclick = () => exportSessionCsv(sess);
+    $("#btnRevertSession").onclick = () => revertSession(sess);
+  }
+
+  function renderSessTiles() {
+    const el = $("#sessTiles");
+    const avgEl = $("#sessClubAvgs");
+    const sess = editingSession();
+    const shotsSrc = sess ? sess.shots : allShotsRaw();
+    const sessionsForFlag = sess ? [sess] : currentSessions();
+    const raw = [];
+    sessionsForFlag.forEach((s) => {
+      (s.shots || []).forEach((sh, i) => raw.push(Object.assign({ _sessionId: s.id }, sh, { _i: i })));
+    });
+    const flagged = flagShots(raw);
+    const used = flagged.filter((s) => !shotExcluded(s));
+    const flagN = flagged.filter((s) => s.flag).length;
+    const carry = used.map((s) => s.carry).filter((v) => v != null);
+    const smash = used.map((s) => s.smash).filter((v) => v != null);
+    const tiles = [
+      { k: "Shots", v: String(flagged.length) },
+      { k: "Used", v: String(used.length), s: state.excludeMishits ? "after filters" : "including flagged" },
+      { k: "Flagged", v: String(flagN) },
+      { k: "Avg carry", v: fmtDist(mean(carry)), u: unitShort() },
+      { k: "Avg smash", v: fmt(mean(smash), 2) }
+    ];
+    el.innerHTML = tiles.map((t) =>
+      '<div class="tile"><div class="k">' + t.k + '</div><div class="v">' + t.v + (t.u ? '<span class="u">' + t.u + "</span>" : "") + '</div>' +
+      (t.s ? '<div class="s">' + t.s + "</div>" : "") + "</div>"
+    ).join("");
+    const rows = clubStats(used);
+    avgEl.innerHTML = rows.map((r) =>
+      '<span><i class="club-dot" style="background:' + clubColor(r.club) + '"></i>' + escapeHtml(clubDef(r.club).short || r.club) +
+      " <b>" + fmtDist(r.avgCarry) + uSuf() + "</b></span>"
+    ).join("");
+  }
+
+  function clubSelectHtml(selected) {
+    const ids = CLUB_DEFS.map((c) => c.id);
+    let html = "";
+    if (selected && ids.indexOf(selected) < 0) {
+      html += '<option value="' + escapeHtml(selected) + '" selected>' + escapeHtml(selected) + "</option>";
+    }
+    ids.forEach((id) => {
+      html += '<option value="' + escapeHtml(id) + '"' + (id === selected ? " selected" : "") + ">" + escapeHtml(id) + "</option>";
+    });
+    return html;
+  }
+  function inputNum(val, digits, asDist) {
+    if (val == null || Number.isNaN(Number(val))) return "";
+    const v = asDist ? toDisp(val) : Number(val);
+    if (v == null || Number.isNaN(v)) return "";
+    return Number(v).toFixed(digits == null ? 1 : digits);
+  }
+
+  function renderSessTable() {
+    const el = $("#sessShotTable");
+    if (!el) return;
+    const sess = editingSession();
+    const editable = !!sess;
+    const rows = [];
+    if (sess) {
+      (sess.shots || []).forEach((sh, i) => rows.push({ sess, sh, i }));
+    } else {
+      currentSessions().forEach((s) => {
+        (s.shots || []).forEach((sh, i) => rows.push({ sess: s, sh, i }));
+      });
+    }
+    if (!rows.length) {
+      el.innerHTML = '<p class="sess-empty">No shots in this session.</p>';
+      return;
+    }
+    const flagged = flagShots(rows.map((r, n) => Object.assign({ _sessionId: r.sess.id, _i: r.i, _n: n }, r.sh)));
+    let html = '<table class="stats" id="sessEditTable"><thead><tr>';
+    const heads = ["Shot", "Club", "Club spd", "Ball spd", "Smash", "Carry (" + unitShort() + ")", "Total (" + unitShort() + ")", "Status", "Include"];
+    if (!editable) heads.unshift("Session");
+    html += heads.map((h) => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>";
+    rows.forEach((r, n) => {
+      const fl = flagged[n] || {};
+      const edited = rowIsEdited(r.sess, r.i);
+      const ov = r.sh.includeOverride || "auto";
+      const status = fl.flag || (ov === "exclude" ? "excluded" : "ok");
+      const statusLbl = ov === "include" && fl.flag ? fl.flag + " · kept in" : (ov === "exclude" && !fl.flag ? "excluded" : (fl.flag || "ok"));
+      html += '<tr class="' + (edited ? "edited " : "") + (ov === "exclude" ? "excluded-row" : "") + '" data-sess="' + escapeHtml(r.sess.id) + '" data-i="' + r.i + '">';
+      if (!editable) html += "<td>" + escapeHtml(r.sess.name || niceDate(r.sess.date)) + "</td>";
+      if (editable) {
+        html += '<td>' + (edited ? '<span class="edit-flag" title="Edited"></span>' : "") + '<input type="number" inputmode="numeric" data-f="shotNo" value="' + (r.sh.shotNo == null ? "" : escapeHtml(r.sh.shotNo)) + '"></td>';
+        html += '<td><select data-f="club">' + clubSelectHtml(r.sh.club) + "</select></td>";
+        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="clubSpeed" value="' + inputNum(r.sh.clubSpeed, 1, false) + '"></td>';
+        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="ballSpeed" value="' + inputNum(r.sh.ballSpeed, 1, false) + '"></td>';
+        html += '<td><input type="number" step="0.01" inputmode="decimal" data-f="smash" value="' + inputNum(r.sh.smash, 2, false) + '"></td>';
+        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="carry" value="' + inputNum(r.sh.carry, 1, true) + '"></td>';
+        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="total" value="' + inputNum(r.sh.total, 1, true) + '"></td>';
+      } else {
+        html += "<td>" + (r.sh.shotNo == null ? "—" : r.sh.shotNo) + "</td>";
+        html += "<td><span class='club-dot' style='background:" + clubColor(r.sh.club) + "'></span>" + escapeHtml(r.sh.club) + "</td>";
+        html += "<td>" + fmt(r.sh.clubSpeed, 1) + "</td><td>" + fmt(r.sh.ballSpeed, 1) + "</td><td>" + fmt(r.sh.smash, 2) + "</td>";
+        html += "<td>" + fmtDist(r.sh.carry) + "</td><td>" + fmtDist(r.sh.total) + "</td>";
+      }
+      html += "<td><span class='tag " + status + "'>" + escapeHtml(statusLbl) + "</span>";
+      if (editable && (edited || r.sh.includeOverride)) html += '<button type="button" class="btn linkish" data-act="revert-row">Revert</button>';
+      html += "</td>";
+      html += '<td><div class="inc-seg" role="group" aria-label="Include in stats">';
+      ["auto", "include", "exclude"].forEach((mode) => {
+        const lab = mode === "auto" ? "Auto" : (mode === "include" ? "In" : "Out");
+        const cls = "active " + (mode === "include" ? "in" : (mode === "exclude" ? "out" : "auto"));
+        html += '<button type="button" data-act="override" data-mode="' + mode + '"' + (ov === mode || (mode === "auto" && !r.sh.includeOverride) ? ' class="' + cls + '"' : "") + ">" + lab + "</button>";
+      });
+      html += "</div></td>";
+      html += "</tr>";
+    });
+    html += "</tbody></table>";
+    if (!editable) html = '<p class="sub">Read-only combined table. Select a session to edit shots.</p>' + html;
+    el.innerHTML = html;
+    bindSessTable(el);
+  }
+
+  function bindSessTable(el) {
+    el.oninput = (e) => {
+      const t = e.target;
+      if (t.matches && t.matches("select[data-f]")) applyShotField(t, false);
+    };
+    el.onchange = (e) => {
+      const t = e.target;
+      if (t.matches && t.matches("input[data-f],select[data-f]")) applyShotField(t, true);
+    };
+    el.onkeydown = (e) => {
+      if (e.key === "Enter" && e.target && e.target.matches && e.target.matches("input[data-f]")) {
+        e.preventDefault();
+        e.target.blur();
+      }
+    };
+    el.onclick = (e) => {
+      const btn = e.target.closest("button[data-act]");
+      if (!btn) return;
+      const tr = btn.closest("tr");
+      if (!tr) return;
+      const sess = state.sessions.find((s) => s.id === tr.getAttribute("data-sess"));
+      const i = Number(tr.getAttribute("data-i"));
+      if (!sess || sess.shots[i] == null) return;
+      const act = btn.getAttribute("data-act");
+      if (act === "override") {
+        const mode = btn.getAttribute("data-mode");
+        if (mode === "auto") delete sess.shots[i].includeOverride;
+        else sess.shots[i].includeOverride = mode;
+        saveStore();
+        afterShotChange(true);
+      } else if (act === "revert-row") {
+        revertRow(sess, i);
+      }
+    };
+  }
+
+  function applyShotField(input, commit) {
+    const tr = input.closest("tr");
+    if (!tr) return;
+    const sess = state.sessions.find((s) => s.id === tr.getAttribute("data-sess"));
+    const i = Number(tr.getAttribute("data-i"));
+    if (!sess || sess.shots[i] == null) return;
+    ensureOriginal(sess);
+    const sh = sess.shots[i];
+    const field = input.getAttribute("data-f");
+    let val = input.value;
+    if (field === "club") {
+      sh.club = val;
+      sh.clubRaw = val;
+    } else if (field === "shotNo") {
+      sh.shotNo = val === "" ? null : parseNum(val);
+    } else if (field === "clubSpeed" || field === "ballSpeed" || field === "smash") {
+      const n = val === "" ? null : parseNum(val);
+      sh[field] = n;
+      if (field === "smash") sh.smashManual = true;
+      if (field === "clubSpeed" || field === "ballSpeed") {
+        const sm = impliedSmash(sh.clubSpeed, sh.ballSpeed);
+        if (sm != null) {
+          sh.smash = sm;
+          sh.smashManual = false;
+          const smashInput = tr.querySelector('input[data-f="smash"]');
+          if (smashInput) smashInput.value = inputNum(sm, 2, false);
+        }
+      }
+    } else if (field === "carry" || field === "total") {
+      sh[field] = val === "" ? null : parseInputDist(val);
+      if (field === "carry" && sh.carry != null && (sh.total == null || sh.total < sh.carry - 1)) {
+        sh.total = sh.carry;
+      }
+    }
+    sh.edited = true;
+    if (commit) {
+      saveStore();
+      afterShotChange(true);
+      tr.classList.add("edited");
+      if (!tr.querySelector(".edit-flag") && tr.querySelector("td")) {
+        const td = tr.querySelector("td");
+        td.insertAdjacentHTML("afterbegin", '<span class="edit-flag" title="Edited"></span>');
+      }
+      if (!tr.querySelector("[data-act='revert-row']")) {
+        const statusTd = tr.querySelector(".tag") && tr.querySelector(".tag").parentElement;
+        if (statusTd) statusTd.insertAdjacentHTML("beforeend", '<button type="button" class="btn linkish" data-act="revert-row">Revert</button>');
+      }
+    }
+  }
+  function parseInputDist(str) {
+    const n = parseNum(str);
+    if (n == null) return null;
+    return fromDisp(n);
+  }
+  function afterShotChange(rebuildTable) {
+    saveStore();
+    if (rebuildTable) renderSessionsView();
+    else {
+      fillSessionSelect();
+      renderSessList();
+      renderSessTiles();
+      renderSessMeta();
+    }
+    const stay = state.view;
+    renderAll();
+    if (stay === "sessions" && rebuildTable) renderSessionsView();
+  }
+  function revertRow(sess, i) {
+    ensureOriginal(sess);
+    const o = sess.original && sess.original.shots && sess.original.shots[i];
+    if (!o) return;
+    const prevOv = sess.shots[i] && sess.shots[i].includeOverride;
+    sess.shots[i] = Object.assign({}, coreShot(o));
+    // revert also clears include override
+    void prevOv;
+    saveStore();
+    afterShotChange(true);
+    toast("Row restored");
+  }
+  function revertSession(sess) {
+    if (!sess.original) return;
+    sess.name = sess.original.name;
+    sess.date = sess.original.date;
+    sess.shots = (sess.original.shots || []).map((sh) => Object.assign({}, coreShot(sh)));
+    saveStore();
+    fillSessionSelect();
+    afterShotChange(true);
+    toast("Session restored to original");
+  }
+
+  function renderSessionsView() {
+    $("#sessCountBadge").innerHTML = "<strong>" + state.sessions.length + "</strong> session" + (state.sessions.length === 1 ? "" : "s") + " · <strong>" + state.sessions.reduce((n, s) => n + (s.shots || []).length, 0) + "</strong> shots";
+    if (!state.sessions.length) {
+      $("#sessList").innerHTML = "<h2>Sessions</h2><p class='sess-empty'>Nothing saved yet. Import a table or load sample data.</p>";
+      $("#sessMeta").innerHTML = "";
+      $("#sessTiles").innerHTML = "";
+      $("#sessClubAvgs").innerHTML = "";
+      $("#sessShotTable").innerHTML = '<p class="sess-empty">Nothing saved yet.</p>';
+      return;
+    }
+    renderSessList();
+    renderSessMeta();
+    renderSessTiles();
+    renderSessTable();
   }
 
   function renderSessionGrid() {
-    $("#sessCountBadge").innerHTML = "<strong>" + state.sessions.length + "</strong> session" + (state.sessions.length === 1 ? "" : "s") + " · <strong>" + state.sessions.reduce((n, s) => n + (s.shots || []).length, 0) + "</strong> shots";
-    const grid = $("#sessGrid");
-    if (!state.sessions.length) {
-      grid.innerHTML = '<p class="empty">Nothing saved yet. Import a table or load sample data.</p>';
-      return;
-    }
-    grid.innerHTML = state.sessions.slice().sort((a, b) => String(b.date).localeCompare(String(a.date))).map((s) => {
-      const clubs = Array.from(new Set((s.shots || []).map((x) => x.club))).sort(sortClubs);
-      const active = s.id === state.currentId ? " active" : "";
-      return '<article class="sess-card' + active + '">' +
-        "<h3>" + escapeHtml(s.name) + "</h3>" +
-        '<div class="meta" style="color:var(--muted);font-size:13px">' + escapeHtml(niceDate(s.date)) + (s.source ? " · " + escapeHtml(s.source) : "") + "</div>" +
-        "<div>" + (s.shots || []).length + " shots · " + clubs.map((c) => escapeHtml(clubDef(c).short || c)).join(", ") + "</div>" +
-        '<div class="sess-actions">' +
-          '<button class="btn primary" data-act="open" data-id="' + escapeHtml(s.id) + '">Open</button>' +
-          '<button class="btn" data-act="rename" data-id="' + escapeHtml(s.id) + '">Rename</button>' +
-          '<button class="btn" data-act="csv" data-id="' + escapeHtml(s.id) + '">Export CSV</button>' +
-          '<button class="btn danger" data-act="del" data-id="' + escapeHtml(s.id) + '">Delete</button>' +
-        "</div></article>";
-    }).join("");
-    grid.onclick = (e) => {
-      const btn = e.target.closest("button[data-act]");
-      if (!btn) return;
-      const id = btn.getAttribute("data-id");
-      const act = btn.getAttribute("data-act");
-      const sess = state.sessions.find((s) => s.id === id);
-      if (!sess) return;
-      if (act === "open") { state.currentId = id; state.selectedClubs = null; saveStore(); showView("range"); renderAll(); }
-      else if (act === "rename") renameSession(sess);
-      else if (act === "csv") exportSessionCsv(sess);
-      else if (act === "del") deleteSession(sess);
-    };
-  }
-
-  function renameSession(sess) {
-    const back = $("#modalBack");
-    const box = $("#modalBox");
-    box.innerHTML = "<h3>Rename session</h3><label class='field'>Name <input id='renameInput' value='" + escapeHtml(sess.name) + "'></label><div class='row'><button class='btn' id='renameCancel'>Cancel</button><button class='btn primary' id='renameOk'>Save</button></div>";
-    back.hidden = false;
-    $("#renameInput").focus();
-    $("#renameCancel").onclick = () => { back.hidden = true; };
-    $("#renameOk").onclick = () => {
-      const v = $("#renameInput").value.trim();
-      if (v) { sess.name = v; saveStore(); back.hidden = true; renderSessionGrid(); fillSessionSelect(); toast("Renamed"); }
-    };
-  }
-  function deleteSession(sess) {
-    const back = $("#modalBack");
-    const box = $("#modalBox");
-    box.innerHTML = "<h3>Delete session?</h3><p>Remove <strong>" + escapeHtml(sess.name) + "</strong> from this browser. This cannot be undone unless you have a JSON backup.</p><div class='row'><button class='btn' id='delCancel'>Cancel</button><button class='btn danger' id='delOk'>Delete</button></div>";
-    back.hidden = false;
-    $("#delCancel").onclick = () => { back.hidden = true; };
-    $("#delOk").onclick = () => {
-      state.sessions = state.sessions.filter((s) => s.id !== sess.id);
-      if (state.currentId === sess.id) state.currentId = state.sessions[0] ? state.sessions[0].id : null;
-      saveStore();
-      back.hidden = true;
-      renderSessionGrid();
-      fillSessionSelect();
-      if (state.sessions.length) renderAll();
-      toast("Session deleted");
-    };
+    renderSessionsView();
   }
 
   function exportSessionCsv(sess) {
@@ -1968,17 +2415,23 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     saveStore();
   }
   function normalizeSession(s) {
-    const shots = (s.shots || []).map((sh) => ({
-      shotNo: sh.shotNo != null ? sh.shotNo : parseNum(sh.shotNo),
-      clubRaw: sh.clubRaw || sh.club || "",
-      club: normalizeClub(sh.club || sh.clubRaw || ""),
-      clubSpeed: sh.clubSpeed != null ? Number(sh.clubSpeed) : parseNum(sh.clubSpeed),
-      ballSpeed: sh.ballSpeed != null ? Number(sh.ballSpeed) : parseNum(sh.ballSpeed),
-      smash: sh.smash != null ? Number(sh.smash) : parseNum(sh.smash),
-      carry: sh.carry != null ? Number(sh.carry) : parseNum(sh.carry),
-      total: sh.total != null ? Number(sh.total) : parseNum(sh.total)
-    }));
-    return {
+    const shots = (s.shots || []).map((sh) => {
+      const shot = {
+        shotNo: sh.shotNo != null ? sh.shotNo : parseNum(sh.shotNo),
+        clubRaw: sh.clubRaw || sh.club || "",
+        club: normalizeClub(sh.club || sh.clubRaw || ""),
+        clubSpeed: sh.clubSpeed != null ? Number(sh.clubSpeed) : parseNum(sh.clubSpeed),
+        ballSpeed: sh.ballSpeed != null ? Number(sh.ballSpeed) : parseNum(sh.ballSpeed),
+        smash: sh.smash != null ? Number(sh.smash) : parseNum(sh.smash),
+        carry: sh.carry != null ? Number(sh.carry) : parseNum(sh.carry),
+        total: sh.total != null ? Number(sh.total) : parseNum(sh.total)
+      };
+      if (sh.edited) shot.edited = true;
+      if (sh.smashManual) shot.smashManual = true;
+      if (sh.includeOverride === "include" || sh.includeOverride === "exclude") shot.includeOverride = sh.includeOverride;
+      return shot;
+    });
+    const sess = {
       id: s.id || uid("sess"),
       name: s.name || niceDate(s.date) || "Session",
       date: s.date || todayISO(),
@@ -1986,6 +2439,9 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       createdAt: s.createdAt || new Date().toISOString(),
       shots
     };
+    if (s.original && s.original.shots) sess.original = JSON.parse(JSON.stringify(s.original));
+    else ensureOriginal(sess);
+    return sess;
   }
 
   let pending = null; // { kind:'paste'|'files', items:[{name,date,shots,warnings}] }
@@ -2105,14 +2561,25 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   /* ---------------- Bindings ---------------- */
   function bind() {
     $$("nav.tabs button").forEach((b) => b.onclick = () => showView(b.getAttribute("data-view")));
-    $("#sessionSelect").onchange = () => {
-      state.currentId = $("#sessionSelect").value;
-      state.selectedClubs = null;
-      saveStore();
+    $("#sessionSelect").onchange = () => setCurrentSession($("#sessionSelect").value);
+    $("#btnSessPrev").onclick = () => stepSession(-1);
+    $("#btnSessNext").onclick = () => stepSession(1);
+    const sessList = $("#sessList");
+    if (sessList) {
+      sessList.onclick = (e) => {
+        const btn = e.target.closest("[data-sess-id]");
+        if (!btn) return;
+        setCurrentSession(btn.getAttribute("data-sess-id"));
+        if (state.view !== "sessions") showView("sessions");
+        else renderSessionsView();
+      };
+    }
+    function refreshAfterFilter() {
       renderAll();
-    };
-    $("#excludeMishits").onchange = () => { state.excludeMishits = $("#excludeMishits").checked; renderAll(); };
-    $("#bestN").onchange = () => { state.bestN = Number($("#bestN").value); renderAll(); };
+      if (state.view === "sessions") renderSessionsView();
+    }
+    $("#excludeMishits").onchange = () => { state.excludeMishits = $("#excludeMishits").checked; refreshAfterFilter(); };
+    $("#bestN").onchange = () => { state.bestN = Number($("#bestN").value); refreshAfterFilter(); };
     $("#unitMode").onclick = (e) => {
       const b = e.target.closest("button[data-unit]");
       if (!b) return;
@@ -2120,6 +2587,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       saveUnits();
       syncUnitButtons();
       renderAll();
+      if (state.view === "sessions") renderSessionsView();
     };
     $("#viewMode").onclick = (e) => {
       const b = e.target.closest("button[data-mode]");
