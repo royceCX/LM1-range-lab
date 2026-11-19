@@ -372,6 +372,16 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 .card-head .sub{margin:0}
 #dispMode{flex:0 0 auto;align-self:flex-start;margin-top:2px}
 #dispChart{min-height:0}
+
+.scatter-legend{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.scatter-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--elev);color:var(--muted);font-size:12px;font-weight:650;line-height:1}
+.scatter-chip.active{color:var(--text);border-color:rgba(62,224,255,.4);box-shadow:0 0 0 1px rgba(62,224,255,.2);background:#1a2730}
+.scatter-swatch{width:8px;height:8px;border-radius:99px;display:inline-block;flex:0 0 auto}
+.scatter-summary{margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--elev);font-size:13px;color:var(--text)}
+.scatter-summary strong{display:block;margin-bottom:4px;font-size:14px}
+.scatter-sum-row{color:var(--muted);font-size:12.5px;margin-top:2px}
+#scatterChart{min-height:0}
+#scatterChart svg{width:100%;height:auto;aspect-ratio:920/440}
 .disp-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 10px;font-size:12px;color:var(--muted)}
 .disp-legend span{display:inline-flex;align-items:center;gap:6px}
 .disp-swatch{display:inline-block;width:12px;height:8px;border-radius:2px;background:#3ee0ff}
@@ -425,6 +435,11 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   .card-head{gap:8px;flex-wrap:wrap}
   #dispMode{margin-left:0}
   #dispMode button{padding:6px 8px;font-size:11px}
+
+  .scatter-chip{padding:6px 9px;font-size:12px;min-height:32px}
+  #scatterChart{min-height:0}
+  .scatter-summary{font-size:12.5px}
+
   .disp-axis-row,.disp-row{grid-template-columns:1fr;gap:4px}
   .disp-chart.show-carry .disp-axis-row,.disp-chart.show-carry .disp-row{grid-template-columns:1fr}
   .disp-name{text-align:left}
@@ -518,7 +533,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       <section class="tiles" id="heroTiles"></section>
       <section class="card" id="club-table">
         <h3>Club summary <button type="button" class="help-btn" data-help="summary" aria-label="About club summary">?</button></h3>
-        <p class="sub">Per-club averages and spread for the current filters.</p>
+        <p class="sub" id="summarySub">Typical distance, speed and strike for each club, plus how widely the shots spread.</p>
         <div class="table-wrap" id="summaryTable"></div>
       </section>
       <section class="card" id="gapping">
@@ -541,22 +556,24 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       </section>
       <section class="card" id="scatter">
         <h3>Club speed vs ball speed <button type="button" class="help-btn" data-help="scatter" aria-label="About club speed vs ball speed">?</button></h3>
-        <p class="sub">Each shot plotted by club speed and ball speed, with smash-factor lines.</p>
-        <div class="chart-box tall" id="scatterChart"></div>
+        <p class="sub" id="scatterSub">Each dot is one shot. Further up-left = better strike (more ball speed for the same swing).</p>
+        <div class="scatter-legend" id="scatterLegend"></div>
+        <div class="chart-box" id="scatterChart"></div>
+        <div class="scatter-summary" id="scatterSummary" hidden></div>
       </section>
       <section class="card" id="smash">
         <h3>Smash factor vs typical benchmarks <button type="button" class="help-btn" data-help="smash" aria-label="About smash factor">?</button></h3>
-        <p class="sub">Your smash on each shot compared with a typical number for that club.</p>
+        <p class="sub" id="smashSub">Smash is ball speed ÷ club speed — how well you found the middle of the face. Higher = better strike.</p>
         <div class="chart-box" id="smashChart"></div>
       </section>
       <section class="card" id="trends-session">
         <h3>First shots vs last shots <button type="button" class="help-btn" data-help="trends" aria-label="About first vs last shots">?</button></h3>
-        <p class="sub">Whether carry, speed or smash changed from the start of this session to the end.</p>
+        <p class="sub" id="trendsSub">Whether your distance, swing speed or strike faded or improved from the start of this session to the end.</p>
         <div id="trendChart"></div>
       </section>
       <section class="card" id="trends-progress">
         <h3>Progress across sessions <button type="button" class="help-btn" data-help="progress" aria-label="About progress across sessions">?</button></h3>
-        <p class="sub">How each club’s average distance, speed and smash have changed from session to session.</p>
+        <p class="sub" id="progressSub">How each club’s distance, speed and strike have changed from one range visit to the next.</p>
         <div id="progressChart"></div>
       </section>
       <section class="card" id="derived">
@@ -566,7 +583,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       </section>
       <section class="card" id="mishits">
         <h3>Flagged shots <button type="button" class="help-btn" data-help="flags" aria-label="About flagged shots">?</button></h3>
-        <p class="sub">Shots in the current session (or all sessions) marked as a misread or a likely mishit.</p>
+        <p class="sub" id="flagsSub">Misreads are numbers that don’t make physical sense. Mishits are poor but plausible contact.</p>
         <div class="table-wrap" id="flagTable"></div>
       </section>
     </section>
@@ -755,6 +772,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   const YD_TO_M = 0.9144;
   const UNITS_KEY = "lm1-range-lab-units";
   const DISP_MODE_KEY = "lm1-range-lab-disp-mode";
+  const SCATTER_CLUBS_KEY = "lm1-range-lab-scatter-clubs";
   function isMetres() { return state.units === "m"; }
   function toDisp(yd) {
     if (yd == null || Number.isNaN(Number(yd))) return null;
@@ -835,10 +853,35 @@ function fmtThresh(yd) {
   function syncUnitButtons() {
     $$("#unitMode button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-unit") === (state.units === "m" ? "m" : "yd")));
   }
+  function applySubtitles() {
+    const kind = state.distMode === "total" ? "total" : "carry";
+    const uw = unitWord();
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    set("summarySub", "Typical distance, speed and strike for each club, plus how widely the shots spread.");
+    set("gapSub", "The space between each club’s average " + kind + ". A healthy gap is about " + fmtThreshRange(10, 15) + ".");
+    if (state.dispMode === "carry") {
+      set("dispSub", "How tightly your carries group for each club. The band is the middle 80% of shots (P10–P90).");
+    } else {
+      set("dispSub", "How far the ball flies (dots and band) and how far it then rolls on the ground (the stripe).");
+    }
+    set("scatterSub", "Each dot is one shot. Further up-left = better strike (more ball speed for the same swing).");
+    set("smashSub", "Smash is ball speed ÷ club speed — how well you found the middle of the face. Higher = better strike.");
+    set("trendsSub", "Whether your distance, swing speed or strike faded or improved from the start of this session to the end.");
+    set("progressSub", "How each club’s distance, speed and strike have changed from one range visit to the next.");
+    set("derivedSub", "How many " + uw + " of carry you get per mph of club speed, and a rough carry if the strike had been more typical.");
+    set("flagsSub", "Misreads are numbers that don’t make physical sense. Mishits are poor but plausible contact.");
+    const ex = document.getElementById("excludeMishits");
+    if (ex && ex.closest("label")) ex.closest("label").title = "Hide likely poor contact (mishits) and impossible-looking readings (misreads) from the averages.";
+    const best = document.getElementById("bestN");
+    if (best && best.closest("label")) best.closest("label").title = "Use only each club’s longest shots — e.g. top 50% — for a ‘best of the session’ picture.";
+    const carryBtn = document.querySelector('#distMode button[data-dist="carry"]');
+    if (carryBtn) carryBtn.title = "How far the ball flies in the air before it lands.";
+    const totalBtn = document.querySelector('#distMode button[data-dist="total"]');
+    if (totalBtn) totalBtn.title = "Carry plus roll on the ground.";
+  }
   function updateUnitCopy() {
     updateHeroCopy();
-    const der = document.getElementById("derivedSub");
-    if (der) der.textContent = "Efficiency and an estimated carry if smash reached a typical benchmark.";
+    applySubtitles();
     if (typeof bindHelp.refresh === "function") bindHelp.refresh();
   }
   function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
@@ -1132,6 +1175,7 @@ function fmtThresh(yd) {
     viewMode: "range",
     distMode: "carry",
     dispMode: "roll",
+    scatterClubs: null,
     bestN: 1,
     charts: {}
   };
@@ -1352,14 +1396,14 @@ function fmtThresh(yd) {
     const title = document.querySelector("#hero .hero-head h3");
     const help = title && title.querySelector(".help-btn");
     if (state.viewMode === "flight") {
-      if (hero) hero.textContent = "Estimated side-on flight for each shot, from that shot’s carry, smash and the club. The LM1 does not measure launch or spin.";
+      if (hero) hero.textContent = "A side-on sketch of each shot’s flight. Height is estimated — the LM1 doesn’t measure how high the ball went.";
       if (title && title.childNodes[0]) title.childNodes[0].nodeValue = "Flight (estimated) ";
       if (help) {
         help.setAttribute("data-help", "flight");
         help.setAttribute("aria-label", "About estimated flight");
       }
     } else {
-      if (hero) hero.textContent = "Each dot is a shot at its measured " + kind + ". Side-to-side spread is only for readability.";
+      if (hero) hero.textContent = "Each dot is a shot. Up the page is how far it " + (kind === "total" ? "flies plus rolls" : "flies in the air") + ". Left and right is only so the dots don’t sit on top of each other.";
       if (title && title.childNodes[0]) title.childNodes[0].nodeValue = "Range view ";
       if (help) {
         help.setAttribute("data-help", "range");
@@ -1515,43 +1559,43 @@ function fmtThresh(yd) {
     const def = clubDef(club);
     const kind = (def && def.kind) || "";
     const table = {
-      "Driver": { launch: 13, land: 38, ratio: 0.17, tPeak: 0.56 },
-      "2 Wood": { launch: 11.5, land: 38, ratio: 0.165, tPeak: 0.56 },
-      "3 Wood": { launch: 11.5, land: 38, ratio: 0.165, tPeak: 0.56 },
-      "4 Wood": { launch: 12, land: 39, ratio: 0.17, tPeak: 0.56 },
-      "5 Wood": { launch: 12, land: 40, ratio: 0.17, tPeak: 0.565 },
-      "7 Wood": { launch: 13, land: 41, ratio: 0.18, tPeak: 0.57 },
-      "9 Wood": { launch: 14, land: 42, ratio: 0.185, tPeak: 0.57 },
-      "2 Hybrid": { launch: 13.5, land: 41, ratio: 0.18, tPeak: 0.57 },
-      "3 Hybrid": { launch: 14, land: 42, ratio: 0.18, tPeak: 0.57 },
-      "4 Hybrid": { launch: 14, land: 42, ratio: 0.18, tPeak: 0.57 },
-      "5 Hybrid": { launch: 14.5, land: 43, ratio: 0.185, tPeak: 0.575 },
-      "6 Hybrid": { launch: 15, land: 43, ratio: 0.19, tPeak: 0.575 },
-      "7 Hybrid": { launch: 15.5, land: 44, ratio: 0.19, tPeak: 0.58 },
-      "2 Iron": { launch: 12, land: 41, ratio: 0.175, tPeak: 0.57 },
-      "3 Iron": { launch: 13, land: 42, ratio: 0.18, tPeak: 0.57 },
-      "4 Iron": { launch: 14.5, land: 43, ratio: 0.185, tPeak: 0.575 },
-      "5 Iron": { launch: 16, land: 44, ratio: 0.19, tPeak: 0.575 },
-      "6 Iron": { launch: 17, land: 45, ratio: 0.19, tPeak: 0.58 },
-      "7 Iron": { launch: 19, land: 46, ratio: 0.20, tPeak: 0.58 },
-      "8 Iron": { launch: 21, land: 47, ratio: 0.21, tPeak: 0.585 },
-      "9 Iron": { launch: 23, land: 48, ratio: 0.23, tPeak: 0.59 },
-      "PW": { launch: 26, land: 50, ratio: 0.25, tPeak: 0.595 },
-      "GW": { launch: 28, land: 51, ratio: 0.26, tPeak: 0.60 },
-      "SW": { launch: 32, land: 52, ratio: 0.27, tPeak: 0.60 },
-      "LW": { launch: 35, land: 53, ratio: 0.28, tPeak: 0.60 }
+      "Driver": { launch: 13, land: 38, ratio: 0.20, tPeak: 0.56 },
+      "2 Wood": { launch: 11.5, land: 38, ratio: 0.19, tPeak: 0.56 },
+      "3 Wood": { launch: 11.5, land: 38, ratio: 0.19, tPeak: 0.56 },
+      "4 Wood": { launch: 12, land: 39, ratio: 0.20, tPeak: 0.56 },
+      "5 Wood": { launch: 12, land: 40, ratio: 0.20, tPeak: 0.565 },
+      "7 Wood": { launch: 13, land: 41, ratio: 0.21, tPeak: 0.57 },
+      "9 Wood": { launch: 14, land: 42, ratio: 0.21, tPeak: 0.57 },
+      "2 Hybrid": { launch: 13.5, land: 41, ratio: 0.21, tPeak: 0.57 },
+      "3 Hybrid": { launch: 14, land: 42, ratio: 0.21, tPeak: 0.57 },
+      "4 Hybrid": { launch: 14, land: 42, ratio: 0.21, tPeak: 0.57 },
+      "5 Hybrid": { launch: 14.5, land: 43, ratio: 0.21, tPeak: 0.575 },
+      "6 Hybrid": { launch: 15, land: 43, ratio: 0.22, tPeak: 0.575 },
+      "7 Hybrid": { launch: 15.5, land: 44, ratio: 0.22, tPeak: 0.58 },
+      "2 Iron": { launch: 12, land: 41, ratio: 0.20, tPeak: 0.57 },
+      "3 Iron": { launch: 13, land: 42, ratio: 0.21, tPeak: 0.57 },
+      "4 Iron": { launch: 14.5, land: 43, ratio: 0.21, tPeak: 0.575 },
+      "5 Iron": { launch: 16, land: 44, ratio: 0.22, tPeak: 0.575 },
+      "6 Iron": { launch: 17, land: 45, ratio: 0.22, tPeak: 0.58 },
+      "7 Iron": { launch: 19, land: 46, ratio: 0.23, tPeak: 0.58 },
+      "8 Iron": { launch: 21, land: 47, ratio: 0.24, tPeak: 0.585 },
+      "9 Iron": { launch: 23, land: 48, ratio: 0.26, tPeak: 0.59 },
+      "PW": { launch: 26, land: 50, ratio: 0.28, tPeak: 0.595 },
+      "GW": { launch: 28, land: 51, ratio: 0.30, tPeak: 0.60 },
+      "SW": { launch: 32, land: 52, ratio: 0.31, tPeak: 0.60 },
+      "LW": { launch: 35, land: 53, ratio: 0.32, tPeak: 0.60 }
     };
     if (table[name]) return table[name];
-    if (kind === "wood") return { launch: 12, land: 39, ratio: 0.17, tPeak: 0.56 };
-    if (kind === "hybrid") return { launch: 14, land: 42, ratio: 0.18, tPeak: 0.57 };
-    if (kind === "wedge") return { launch: 30, land: 52, ratio: 0.26, tPeak: 0.60 };
+    if (kind === "wood") return { launch: 12, land: 39, ratio: 0.20, tPeak: 0.56 };
+    if (kind === "hybrid") return { launch: 14, land: 42, ratio: 0.21, tPeak: 0.57 };
+    if (kind === "wedge") return { launch: 30, land: 52, ratio: 0.30, tPeak: 0.60 };
     const num = parseInt(name, 10);
     if (kind === "iron" && !Number.isNaN(num)) {
       const t = Math.max(0, Math.min(1, (num - 2) / 7));
       return {
         launch: 12 + t * 11,
         land: 41 + t * 7,
-        ratio: 0.175 + t * 0.055,
+        ratio: 0.20 + t * 0.06,
         tPeak: 0.57 + t * 0.02
       };
     }
@@ -1886,13 +1930,14 @@ function fmtThresh(yd) {
     function helpBtn(key, label) {
       return ' <button type="button" class="help-btn" data-help="' + key + '" aria-label="About ' + label + '">?</button>';
     }
+    const excludedN = state.excludeMishits ? raw.filter((s) => s.flag).length : 0;
     const tiles = [
-      { k: "Shots", help: "tile-shots", v: String(shots.length), s: (state.excludeMishits ? raw.filter((s) => s.flag).length + " excluded" : "including flagged") },
-      { k: "Peak " + kind, help: "tile-peak", v: fmtDist(peak), u: unitShort(), s: peakShot ? peakShot.club : "longest used shot" },
-      { k: "Avg smash", help: "tile-smash", v: fmt(mean(smash), 2), s: "ball speed ÷ club speed" },
-      { k: "Avg club speed", help: "tile-speed", v: fmt(mean(chs), 1), u: "mph", s: "at impact" },
-      { k: "Consistency", help: "tile-cons", v: cons == null ? "—" : fmt0(cons), s: "100 = tight carry SD" },
-      { k: kind[0].toUpperCase() + kind.slice(1) + " / mph", help: "tile-eff", v: fmt(toDisp(mean(eff)), 2), u: unitShort(), s: kind + " efficiency" }
+      { k: "Shots", help: "tile-shots", v: String(shots.length), s: "How many shots feed the averages" + (excludedN ? " · " + excludedN + " left out" : "") },
+      { k: "Peak " + kind, help: "tile-peak", v: fmtDist(peak), u: unitShort(), s: "The longest " + kind + " here — one shot, not a typical result" },
+      { k: "Avg smash", help: "tile-smash", v: fmt(mean(smash), 2), s: "Ball speed ÷ club speed — higher = better strike" },
+      { k: "Avg club speed", help: "tile-speed", v: fmt(mean(chs), 1), u: "mph", s: "How fast the club was moving at impact" },
+      { k: "Consistency", help: "tile-cons", v: cons == null ? "—" : fmt0(cons), s: "How tightly your carry repeats. Higher = more predictable" },
+      { k: kind[0].toUpperCase() + kind.slice(1) + " / mph", help: "tile-eff", v: fmt(toDisp(mean(eff)), 2), u: unitShort(), s: unitWord() + " of " + kind + " you get from each mph of club speed" }
     ];
     $("#heroTiles").innerHTML = tiles.map((tile) =>
       '<div class="tile"><div class="k">' + tile.k + helpBtn(tile.help, tile.k) + '</div><div class="v">' + tile.v + (tile.u ? '<span class="u">' + tile.u + "</span>" : "") + '</div><div class="s">' + (tile.s || "") + "</div></div>"
@@ -1972,7 +2017,7 @@ function fmtThresh(yd) {
       summary: { title: "Club summary", body: "Each row is one club after your session, mishit and Best-N filters. Average, median and max show typical versus best distance. Carry SD and the P10–P90 window are the spread you should plan for: a tight window is a club you can trust; a wide one means the number on the card can easily come up short or long." },
       gapping: { title: "Club gapping", body: "Each bar is that club’s average " + kind + ". The lighter band is the P10–P90 range — where most of those shots actually finished. The coloured dimension line between two bars is the gap between those clubs’ averages, sitting in the space that actually separates them. A " + ideal + " step is a healthy gap; a tight or overlapping gap means two clubs can fly the same number; a wide gap is a hole in the bag." },
       dispersion: { title: "Carry & roll", body: "Each row is one club. The dots are individual carry distances — how far the ball flew in the air. The band is the P10–P90 window of those carries, a compact read of how tightly you repeated the shot. The solid mark is average carry; the striped extension is average roll (ground run after landing) out to average total. Roll depends on launch, spin and how firm the turf is. Irons should roll only a little; a driver typically rolls more. A wide band means inconsistent strike, so the number you have in mind can come up short or long. Dots always show carry; the page Carry/Total toggle does not change this card." },
-      scatter: { title: "Club speed vs ball speed", body: "Ball speed is largely what became distance; club speed is how fast you swung. Smash is ball speed ÷ club speed, drawn as the reference lines. Points on a higher line were struck better for that speed. A cluster that moves right (more club speed) without moving up (more ball speed) is swinging harder without better contact." },
+      scatter: { title: "Club speed vs ball speed", body: "Club speed is how fast you swung; ball speed is what that swing transferred to the ball — and ball speed is largely what became distance. The shaded diagonals are smash (ball speed ÷ club speed): higher bands mean a better strike. Further up and left is more ball speed for the same swing. The chips under the title filter this chart only, not the range view. A ring marks each club’s average. On a full-blooded driver, around 1.50 is a typical ideal; mid-irons are closer to 1.38." },
       smash: { title: "Smash factor vs benchmarks", body: "The dots are individual shots, the diamond is your average, and the dashed mark is a typical benchmark for that club — a reference, not a promise. If your diamond sits under the mark, there is usually speed you are not turning into ball speed, often from a strike issue. Driver benchmarks sit near 1.50; irons are lower." },
       trends: { title: "First shots vs last shots", body: "For the selected session only, we compare the first shots with the last shots of each club — first 10 versus last 10 when you have enough, otherwise first half versus last half. A drop in distance or smash late can be fatigue or losing the strike; a rise can be a slow warm-up. This is not combined across days." },
       progress: { title: "Progress across sessions", body: "Each card is one club across every imported session, using your mishit, Best-N and units filters — not the range-view club chips. Green and red badges are the change versus the previous session. The takeaway and footer compare your latest visit with the first time we have that club on file." },
@@ -2144,8 +2189,7 @@ function fmtThresh(yd) {
     });
     html += "</div>";
     el.innerHTML = html;
-    const sub = $("#gapSub");
-    if (sub) sub.textContent = "Average " + kindName + " per club, with a lighter P10–P90 band. The coloured line between two clubs is the gap between their averages.";
+    applySubtitles();
   }
 
   function renderDispersion() {
@@ -2163,12 +2207,7 @@ function fmtThresh(yd) {
         if (btn.parentNode !== title) title.appendChild(btn);
       }
     }
-    const sub = $("#dispSub");
-    if (sub) {
-      sub.textContent = showRoll
-        ? "Dots and the P10–P90 band are carry. The stripe below is average roll out to average total. The page Carry/Total toggle does not change this card."
-        : "Each dot is a carry. The band is the P10–P90 window, and the mark is average carry. The page Carry/Total toggle does not change this card.";
-    }
+    applySubtitles();
     syncDispButtons();
     const by = new Map();
     shots.forEach((s) => {
@@ -2287,92 +2326,210 @@ function fmtThresh(yd) {
     bindChartTips(el, "[data-tip]");
   }
 
-  function renderScatter() {
-    const shots = shotsForStats().filter((s) => s.clubSpeed != null && s.ballSpeed != null);
-    const el = $("#scatterChart");
-    if (!shots.length) { el.innerHTML = '<p class="empty">No speed data.</p>'; return; }
-    if (window.Chart) return renderScatterChartJS(shots, el);
-    const W = 920, H = 420, padL = 52, padR = 20, padT = 16, padB = 44;
-    let maxC = 0, maxB = 0;
-    shots.forEach((s) => { maxC = Math.max(maxC, s.clubSpeed); maxB = Math.max(maxB, s.ballSpeed); });
-    maxC = Math.ceil((maxC + 8) / 10) * 10;
-    maxB = Math.ceil((maxB + 8) / 10) * 10;
-    maxC = Math.max(maxC, 80); maxB = Math.max(maxB, 80);
-    const xOf = (v) => padL + (v / maxC) * (W - padL - padR);
-    const yOf = (v) => H - padB - (v / maxB) * (H - padT - padB);
-    let inner = "";
-    const smashes = [1.5, 1.38, 1.3, 1.2];
-    const labels = { 1.5: "1.50 driver", 1.38: "1.38 irons", 1.3: "1.30", 1.2: "1.20" };
-    smashes.forEach((sm) => {
-      inner += '<line x1="' + xOf(0) + '" y1="' + yOf(0) + '" x2="' + xOf(maxC) + '" y2="' + yOf(maxC * sm) + '" stroke="rgba(255,255,255,.18)" stroke-dasharray="5 5"/>';
-      inner += '<text x="' + (W - padR) + '" y="' + (yOf(Math.min(maxC * sm, maxB)) + 4) + '" text-anchor="end" fill="#8aa196" font-size="11">' + labels[sm] + "</text>";
-    });
-    shots.forEach((s) => {
-      inner += '<circle cx="' + xOf(s.clubSpeed) + '" cy="' + yOf(s.ballSpeed) + '" r="4" fill="' + clubColor(s.club) + '" fill-opacity=".85"><title>' + escapeHtml(s.club) + " smash " + fmt(s.smash, 2) + "</title></circle>";
-    });
-    inner += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" text-anchor="middle" fill="#8aa196" font-size="12">Club speed (mph)</text>';
-    inner += '<text x="16" y="16" fill="#8aa196" font-size="12">Ball speed (mph)</text>';
-    // axes ticks
-    for (let v = 0; v <= maxC; v += 20) inner += '<text x="' + xOf(v) + '" y="' + (H - padB + 16) + '" text-anchor="middle" fill="#8aa196" font-size="11">' + v + "</text>";
-    el.innerHTML = svgWrap(inner, W, H, "Club vs ball speed");
+  function smashGoodFor(club) {
+    const kind = (clubDef(club) || {}).kind || "iron";
+    if (kind === "wood") return { good: 1.45, ok: 1.35, label: "woods", goodLab: "1.45" };
+    if (kind === "hybrid") return { good: 1.40, ok: 1.30, label: "hybrids", goodLab: "1.40" };
+    if (kind === "wedge") return { good: 1.28, ok: 1.20, label: "wedges", goodLab: "1.28" };
+    return { good: 1.33, ok: 1.25, label: "irons", goodLab: "1.33" };
+  }
+  function scatterFilterSet(clubs) {
+    const saved = state.scatterClubs;
+    if (!saved || !saved.size) return null;
+    const inter = clubs.filter((c) => saved.has(c));
+    return inter.length ? new Set(inter) : null;
+  }
+  function saveScatterClubs() {
+    try {
+      const v = state.scatterClubs && state.scatterClubs.size ? JSON.stringify(Array.from(state.scatterClubs)) : "all";
+      localStorage.setItem(SCATTER_CLUBS_KEY, v);
+    } catch (e) {}
+  }
+  function loadScatterClubs() {
+    try {
+      const v = localStorage.getItem(SCATTER_CLUBS_KEY);
+      if (!v || v === "all") { state.scatterClubs = null; return; }
+      const arr = JSON.parse(v);
+      state.scatterClubs = Array.isArray(arr) && arr.length ? new Set(arr) : null;
+    } catch (e) { state.scatterClubs = null; }
+  }
+  function toggleScatterClub(club) {
+    if (club === "__all__") {
+      state.scatterClubs = null;
+    } else if (!state.scatterClubs) {
+      state.scatterClubs = new Set([club]);
+    } else if (state.scatterClubs.has(club)) {
+      state.scatterClubs.delete(club);
+      if (!state.scatterClubs.size) state.scatterClubs = null;
+    } else {
+      state.scatterClubs.add(club);
+    }
+    saveScatterClubs();
+    renderScatter();
   }
 
-  function renderScatterChartJS(shots, el) {
-    el.innerHTML = '<canvas id="scatterCanvas"></canvas>';
-    const by = new Map();
-    shots.forEach((s) => { if (!by.has(s.club)) by.set(s.club, []); by.get(s.club).push(s); });
-    const datasets = Array.from(by.keys()).sort(sortClubs).map((club) => ({
-      label: club,
-      data: by.get(club).map((s) => ({ x: s.clubSpeed, y: s.ballSpeed, smash: s.smash, shotNo: s.shotNo })),
-      backgroundColor: clubColor(club),
-      borderColor: clubColor(club),
-      pointRadius: 4.5,
-      pointHoverRadius: 6
-    }));
-    const plugin = {
-      id: "smashLines",
-      afterDraw(chart) {
-        const { ctx, chartArea, scales } = chart;
-        if (!chartArea) return;
-        const lines = [[1.5, "1.50 driver"], [1.38, "1.38 irons"], [1.3, "1.30"], [1.2, "1.20"]];
-        ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,.25)";
-        ctx.setLineDash([5, 5]);
-        ctx.font = "11px DM Sans, sans-serif";
-        ctx.fillStyle = "#8aa196";
-        lines.forEach(([sm, lab]) => {
-          const x0 = scales.x.getPixelForValue(scales.x.min);
-          const y0 = scales.y.getPixelForValue(scales.x.min * sm);
-          const x1 = scales.x.getPixelForValue(scales.x.max);
-          const y1 = scales.y.getPixelForValue(scales.x.max * sm);
-          ctx.beginPath();
-          ctx.moveTo(x0, y0);
-          ctx.lineTo(x1, y1);
-          ctx.stroke();
-          ctx.fillText(lab, chartArea.right - 70, Math.min(Math.max(y1, chartArea.top + 10), chartArea.bottom - 4));
-        });
-        ctx.restore();
-      }
-    };
-    const chart = new Chart($("#scatterCanvas"), {
-      type: "scatter",
-      data: { datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: "#eef6f0", usePointStyle: true, boxWidth: 8 }, onClick: (e, item) => { toggleClub(item.text); } },
-          tooltip: { callbacks: { label: (c) => { const d = c.raw; return c.dataset.label + "  #" + (d.shotNo || "") + "  " + fmt(d.x, 1) + " / " + fmt(d.y, 1) + " mph  smash " + fmt(d.smash, 2); } } }
-        },
-        scales: {
-          x: { title: { display: true, text: "Club speed (mph)", color: "#8aa196" }, ticks: { color: "#8aa196" }, grid: { color: "rgba(160,200,180,.1)" } },
-          y: { title: { display: true, text: "Ball speed (mph)", color: "#8aa196" }, ticks: { color: "#8aa196" }, grid: { color: "rgba(160,200,180,.1)" } }
-        }
-      },
-      plugins: [plugin]
+  function renderScatter() {
+    const all = shotsForStats().filter((s) => s.clubSpeed != null && s.ballSpeed != null);
+    const el = $("#scatterChart");
+    const legendEl = $("#scatterLegend");
+    const sumEl = $("#scatterSummary");
+    const clubs = Array.from(new Set(all.map((s) => s.club))).sort(sortClubs);
+    const filter = scatterFilterSet(clubs);
+    const shots = filter ? all.filter((s) => filter.has(s.club)) : all;
+    const shown = Array.from(new Set(shots.map((s) => s.club))).sort(sortClubs);
+    const allOn = !filter;
+
+    if (legendEl) {
+      let html = '<button type="button" class="scatter-chip' + (allOn ? " active" : "") + '" data-sc="__all__">All</button>';
+      clubs.forEach((club) => {
+        const on = allOn || (filter && filter.has(club));
+        html += '<button type="button" class="scatter-chip' + (on ? " active" : "") + '" data-sc="' + escapeHtml(club) + '">';
+        html += '<i class="scatter-swatch" style="background:' + clubColor(club) + '"></i>' + escapeHtml(clubDef(club).short || club) + "</button>";
+      });
+      legendEl.innerHTML = html;
+      legendEl.onclick = (e) => {
+        const btn = e.target.closest("[data-sc]");
+        if (!btn) return;
+        toggleScatterClub(btn.getAttribute("data-sc"));
+      };
+    }
+
+    if (!shots.length) {
+      el.innerHTML = '<p class="empty">No speed data for the current filters.</p>';
+      if (sumEl) { sumEl.hidden = true; sumEl.innerHTML = ""; }
+      return;
+    }
+
+    const W = 920, H = 440, padL = 50, padR = 96, padT = 18, padB = 46;
+    let minC = 1e9, maxC = 0, minB = 1e9, maxB = 0;
+    shots.forEach((s) => {
+      minC = Math.min(minC, s.clubSpeed); maxC = Math.max(maxC, s.clubSpeed);
+      minB = Math.min(minB, s.ballSpeed); maxB = Math.max(maxB, s.ballSpeed);
     });
-    state.charts.scatter = chart;
-    el.querySelector("canvas").parentElement.style.height = "360px";
+    const x0 = Math.max(0, Math.floor((minC - 8) / 10) * 10);
+    const x1 = Math.ceil((maxC + 8) / 10) * 10;
+    const y0 = Math.max(0, Math.floor((minB - 8) / 10) * 10);
+    const y1 = Math.ceil((maxB + 10) / 10) * 10;
+    const xOf = (v) => padL + ((v - x0) / (x1 - x0)) * (W - padL - padR);
+    const yOf = (v) => H - padB - ((v - y0) / (y1 - y0)) * (H - padT - padB);
+    const clipX = (v) => Math.max(padL, Math.min(W - padR, v));
+    const clipY = (v) => Math.max(padT, Math.min(H - padB, v));
+
+    const bands = [
+      { lo: 0, hi: 1.20, fill: "rgba(255,77,90,.11)" },
+      { lo: 1.20, hi: 1.30, fill: "rgba(255,176,32,.10)" },
+      { lo: 1.30, hi: 1.40, fill: "rgba(212,255,63,.08)" },
+      { lo: 1.40, hi: 1.50, fill: "rgba(62,224,122,.10)" },
+      { lo: 1.50, hi: 2.20, fill: "rgba(62,224,255,.09)" }
+    ];
+    const lines = [
+      [1.50, "1.50 driver ideal"],
+      [1.38, "1.38 iron ideal"],
+      [1.30, "1.30"],
+      [1.20, "1.20"]
+    ];
+
+    function bandPoly(lo, hi) {
+      const corners = [
+        [x0, x0 * lo], [x1, x1 * lo], [x1, x1 * hi], [x0, x0 * hi]
+      ].map(([x, y]) => [clipX(xOf(x)), clipY(yOf(y))]);
+      return corners.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
+    }
+
+    let inner = "";
+    inner += '<defs><clipPath id="scatterClip"><rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (H - padT - padB) + '"/></clipPath></defs>';
+    inner += '<g clip-path="url(#scatterClip)">';
+    bands.forEach((b) => {
+      inner += '<polygon points="' + bandPoly(b.lo, b.hi) + '" fill="' + b.fill + '" stroke="none"/>';
+    });
+    lines.forEach(([sm]) => {
+      const xa = clipX(xOf(x0)), ya = clipY(yOf(x0 * sm));
+      const xb = clipX(xOf(x1)), yb = clipY(yOf(x1 * sm));
+      inner += '<line x1="' + xa + '" y1="' + ya + '" x2="' + xb + '" y2="' + yb + '" stroke="rgba(255,255,255,.22)" stroke-dasharray="5 4"/>';
+    });
+    inner += "</g>";
+    // labels in a right-hand column; if a line exits the top, stack downward in smash order
+    let lastLabY = padT - 2;
+    lines.forEach(([sm, lab]) => {
+      let ly = clipY(yOf(Math.min(Math.max(x1 * sm, y0), y1)));
+      if (ly < lastLabY + 13) ly = lastLabY + 13;
+      lastLabY = ly;
+      inner += '<text x="' + (W - padR + 6) + '" y="' + (ly + 3) + '" fill="#9eb4a8" font-size="10" font-family="DM Sans, sans-serif">' + lab + "</text>";
+    });
+    // grid + ticks
+    for (let v = x0; v <= x1; v += 10) {
+      const major = v % 20 === 0;
+      inner += '<line x1="' + xOf(v) + '" y1="' + padT + '" x2="' + xOf(v) + '" y2="' + (H - padB) + '" stroke="' + (major ? "rgba(160,200,180,.12)" : "rgba(160,200,180,.06)") + '"/>';
+      if (major) inner += '<text x="' + xOf(v) + '" y="' + (H - padB + 16) + '" text-anchor="middle" fill="#8aa196" font-size="11">' + v + "</text>";
+    }
+    const yStep = (y1 - y0) > 80 ? 20 : 10;
+    for (let v = y0; v <= y1; v += yStep) {
+      inner += '<line x1="' + padL + '" y1="' + yOf(v) + '" x2="' + (W - padR) + '" y2="' + yOf(v) + '" stroke="rgba(160,200,180,.08)"/>';
+      inner += '<text x="' + (padL - 8) + '" y="' + (yOf(v) + 4) + '" text-anchor="end" fill="#8aa196" font-size="11">' + v + "</text>";
+    }
+    inner += '<text x="' + ((padL + W - padR) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#8aa196" font-size="12">Club speed (mph)</text>';
+    inner += '<text x="16" y="14" fill="#8aa196" font-size="12">Ball speed (mph)</text>';
+
+    shots.forEach((s) => {
+      const tip = escapeHtml([
+        s.club + " #" + (s.shotNo || ""),
+        "Club speed " + fmt(s.clubSpeed, 1) + " mph",
+        "Ball speed " + fmt(s.ballSpeed, 1) + " mph",
+        "Smash " + fmt(s.smash, 2),
+        s.carry != null ? "Carry " + fmtDist(s.carry) + " " + unitShort() : ""
+      ].filter(Boolean).join("\n"));
+      inner += '<circle class="scatter-dot" data-tip="' + tip + '" cx="' + xOf(s.clubSpeed).toFixed(1) + '" cy="' + yOf(s.ballSpeed).toFixed(1) + '" r="4.6" fill="' + clubColor(s.club) + '" fill-opacity=".88" stroke="#071018" stroke-width=".6" style="cursor:pointer"/>';
+    });
+
+    const avgs = shown.map((club) => {
+      const arr = shots.filter((s) => s.club === club);
+      return {
+        club,
+        short: clubDef(club).short || club,
+        color: clubColor(club),
+        n: arr.length,
+        cs: mean(arr.map((s) => s.clubSpeed)),
+        bs: mean(arr.map((s) => s.ballSpeed)),
+        sm: mean(arr.map((s) => s.smash).filter((v) => v != null)),
+        carry: mean(arr.map((s) => s.carry).filter((v) => v != null))
+      };
+    });
+    const labelAvgs = avgs.length <= 6;
+    avgs.forEach((a) => {
+      const tip = escapeHtml([
+        a.club + " average",
+        "Club speed " + fmt(a.cs, 1) + " mph",
+        "Ball speed " + fmt(a.bs, 1) + " mph",
+        "Smash " + fmt(a.sm, 2),
+        a.n + " shot" + (a.n === 1 ? "" : "s")
+      ].join("\n"));
+      const cx = xOf(a.cs), cy = yOf(a.bs);
+      inner += '<circle class="scatter-avg" data-tip="' + tip + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="8" fill="none" stroke="' + a.color + '" stroke-width="2.4" style="cursor:pointer"/>';
+      inner += '<circle class="scatter-avg" data-tip="' + tip + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="2.2" fill="' + a.color + '" style="pointer-events:none"/>';
+      if (labelAvgs) {
+        inner += '<text x="' + (cx + 11).toFixed(1) + '" y="' + (cy - 8).toFixed(1) + '" fill="#eef6f0" font-size="11" font-weight="700" font-family="DM Sans, sans-serif" style="pointer-events:none" stroke="#071018" stroke-width="3" paint-order="stroke">' + escapeHtml(a.short) + "</text>";
+      }
+    });
+
+    el.innerHTML = svgWrap(inner, W, H, "Club speed versus ball speed");
+    bindChartTips(el, "[data-tip]");
+
+    if (sumEl) {
+      if (shown.length === 1) {
+        const a = avgs[0];
+        const band = smashGoodFor(a.club);
+        const clubShots = shots.filter((s) => s.club === a.club && s.smash != null);
+        const goodN = clubShots.filter((s) => s.smash >= band.good).length;
+        const pct = clubShots.length ? Math.round((goodN / clubShots.length) * 100) : 0;
+        sumEl.hidden = false;
+        sumEl.innerHTML = "<strong>" + escapeHtml(a.club) + " · " + a.n + " shot" + (a.n === 1 ? "" : "s") + "</strong>"
+          + '<div class="scatter-sum-row">Avg club speed ' + fmt(a.cs, 1) + " mph · Avg ball speed " + fmt(a.bs, 1) + " mph · Avg smash " + fmt(a.sm, 2) + "</div>"
+          + '<div class="scatter-sum-row">' + goodN + " of " + clubShots.length + " shots (" + pct + "%) in the good band for " + band.label + " (≥ " + band.goodLab + ")</div>";
+      } else {
+        sumEl.hidden = true;
+        sumEl.innerHTML = "";
+      }
+    }
   }
 
   function renderSmash() {
@@ -3600,6 +3757,7 @@ function renderSessionGrid() {
     loadStore();
     loadUnits();
     loadDispMode();
+    loadScatterClubs();
     bind();
     syncUnitButtons();
     fillSessionSelect();
