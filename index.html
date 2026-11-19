@@ -623,6 +623,9 @@ nav.tabs{flex-shrink:1}
 .bag-leg-dot{width:9px;height:9px;border-radius:99px;background:#3ee0ff;margin-right:5px}
 .bag-leg-ghost{width:9px;height:9px;border-radius:99px;border:1.5px dashed rgba(255,255,255,.45);background:transparent;margin-right:5px}
 .bag-leg-fade{width:9px;height:9px;border-radius:99px;background:rgba(255,255,255,.25);margin-right:5px}
+.bag-leg-trail{width:6px;height:6px;border-radius:99px;background:rgba(62,224,255,.3);margin-right:5px}
+.bag-leg-gap{width:16px;height:9px;margin-right:5px;background:linear-gradient(to top right,transparent calc(50% - .6px),rgba(232,238,236,.5) calc(50% - .6px),rgba(232,238,236,.5) calc(50% + .6px),transparent calc(50% + .6px))}
+.bag-leg-note{color:var(--dim)}
 .perf-bag-stage{position:relative;width:100%;min-height:320px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .perf-bag-stage svg{width:100%;min-width:560px;height:auto;display:block}
 
@@ -765,7 +768,8 @@ nav.tabs{flex-shrink:1}
           <span><i class="bag-leg-dot"></i>This session</span>
           <span><i class="bag-leg-ghost"></i>First session (ghost)</span>
           <span><i class="bag-leg-fade"></i>Not hit this session — last known</span>
-          <span><i class="gap-swatch ideal"></i><i class="gap-swatch tight" style="margin-left:6px"></i><i class="gap-swatch wide" style="margin-left:6px"></i> Gaps use the same colours as the gapping chart</span>
+          <span><i class="bag-leg-trail"></i>Prior sessions</span>
+          <span class="bag-leg-note"><i class="bag-leg-gap"></i>Line = gap to next club; red = overlap/tight; amber = wide hole</span>
         </div>
         <div id="perfBag"></div>
       </section>
@@ -3725,13 +3729,15 @@ function fmtThresh(yd) {
       }
       const y0 = H - padB;
       svg += '<g class="perf-bag-club" data-club="' + escapeHtml(r.club) + '" opacity="0">';
-      svg += '<line class="perf-bag-stem" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="' + r.color + '" stroke-opacity=".28" stroke-width="1.6"/>';
-      svg += '<text class="perf-bag-stem-lab" x="' + x.toFixed(1) + '" y="' + y0 + '" text-anchor="middle" dominant-baseline="middle" fill="' + r.color + '" fill-opacity=".55" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="600" letter-spacing="0.1em" style="letter-spacing:0.1em" pointer-events="none">' + escapeHtml(r.full) + "</text>";
+      svg += '<line class="perf-bag-stem-lo" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="' + r.color + '" stroke-opacity=".26" stroke-width="1.35"/>';
+      svg += '<line class="perf-bag-stem-hi" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="' + r.color + '" stroke-opacity=".26" stroke-width="1.35"/>';
+      svg += '<text class="perf-bag-stem-lab" x="' + x.toFixed(1) + '" y="' + y0 + '" text-anchor="middle" dominant-baseline="middle" fill="' + r.color + '" fill-opacity=".5" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="500" letter-spacing="0.16em" style="letter-spacing:0.16em" pointer-events="none">' + escapeHtml(r.full) + "</text>";
       svg += '<circle class="perf-bag-dot" cx="' + x.toFixed(1) + '" cy="' + y0 + '" r="8" fill="' + r.color + '" stroke="#071018" stroke-width="1.1"/>';
       svg += '<text class="perf-bag-lab" x="' + (x + 12).toFixed(1) + '" y="' + y0 + '" text-anchor="start" fill="rgba(238,246,240,.7)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="500" paint-order="stroke" stroke="#0c1319" stroke-width="2.2"></text>';
       svg += '<text class="perf-bag-note" x="' + (x + 12).toFixed(1) + '" y="' + (y0 + 11) + '" text-anchor="start" fill="rgba(255,255,255,.38)" font-size="8" font-family="DM Sans, sans-serif" font-weight="400"></text>';
       svg += "</g>";
     });
+    svg += '<g class="perf-bag-trails"></g>';
     svg += '<g class="perf-bag-gaps"></g>';
     svg += "</svg></div>";
     el.innerHTML = svg;
@@ -3772,7 +3778,8 @@ function fmtThresh(yd) {
         const dot = g.querySelector(".perf-bag-dot");
         const lab = g.querySelector(".perf-bag-lab");
         const note = g.querySelector(".perf-bag-note");
-        const stem = g.querySelector(".perf-bag-stem");
+        const stemLo = g.querySelector(".perf-bag-stem-lo");
+        const stemHi = g.querySelector(".perf-bag-stem-hi");
         const stemLab = g.querySelector(".perf-bag-stem-lab");
         let last = null;
         for (let i = idx; i >= 0; i--) if (r.vals[i] != null) { last = r.vals[i]; break; }
@@ -3788,38 +3795,52 @@ function fmtThresh(yd) {
         const ghost = bagEl.querySelector('.perf-bag-ghost[data-club="' + cssAttr(r.club) + '"]');
         if (ghost) ghost.setAttribute("opacity", (idx === 0 || r.vals[0] == null) ? "0" : "1");
         return {
-          g, dot, lab, note, stem, stemLab, ri, present, hasVal: v != null, v,
+          g, dot, lab, note, stemLo, stemHi, stemLab, ri, present, hasVal: v != null, v,
           fromY: appear ? toY : (isNaN(fromY) ? toY : fromY),
           toY, fromOp: isNaN(startOp) ? 0 : startOp, toOp
         };
       }).filter(Boolean);
-      const paintGaps = (getY, presentOf) => {
+      const paintGaps = (getY, includeOf) => {
         const gapG = bagEl.querySelector(".perf-bag-gaps");
         if (!gapG) return;
         let html = "";
-        const present = [];
+        const nodes = [];
         bag.rows.forEach((r, i) => {
           const t = targets.find((o) => o.ri === i);
-          if (!t || !presentOf(t) || t.v == null) return;
-          present.push({ r, x: bag.xs[i], y: getY(t), v: t.v });
+          if (!t || !includeOf(t) || t.v == null) return;
+          nodes.push({ r, x: bag.xs[i], y: getY(t), v: t.v, present: t.present });
         });
-        for (let i = 0; i < present.length - 1; i++) {
-          const a = present[i], b = present[i + 1];
+        const u = bag.u || unitShort();
+        for (let i = 0; i < nodes.length - 1; i++) {
+          const a = nodes[i], b = nodes[i + 1];
           const gapYd = a.v - b.v;
-          const kind = gapKind(Math.round(gapYd));
-          const col = bagGapColor(kind);
-          const midX = (a.x + b.x) / 2;
-          const y1 = Math.min(a.y, b.y), y2 = Math.max(a.y, b.y);
-          const midY = (y1 + y2) / 2;
-          const wide = Math.abs(a.x - b.x) > 120;
-          const tight = (y2 - y1) < 26;
-          const absLab = fmtDist(Math.abs(Math.round(gapYd))) + " " + (bag.u || unitShort());
-          const glab = absLab;
-          if (!wide) {
-            html += '<line x1="' + midX.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + midX.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="1" stroke-linecap="round" stroke-opacity="' + (tight ? ".4" : ".65") + '"/>';
-          }
-          const ly = tight ? (y1 - 7) : (midY + 3);
-          html += '<text x="' + midX.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle" fill="' + col + '" fill-opacity=".8" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="500" paint-order="stroke" stroke="#0c1319" stroke-width="2.2">' + escapeHtml(glab) + "</text>";
+          const rounded = Math.round(gapYd);
+          const faded = !a.present || !b.present;
+          const x1 = a.x, y1 = a.y, x2 = b.x, y2 = b.y;
+          const dx = x2 - x1, dy = y2 - y1;
+          const len = Math.hypot(dx, dy) || 1;
+          const ux = dx / len, uy = dy / len;
+          const inset = Math.min(8, len / 2 - 0.5);
+          const sx = x1 + ux * inset, sy = y1 + uy * inset;
+          const ex = x2 - ux * inset, ey = y2 - uy * inset;
+          const midX = (sx + ex) / 2, midY = (sy + ey) / 2;
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          const absA = Math.abs(angle);
+          const follow = absA <= 36 || absA >= 144;
+          let offX = -uy * 9, offY = ux * 9;
+          if (offY > 0) { offX = -offX; offY = -offY; }
+          const lx = midX + offX;
+          const ly = midY + offY;
+          let fill = "rgba(232,238,236,.62)", fillOp = faded ? ".42" : ".7";
+          if (rounded < 5) { fill = "#ff6b75"; fillOp = faded ? ".55" : ".92"; }
+          else if (rounded > 20) { fill = "#e0b056"; fillOp = faded ? ".55" : ".9"; }
+          const dash = faded ? ' stroke-dasharray="3.5 3.5"' : "";
+          const lineOp = faded ? ".22" : ".42";
+          html += '<line x1="' + sx.toFixed(1) + '" y1="' + sy.toFixed(1) + '" x2="' + ex.toFixed(1) + '" y2="' + ey.toFixed(1) + '" stroke="rgba(232,238,236,.7)" stroke-width="1" stroke-linecap="round" stroke-opacity="' + lineOp + '"' + dash + ' pointer-events="none"/>';
+          const disp = Math.round(toDisp(gapYd));
+          const glab = (disp < 0 ? "\u2212" : "") + Math.abs(disp) + " " + u;
+          const rot = follow ? (' transform="rotate(' + angle.toFixed(2) + " " + lx.toFixed(1) + " " + ly.toFixed(1) + ')"') : "";
+          html += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle" dominant-baseline="middle"' + rot + ' fill="' + fill + '" fill-opacity="' + fillOp + '" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="500" paint-order="stroke" stroke="#0c1319" stroke-width="2.2" pointer-events="none">' + escapeHtml(glab) + "</text>";
         }
         gapG.innerHTML = html;
       };
@@ -3853,8 +3874,64 @@ function fmtThresh(yd) {
             o.stemLab.setAttribute("y", mid.toFixed(1));
             o.stemLab.setAttribute("transform", "rotate(-90 " + x.toFixed(1) + " " + mid.toFixed(1) + ")");
           }
+          const name = (o.stemLab && o.stemLab.textContent) || "";
+          const span = Math.abs(y0 - o._y);
+          let half = Math.max(7, name.length * 11 * 0.33) + 4;
+          const maxHalf = Math.max(4, (span - 10) / 2);
+          if (half > maxHalf) half = maxHalf;
+          const botY = Math.max(y0, o._y);
+          const topY = Math.min(y0, o._y);
+          const gapBot = mid + half;
+          const gapTop = mid - half;
+          if (o.stemLo) {
+            if (gapBot < botY - 1) {
+              o.stemLo.setAttribute("y1", botY.toFixed(1));
+              o.stemLo.setAttribute("y2", gapBot.toFixed(1));
+              o.stemLo.setAttribute("stroke-opacity", ".26");
+            } else {
+              o.stemLo.setAttribute("y1", botY.toFixed(1));
+              o.stemLo.setAttribute("y2", botY.toFixed(1));
+              o.stemLo.setAttribute("stroke-opacity", "0");
+            }
+          }
+          if (o.stemHi) {
+            if (gapTop > topY + 1) {
+              o.stemHi.setAttribute("y1", topY.toFixed(1));
+              o.stemHi.setAttribute("y2", gapTop.toFixed(1));
+              o.stemHi.setAttribute("stroke-opacity", ".26");
+            } else {
+              o.stemHi.setAttribute("y1", topY.toFixed(1));
+              o.stemHi.setAttribute("y2", topY.toFixed(1));
+              o.stemHi.setAttribute("stroke-opacity", "0");
+            }
+          }
         });
       };
+      const paintTrails = () => {
+        const trailG = bagEl.querySelector(".perf-bag-trails");
+        if (!trailG) return;
+        let html = "";
+        bag.rows.forEach((r, i) => {
+          const x = bag.xs[i];
+          const priors = [];
+          for (let s = 0; s < idx; s++) {
+            if (r.vals[s] != null) priors.push({ s, y: bag.yOf(r.vals[s]) });
+          }
+          if (!priors.length) return;
+          const ys = priors.map((p) => p.y);
+          const yMin = Math.min.apply(null, ys);
+          const yMax = Math.max.apply(null, ys);
+          if (yMax - yMin > 5) {
+            html += '<line x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + yMin.toFixed(1) + '" y2="' + yMax.toFixed(1) + '" stroke="' + r.color + '" stroke-width="0.7" stroke-opacity=".13" stroke-linecap="round" pointer-events="none"/>';
+          }
+          priors.forEach((p) => {
+            const op = 0.09 + 0.17 * ((p.s + 1) / idx);
+            html += '<circle class="perf-bag-trail-dot" cx="' + x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="2.15" fill="' + r.color + '" fill-opacity="' + op.toFixed(2) + '" pointer-events="none"/>';
+          });
+        });
+        trailG.innerHTML = html;
+      };
+      paintTrails();
       const apply = (t) => {
         const e = 1 - Math.pow(1 - t, 2);
         targets.forEach((o) => {
@@ -3862,12 +3939,11 @@ function fmtThresh(yd) {
           const op = o.fromOp + (o.toOp - o.fromOp) * e;
           o._y = y;
           if (o.dot) o.dot.setAttribute("cy", y.toFixed(1));
-          if (o.stem) o.stem.setAttribute("y2", y.toFixed(1));
           o.g.style.opacity = String(op);
           o.g.style.visibility = o.hasVal || op > 0.05 ? "visible" : "hidden";
         });
         placeLabs();
-        paintGaps((o) => o._y, (o) => o.present && o.hasVal);
+        paintGaps((o) => o._y, (o) => o.hasVal);
       };
       if (!dur) { apply(1); return; }
       const t0 = performance.now();
