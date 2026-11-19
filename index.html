@@ -499,6 +499,103 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   .filter-bar .session-switcher{flex:1 1 100%;max-width:none}
 }
 
+
+/* ---- Performance tab ---- */
+.filter-bar.is-perf #sessionSwitcher{display:none}
+nav.tabs{flex-shrink:1}
+@media (max-width:640px){
+  nav.tabs{width:100%;justify-content:stretch}
+  nav.tabs button{flex:1 1 0;padding:8px 4px;font-size:11px;letter-spacing:.02em;text-align:center}
+  .brand{min-width:0}
+}
+.perf-toolbar{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px 16px;margin:0 0 14px}
+.perf-clubs{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 220px}
+.perf-toolbar .seg button{text-transform:none;letter-spacing:.02em}
+.perf-playbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 16px;padding:8px 10px;background:var(--elev);border:1px solid var(--line);border-radius:12px}
+.perf-playbar .perf-play-lab{font-size:12px;color:var(--muted);margin-right:4px}
+.perf-playbar input[type="range"]{flex:1 1 160px;accent-color:var(--cyan);min-width:120px}
+.perf-playbar #perfScrubLabel{font-family:var(--cond);font-weight:700;letter-spacing:.04em;font-size:14px;color:var(--text);min-width:7.5em}
+.perf-playbar .btn.playing{color:var(--cyan);border-color:rgba(62,224,255,.45)}
+
+.perf-hero-list{display:flex;flex-direction:column;gap:6px}
+.perf-db{display:grid;grid-template-columns:52px minmax(0,1fr) 92px;gap:8px;align-items:center}
+.perf-db-name{display:flex;align-items:center;gap:6px;font-family:var(--cond);font-weight:700;font-size:16px;letter-spacing:.04em}
+.perf-db-swatch{width:8px;height:8px;border-radius:99px;flex:0 0 auto}
+.perf-db svg{width:100%;height:44px;display:block}
+.perf-db-delta{font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:.02em;font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+.perf-db-delta.up{color:var(--green)}
+.perf-db-delta.down{color:var(--red)}
+.perf-db-delta.flat{color:var(--muted);font-size:13px;font-family:var(--font);font-weight:650}
+.perf-db-delta small{display:block;font-family:var(--font);font-size:10px;font-weight:650;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+
+.perf-multi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:980px){ .perf-multi{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.perf-mini{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:8px 8px 10px;min-width:0}
+.perf-mini h4{margin:0 0 4px;font-family:var(--cond);font-size:15px;letter-spacing:.05em;font-weight:700;display:flex;align-items:center;gap:6px}
+.perf-mini svg{width:100%;height:auto;display:block}
+.perf-mini.is-missing{opacity:.45}
+
+.perf-bag-stage{position:relative;width:100%;min-height:280px}
+.perf-bag-stage svg{width:100%;height:auto;display:block}
+
+.perf-heat-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
+.perf-heat{border-collapse:separate;border-spacing:3px;min-width:max-content}
+.perf-heat th,.perf-heat td{font-size:11px;text-align:center;padding:0}
+.perf-heat th.sess{font-weight:650;color:var(--dim);font-size:10px;white-space:nowrap;padding:0 2px 4px;font-family:var(--cond);letter-spacing:.03em}
+.perf-heat th.club{text-align:right;padding:0 8px 0 0;font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--text);white-space:nowrap}
+.perf-heat .cell{width:46px;height:28px;border-radius:5px;display:block;cursor:pointer;box-sizing:border-box;border:1px solid transparent}
+.perf-heat .cell:hover,.perf-heat .cell:focus{border-color:rgba(238,246,240,.45);outline:none}
+.perf-heat .cell.is-empty{background:rgba(255,255,255,.04)}
+.perf-heat-legend{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
+.perf-heat-scale{display:inline-flex;height:8px;width:88px;border-radius:99px;background:linear-gradient(90deg,#3dff9a,#ffb020,#ff4d5a)}
+
+.perf-strike{width:100%}
+.perf-strike svg{width:100%;height:auto;display:block}
+.perf-strike-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 10px;font-size:12px;color:var(--muted)}
+.perf-strike-legend span{display:inline-flex;align-items:center;gap:6px}
+
+.work-list{display:flex;flex-direction:column;gap:14px}
+.work-item{display:grid;grid-template-columns:140px minmax(0,1fr);gap:14px 16px;align-items:start;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:12px}
+.work-illu{background:#0c1319;border:1px solid var(--line);border-radius:10px;padding:6px;min-height:120px}
+.work-illu svg{width:100%;height:auto;display:block}
+.work-body h4{margin:0 0 4px;font-family:var(--cond);font-size:18px;letter-spacing:.04em;font-weight:700}
+.work-yards{font-family:var(--cond);font-weight:700;font-size:20px;color:var(--lime);margin:0 0 8px;font-variant-numeric:tabular-nums}
+.work-yards span{font-family:var(--font);font-size:11px;font-weight:650;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-left:6px}
+.work-evidence{font-size:13px;color:var(--text);margin:0 0 8px;line-height:1.45}
+.work-k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:8px 0 4px}
+.work-causes,.work-drills{margin:0;padding-left:18px;font-size:13px;color:var(--text);line-height:1.45}
+.work-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(255,176,32,.35);vertical-align:middle}
+@media (max-width:640px){
+  .perf-db{grid-template-columns:1fr auto;grid-template-areas:"name delta" "svg svg";gap:4px 8px;align-items:end}
+  .perf-db-name{grid-area:name}
+  .perf-db-delta{grid-area:delta;font-size:20px}
+  .perf-db svg{grid-area:svg;height:52px}
+  .perf-multi{grid-template-columns:1fr}
+  .work-item{grid-template-columns:1fr;padding:10px}
+  .work-illu{max-width:220px}
+  #perfStat{width:100%}
+  #perfStat button{flex:1 1 auto;padding:6px 7px;font-size:11px}
+}
+@media (prefers-reduced-motion: reduce){
+  .perf-db svg *,.perf-mini svg *,.perf-bag-stage svg *,.work-illu svg *{transition:none !important;animation:none !important}
+}
+
+@keyframes perf-pulse {
+  0%,100%{opacity:.55} 50%{opacity:1}
+}
+@keyframes perf-impact {
+  0%,100%{transform:translate(0,0)} 40%{transform:translate(3px,-1px)}
+}
+
+#view-performance .card{scroll-margin-top: 88px}
+.perf-db svg{width:100%;height:56px;display:block}
+.perf-heat{width:100%}
+.perf-heat .cell{width:auto;min-width:52px;height:32px}
+@media (max-width:640px){
+  #view-performance .card{scroll-margin-top: 108px}
+  .perf-heat .cell{min-width:46px;height:28px}
+}
+
 </style>
 </head>
 <body>
@@ -513,9 +610,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       </div>
     </div>
     <nav class="tabs" aria-label="Primary">
+      <button type="button" data-view="performance">Performance</button>
       <button type="button" data-view="range" class="active">Range</button>
-      <button type="button" data-view="import">Import</button>
       <button type="button" data-view="sessions">Sessions</button>
+      <button type="button" data-view="import">Import</button>
     </nav>
     <div class="header-actions">
       <button type="button" class="btn ghost" id="btnExportJson">Backup JSON</button>
@@ -546,6 +644,59 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   </div>
 
   <main>
+    <section id="view-performance" class="view">
+      <div class="perf-toolbar">
+        <div class="perf-clubs" id="perfClubs" aria-label="Performance clubs"></div>
+        <div class="seg" id="perfStat" role="group" aria-label="Performance stat">
+          <button type="button" data-ps="carry" class="active">Carry</button>
+          <button type="button" data-ps="total">Total</button>
+          <button type="button" data-ps="clubSpeed">Club speed</button>
+          <button type="button" data-ps="ballSpeed">Ball speed</button>
+          <button type="button" data-ps="smash">Smash</button>
+          <button type="button" data-ps="spread">Spread</button>
+        </div>
+      </div>
+      <div class="perf-playbar" id="perfPlaybar" hidden>
+        <span class="perf-play-lab">Watch your bag evolve</span>
+        <button type="button" class="btn" id="perfPlayBtn">Play</button>
+        <input type="range" id="perfScrub" min="0" max="0" value="0" aria-label="Session date">
+        <span id="perfScrubLabel"></span>
+      </div>
+
+      <section class="card" id="perf-hero-card">
+        <h3>Then vs now <button type="button" class="help-btn" data-help="perf-hero" aria-label="About then vs now">?</button></h3>
+        <p class="sub" id="perfHeroSub">Each club’s first session compared with its latest, for the stat you picked. Green is an improvement, red is a drop.</p>
+        <div id="perfHero"></div>
+      </section>
+      <section class="card" id="perf-timeline-card">
+        <h3>Session timeline <button type="button" class="help-btn" data-help="perf-timeline" aria-label="About the session timeline">?</button></h3>
+        <p class="sub" id="perfTimelineSub">One panel per club. Each visit is a dot at the average, with a whisker for the middle 80% of shots (P10–P90).</p>
+        <div id="perfTimeline"></div>
+      </section>
+      <section class="card" id="perf-bag-card">
+        <h3>Bag evolution <button type="button" class="help-btn" data-help="perf-bag" aria-label="About bag evolution">?</button></h3>
+        <p class="sub" id="perfBagSub">Average carry (or total) for each club on a distance ladder. Use the play bar to walk through your visits.</p>
+        <div id="perfBag"></div>
+      </section>
+      <section class="card" id="perf-heat-card">
+        <h3>Consistency over time <button type="button" class="help-btn" data-help="perf-heat" aria-label="About the consistency heatmap">?</button></h3>
+        <p class="sub" id="perfHeatSub">How wide the middle 80% of shots was in each session. Green is tighter, red is more spread out.</p>
+        <div id="perfHeat"></div>
+      </section>
+      <section class="card" id="perf-strike-card">
+        <h3>Strike quality over time <button type="button" class="help-btn" data-help="perf-strike" aria-label="About strike quality over time">?</button></h3>
+        <p class="sub" id="perfStrikeSub">The share of poor, OK and good strikes in each session, using the same smash thresholds as the gauges.</p>
+        <div id="perfStrike"></div>
+      </section>
+      <section class="card" id="perf-work-card">
+        <h3>What to work on <button type="button" class="help-btn" data-help="perf-work" aria-label="About what to work on">?</button></h3>
+        <p class="sub" id="perfWorkSub">Pattern-based suggestions from the stats the LM1 does measure. They are inferred, not a launch-monitor diagnosis.</p>
+        <div id="perfWork"></div>
+        <p class="smash-foot">The LM1 doesn’t measure club path, face angle, spin, launch or dynamic loft; these are pattern-based suggestions, and a coach or a launch monitor with those metrics can confirm.</p>
+      </section>
+    </section>
+
+
     <section id="view-range" class="view active">
       <section id="hero" class="hero">
         <div class="hero-head">
@@ -613,11 +764,6 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         <h3>First shots vs last shots <button type="button" class="help-btn" data-help="trends" aria-label="About first vs last shots">?</button></h3>
         <p class="sub" id="trendsSub">Whether your distance, swing speed or strike faded or improved from the start of this session to the end.</p>
         <div id="trendChart"></div>
-      </section>
-      <section class="card" id="trends-progress">
-        <h3>Progress across sessions <button type="button" class="help-btn" data-help="progress" aria-label="About progress across sessions">?</button></h3>
-        <p class="sub" id="progressSub">How each club’s distance, speed and strike have changed from one range visit to the next.</p>
-        <div id="progressChart"></div>
       </section>
       <section class="card" id="derived">
         <h3>Derived stats <button type="button" class="help-btn" data-help="derived" aria-label="About derived stats">?</button></h3>
@@ -1219,6 +1365,9 @@ function fmtThresh(yd) {
     distMode: "carry",
     dispMode: "roll",
     scatterClubs: null,
+    perfClubs: null,
+    perfStat: "carry",
+    perfSessionIndex: null,
     bestN: 1,
     charts: {}
   };
@@ -1956,12 +2105,25 @@ function fmtThresh(yd) {
 
   /* ---------------- Tiles, tables, charts ---------------- */
   function renderCounts() {
-    const raw = allShotsRaw();
+    const el = $("#shotCounts");
+    if (!el) return;
+    let raw;
+    let used;
+    if (state.view === "performance") {
+      raw = [];
+      (state.sessions || []).forEach((sess) => {
+        (sess.shots || []).forEach((sh, i) => raw.push(Object.assign({ _sessionId: sess.id }, sh, { _i: i })));
+      });
+      raw = flagShots(raw);
+      used = 0;
+      sessionsChrono().forEach((sess) => { used += sessionFilteredShots(sess).length; });
+    } else {
+      raw = allShotsRaw();
+      used = usedShots().length;
+    }
     const misreads = raw.filter((s) => s.flag === "misread").length;
     const mishits = raw.filter((s) => s.flag === "mishit").length;
     const excluded = misreads + mishits;
-    const used = usedShots().length;
-    const el = $("#shotCounts");
     const bestNote = (!state.bestN || state.bestN >= 1) ? "" : (" · top " + Math.round(state.bestN * 100) + "% by carry");
     el.innerHTML = "<strong>" + used + "</strong> used of <strong>" + raw.length + "</strong> shots · <strong>" + excluded + "</strong> flagged (<strong>" + misreads + "</strong> misreads, <strong>" + mishits + "</strong> mishits)" + bestNote;
     el.className = "badge" + (excluded ? " warn" : "");
@@ -2923,6 +3085,931 @@ function fmtThresh(yd) {
     el.innerHTML = html;
   }
 
+  /* ---------------- Performance tab ---------------- */
+  const VIEW_KEY = "lm1-range-lab-view";
+  const PERF_CLUBS_KEY = "lm1-range-lab-perf-clubs";
+  const PERF_STAT_KEY = "lm1-range-lab-perf-stat";
+
+  function reduceMotion() {
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+  function loadViewName() {
+    try {
+      const v = localStorage.getItem(VIEW_KEY);
+      if (v && ["performance", "range", "sessions", "import"].indexOf(v) >= 0) return v;
+    } catch (e) {}
+    return "range";
+  }
+  function saveViewName() {
+    try { localStorage.setItem(VIEW_KEY, state.view); } catch (e) {}
+  }
+  function loadPerfPrefs() {
+    try {
+      const s = localStorage.getItem(PERF_STAT_KEY);
+      if (s && ["carry", "total", "clubSpeed", "ballSpeed", "smash", "spread"].indexOf(s) >= 0) state.perfStat = s;
+      const v = localStorage.getItem(PERF_CLUBS_KEY);
+      if (!v || v === "all") { state.perfClubs = null; return; }
+      const arr = JSON.parse(v);
+      state.perfClubs = Array.isArray(arr) && arr.length ? new Set(arr) : null;
+    } catch (e) { state.perfClubs = null; }
+  }
+  function savePerfPrefs() {
+    try {
+      localStorage.setItem(PERF_STAT_KEY, state.perfStat || "carry");
+      const v = state.perfClubs && state.perfClubs.size ? JSON.stringify(Array.from(state.perfClubs)) : "all";
+      localStorage.setItem(PERF_CLUBS_KEY, v);
+    } catch (e) {}
+  }
+
+  function sessionsChrono() {
+    return (state.sessions || []).slice().sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")) || String(a.id).localeCompare(String(b.id)));
+  }
+  function sessionFilteredShots(sess) {
+    let shots = flagShots((sess.shots || []).map((s, i) => Object.assign({ _sessionId: sess.id, _sessionDate: sess.date, _sessionName: sess.name }, s, { _i: i })));
+    shots = shots.filter((s) => !shotExcluded(s));
+    return applyBestN(shots);
+  }
+  function clubPerfRow(club, arr) {
+    const carry = arr.map((s) => s.carry).filter((v) => v != null);
+    const total = arr.map((s) => s.total).filter((v) => v != null);
+    const chs = arr.map((s) => s.clubSpeed).filter((v) => v != null);
+    const ball = arr.map((s) => s.ballSpeed).filter((v) => v != null);
+    const smash = arr.map((s) => s.smash).filter((v) => v != null);
+    const rollRatio = arr.filter((s) => s.total != null && s.carry != null && s.carry > 0).map((s) => (s.total - s.carry) / s.carry);
+    const cpb = arr.filter((s) => s.carry != null && s.ballSpeed).map((s) => s.carry / s.ballSpeed);
+    const band = smashGoodFor(club);
+    let goodN = 0, okN = 0, poorN = 0;
+    smash.forEach((v) => {
+      if (v >= band.good) goodN++;
+      else if (v >= band.ok) okN++;
+      else poorN++;
+    });
+    const p10c = carry.length ? quantile(carry, 0.1) : null;
+    const p90c = carry.length ? quantile(carry, 0.9) : null;
+    return {
+      club, n: arr.length, band,
+      avgCarry: mean(carry), avgTotal: mean(total), avgChs: mean(chs), avgBall: mean(ball), avgSmash: mean(smash),
+      p10c, p90c, spread: (p10c != null && p90c != null) ? (p90c - p10c) : null,
+      p10t: total.length ? quantile(total, 0.1) : null, p90t: total.length ? quantile(total, 0.9) : null,
+      p10s: chs.length ? quantile(chs, 0.1) : null, p90s: chs.length ? quantile(chs, 0.9) : null,
+      chsSd: chs.length > 1 ? stdev(chs) : 0,
+      p10b: ball.length ? quantile(ball, 0.1) : null, p90b: ball.length ? quantile(ball, 0.9) : null,
+      p10sm: smash.length ? quantile(smash, 0.1) : null, p90sm: smash.length ? quantile(smash, 0.9) : null,
+      avgRollRatio: mean(rollRatio), carryPerBall: mean(cpb),
+      goodN, okN, poorN
+    };
+  }
+  function buildPerfData() {
+    const sessions = sessionsChrono();
+    const clubSet = new Set();
+    const sessRows = sessions.map((sess) => {
+      const shots = sessionFilteredShots(sess);
+      const byClub = new Map();
+      shots.forEach((s) => {
+        if (!byClub.has(s.club)) byClub.set(s.club, []);
+        byClub.get(s.club).push(s);
+      });
+      const by = new Map();
+      byClub.forEach((arr, club) => {
+        clubSet.add(club);
+        by.set(club, clubPerfRow(club, arr));
+      });
+      return { sess, shots, by };
+    });
+    const clubs = Array.from(clubSet).sort(sortClubs);
+    const cells = new Map();
+    clubs.forEach((club) => { cells.set(club, sessRows.map((sr) => sr.by.get(club) || null)); });
+    return { sessions, sessRows, clubs, cells };
+  }
+  function perfStatMeta() {
+    const id = state.perfStat || "carry";
+    const all = {
+      carry: { id: "carry", label: "Carry", unit: unitShort(), better: "up",
+        fmt: (v) => fmtDist(v) + " " + unitShort(), raw: (c) => c && c.avgCarry, lo: (c) => c && c.p10c, hi: (c) => c && c.p90c },
+      total: { id: "total", label: "Total", unit: unitShort(), better: "up",
+        fmt: (v) => fmtDist(v) + " " + unitShort(), raw: (c) => c && c.avgTotal, lo: (c) => c && c.p10t, hi: (c) => c && c.p90t },
+      clubSpeed: { id: "clubSpeed", label: "Club speed", unit: "mph", better: "up",
+        fmt: (v) => fmt(v, 1) + " mph", raw: (c) => c && c.avgChs, lo: (c) => c && c.p10s, hi: (c) => c && c.p90s },
+      ballSpeed: { id: "ballSpeed", label: "Ball speed", unit: "mph", better: "up",
+        fmt: (v) => fmt(v, 1) + " mph", raw: (c) => c && c.avgBall, lo: (c) => c && c.p10b, hi: (c) => c && c.p90b },
+      smash: { id: "smash", label: "Smash", unit: "", better: "up",
+        fmt: (v) => fmt(v, 2), raw: (c) => c && c.avgSmash, lo: (c) => c && c.p10sm, hi: (c) => c && c.p90sm },
+      spread: { id: "spread", label: "Spread", unit: unitShort(), better: "down",
+        fmt: (v) => fmtDist(v) + " " + unitShort(), raw: (c) => c && c.spread, lo: (c) => c && c.spread, hi: (c) => c && c.spread }
+    };
+    return all[id] || all.carry;
+  }
+  function perfSelectedClubs(clubs) {
+    const saved = state.perfClubs;
+    if (!saved || !saved.size) return clubs.slice();
+    const inter = clubs.filter((c) => saved.has(c));
+    return inter.length ? inter : clubs.slice();
+  }
+  function perfDeltaTone(delta, better) {
+    if (delta == null || Math.abs(delta) < 1e-9) return "flat";
+    const improved = better === "down" ? delta < 0 : delta > 0;
+    return improved ? "up" : "down";
+  }
+  function perfFmtDelta(delta, meta) {
+    if (delta == null) return "—";
+    if (meta.id === "smash") return (delta > 0 ? "+" : "") + fmt(delta, 2);
+    if (meta.id === "clubSpeed" || meta.id === "ballSpeed") return (delta > 0 ? "+" : "") + fmt(delta, 1) + " mph";
+    return signedDist(delta);
+  }
+  function firstLast(cells) {
+    let first = null, last = null, fi = -1, li = -1;
+    cells.forEach((c, i) => {
+      if (!c) return;
+      if (!first) { first = c; fi = i; }
+      last = c; li = i;
+    });
+    return { first, last, fi, li };
+  }
+  function speedRef(club) {
+    const name = String(club || "");
+    const kind = (clubDef(club) || {}).kind || "iron";
+    if (name === "Driver") return { low: 68, mid: 76, band: "70–85 mph" };
+    if (kind === "wood") return { low: 64, mid: 72, band: "65–80 mph" };
+    if (kind === "hybrid") return { low: 60, mid: 68, band: "62–75 mph" };
+    if (/^2 Iron|^3 Iron|^4 Iron/.test(name)) return { low: 60, mid: 68, band: "62–74 mph" };
+    if (name === "5 Iron") return { low: 58, mid: 66, band: "60–72 mph" };
+    if (name === "6 Iron") return { low: 57, mid: 64, band: "58–70 mph" };
+    if (name === "7 Iron") return { low: 58, mid: 64, band: "60–68 mph" };
+    if (name === "8 Iron") return { low: 55, mid: 62, band: "56–66 mph" };
+    if (name === "9 Iron") return { low: 52, mid: 58, band: "54–64 mph" };
+    if (kind === "wedge") return { low: 50, mid: 56, band: "52–62 mph" };
+    return { low: 55, mid: 62, band: "55–70 mph" };
+  }
+  function typicalCarryPerBall(club) {
+    const kind = (clubDef(club) || {}).kind || "iron";
+    if (String(club) === "Driver") return 1.40;
+    if (kind === "wood") return 1.30;
+    if (kind === "hybrid") return 1.20;
+    if (kind === "wedge") return 1.05;
+    return 1.12;
+  }
+
+  const perfPlay = { timer: null, data: null, bagAnim: 0 };
+
+  function perfStopPlay() {
+    if (perfPlay.timer) { clearInterval(perfPlay.timer); perfPlay.timer = null; }
+    const btn = $("#perfPlayBtn");
+    if (btn) { btn.textContent = "Play"; btn.classList.remove("playing"); }
+  }
+  function perfSetIndex(i, data) {
+    const n = (data || perfPlay.data || {}).sessions || [];
+    if (!n.length) return;
+    const idx = Math.max(0, Math.min(n.length - 1, i));
+    state.perfSessionIndex = idx;
+    const scrub = $("#perfScrub");
+    const lab = $("#perfScrubLabel");
+    if (scrub) scrub.value = String(idx);
+    if (lab) lab.textContent = niceDate(n[idx].date);
+    perfSyncPlayhead(idx, data || perfPlay.data);
+  }
+  function perfTogglePlay() {
+    const data = perfPlay.data;
+    if (!data || data.sessions.length < 2) return;
+    if (perfPlay.timer) { perfStopPlay(); return; }
+    if (reduceMotion()) {
+      perfSetIndex(data.sessions.length - 1, data);
+      return;
+    }
+    const btn = $("#perfPlayBtn");
+    if (btn) { btn.textContent = "Pause"; btn.classList.add("playing"); }
+    let i = state.perfSessionIndex == null ? 0 : state.perfSessionIndex;
+    if (i >= data.sessions.length - 1) i = -1;
+    perfPlay.timer = setInterval(() => {
+      i += 1;
+      if (i >= data.sessions.length) { perfStopPlay(); perfSetIndex(data.sessions.length - 1, data); return; }
+      perfSetIndex(i, data);
+    }, 850);
+  }
+
+  function renderPerformance() {
+    const root = $("#view-performance");
+    if (!root) return;
+    perfStopPlay();
+    const data = buildPerfData();
+    perfPlay.data = data;
+    const clubs = perfSelectedClubs(data.clubs);
+    const meta = perfStatMeta();
+    renderPerfToolbar(data.clubs, clubs);
+    const play = $("#perfPlaybar");
+    const scrub = $("#perfScrub");
+    if (play) play.hidden = data.sessions.length < 1;
+    if (scrub) {
+      scrub.min = 0;
+      scrub.max = Math.max(0, data.sessions.length - 1);
+    }
+    if (!data.sessions.length || !data.clubs.length) {
+      ["perfHero", "perfTimeline", "perfBag", "perfHeat", "perfStrike", "perfWork"].forEach((id) => {
+        const el = $("#" + id);
+        if (el) el.innerHTML = '<p class="empty">Import range sessions to see progress over time.</p>';
+      });
+      return;
+    }
+    const startIdx = state.perfSessionIndex != null && state.perfSessionIndex < data.sessions.length ? state.perfSessionIndex : data.sessions.length - 1;
+    renderPerfHero(data, clubs, meta);
+    renderPerfTimeline(data, clubs, meta);
+    renderPerfBag(data, clubs);
+    renderPerfHeat(data, clubs);
+    renderPerfStrike(data, clubs);
+    renderPerfWork(data, clubs);
+    applySubtitles();
+    perfSetIndex(startIdx, data);
+  }
+
+  function renderPerfToolbar(allClubs, selected) {
+    const el = $("#perfClubs");
+    if (el) {
+      const allOn = !state.perfClubs || !state.perfClubs.size;
+      let html = '<button type="button" class="scatter-chip' + (allOn ? " active" : "") + '" data-pc="__all__">All</button>';
+      allClubs.forEach((club) => {
+        const on = allOn || state.perfClubs.has(club);
+        html += '<button type="button" class="scatter-chip' + (on ? " active" : "") + '" data-pc="' + escapeHtml(club) + '">';
+        html += '<i class="scatter-swatch" style="background:' + clubColor(club) + '"></i>' + escapeHtml(clubDef(club).short || club) + "</button>";
+      });
+      el.innerHTML = html;
+    }
+    $$("#perfStat button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-ps") === (state.perfStat || "carry")));
+  }
+  function togglePerfClub(club) {
+    if (club === "__all__") state.perfClubs = null;
+    else if (!state.perfClubs) state.perfClubs = new Set([club]);
+    else if (state.perfClubs.has(club)) {
+      state.perfClubs.delete(club);
+      if (!state.perfClubs.size) state.perfClubs = null;
+    } else state.perfClubs.add(club);
+    savePerfPrefs();
+    renderPerformance();
+  }
+
+  function renderPerfHero(data, clubs, meta) {
+    const el = $("#perfHero");
+    if (!el) return;
+    const pairs = clubs.map((club) => {
+      const fl = firstLast(data.cells.get(club) || []);
+      const a = meta.raw(fl.first), b = meta.raw(fl.last);
+      return { club, fl, a, b, delta: (a != null && b != null) ? b - a : null };
+    }).filter((p) => p.a != null || p.b != null);
+    if (!pairs.length) { el.innerHTML = '<p class="empty">No ' + meta.label.toLowerCase() + " numbers for the current filters.</p>"; return; }
+    const vals = [];
+    pairs.forEach((p) => { if (p.a != null) vals.push(p.a); if (p.b != null) vals.push(p.b); });
+    let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.18 || 1;
+    lo -= pad; hi += pad;
+    const narrow = (el.clientWidth || 640) < 520;
+    const W = narrow ? 320 : 640, H = 56, padL = narrow ? 16 : 22, padR = narrow ? 16 : 22;
+    const xOf = (v) => padL + ((v - lo) / (hi - lo)) * (W - padL - padR);
+    let html = '<div class="perf-hero-list">';
+    pairs.forEach((p) => {
+      const color = clubColor(p.club);
+      const short = clubDef(p.club).short || p.club;
+      const same = p.fl.fi === p.fl.li;
+      const tone = p.delta == null || same ? "flat" : perfDeltaTone(p.delta, meta.better);
+      let x1 = p.a != null ? xOf(p.a) : null;
+      let x2 = p.b != null ? xOf(p.b) : x1;
+      if (x1 != null && x2 != null && !same && Math.abs(x2 - x1) < 16) {
+        const mid = (x1 + x2) / 2, dir = x2 >= x1 ? 1 : -1;
+        x1 = mid - 10 * dir;
+        x2 = mid + 10 * dir;
+      }
+      const y1 = 20, y2 = same ? 28 : 32;
+      let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escapeHtml(p.club) + '">';
+      svg += '<line x1="' + padL + '" y1="26" x2="' + (W - padR) + '" y2="26" stroke="rgba(255,255,255,.08)"/>';
+      if (x1 != null && x2 != null && !same) {
+        const stroke = tone === "up" ? "var(--green)" : (tone === "down" ? "var(--red)" : "rgba(255,255,255,.35)");
+        svg += '<line class="perf-db-line" x1="' + x1.toFixed(1) + '" y1="' + y1 + '" x2="' + x2.toFixed(1) + '" y2="' + y2 + '" stroke="' + stroke + '" stroke-width="3" stroke-linecap="round" data-x1="' + x1.toFixed(1) + '" data-x2="' + x2.toFixed(1) + '" data-y1="' + y1 + '" data-y2="' + y2 + '"/>';
+      }
+      const d1 = p.fl.fi != null ? niceDate(data.sessions[p.fl.fi].date).replace(/ 20\d\d/, "") : "";
+      const d2 = p.fl.li != null ? niceDate(data.sessions[p.fl.li].date).replace(/ 20\d\d/, "") : "";
+      const closeLabs = x1 != null && x2 != null && !same && Math.abs(x2 - x1) < 50;
+      if (x1 != null) {
+        svg += '<circle class="perf-db-then" cx="' + x1.toFixed(1) + '" cy="' + y1 + '" r="6" fill="#0c1319" stroke="' + color + '" stroke-width="2.2"/>';
+        const thenLab = meta.fmt(p.a).replace(" " + unitShort(), "");
+        const thenAnchor = closeLabs && x1 < x2 ? "end" : (closeLabs && x1 > x2 ? "start" : "middle");
+        const thenX = closeLabs && x1 < x2 ? x1 - 8 : (closeLabs && x1 > x2 ? x1 + 8 : x1);
+        svg += '<text x="' + thenX.toFixed(1) + '" y="12" text-anchor="' + thenAnchor + '" fill="rgba(255,255,255,.5)" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="700">' + escapeHtml(thenLab) + "</text>";
+        if (!closeLabs) svg += '<text x="' + x1.toFixed(1) + '" y="50" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">' + escapeHtml(d1) + "</text>";
+      }
+      if (x2 != null) {
+        svg += '<circle class="perf-db-now" cx="' + x2.toFixed(1) + '" cy="' + y2 + '" r="7" fill="' + color + '" stroke="#071018" stroke-width="1" data-cx="' + x2.toFixed(1) + '" data-cy="' + y2 + '"/>';
+        if (!same) {
+          const nowAnchor = closeLabs && x2 > x1 ? "start" : (closeLabs && x2 < x1 ? "end" : "middle");
+          const nowX = closeLabs && x2 > x1 ? x2 + 8 : (closeLabs && x2 < x1 ? x2 - 8 : x2);
+          svg += '<text x="' + nowX.toFixed(1) + '" y="12" text-anchor="' + nowAnchor + '" fill="rgba(255,255,255,.8)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="700">' + escapeHtml(meta.fmt(p.b).replace(" " + unitShort(), "")) + "</text>";
+          if (!closeLabs) svg += '<text x="' + x2.toFixed(1) + '" y="50" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">' + escapeHtml(d2) + "</text>";
+        } else {
+          svg += '<text x="' + x2.toFixed(1) + '" y="50" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">' + escapeHtml(d2) + "</text>";
+        }
+      }
+      if (closeLabs) {
+        const mid = (x1 + x2) / 2;
+        svg += '<text x="' + mid.toFixed(1) + '" y="50" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">' + escapeHtml(d1 + " → " + d2) + "</text>";
+      }
+      svg += "</svg>";
+      const deltaLab = same ? "One session" : (p.delta == null ? "—" : perfFmtDelta(p.delta, meta));
+      html += '<div class="perf-db" data-club="' + escapeHtml(p.club) + '">';
+      html += '<div class="perf-db-name"><i class="perf-db-swatch" style="background:' + color + '"></i>' + escapeHtml(short) + "</div>";
+      html += svg;
+      html += '<div class="perf-db-delta ' + tone + '">' + deltaLab + (same ? "" : "<small>vs first</small>") + "</div>";
+      html += "</div>";
+    });
+    html += "</div>";
+    el.innerHTML = html;
+    if (!reduceMotion()) {
+      el.querySelectorAll(".perf-db").forEach((row) => {
+        const line = row.querySelector(".perf-db-line");
+        const now = row.querySelector(".perf-db-now");
+        if (!line || !now) return;
+        const x1 = parseFloat(line.getAttribute("data-x1"));
+        const x2 = parseFloat(line.getAttribute("data-x2"));
+        const y1 = parseFloat(line.getAttribute("data-y1"));
+        const y2 = parseFloat(line.getAttribute("data-y2"));
+        line.setAttribute("x2", x1);
+        line.setAttribute("y2", y1);
+        now.setAttribute("cx", x1);
+        now.setAttribute("cy", y1);
+        const t0 = performance.now();
+        const dur = 700;
+        const step = (nowT) => {
+          const t = Math.min(1, (nowT - t0) / dur);
+          const e = 1 - Math.pow(1 - t, 3);
+          line.setAttribute("x2", (x1 + (x2 - x1) * e).toFixed(1));
+          line.setAttribute("y2", (y1 + (y2 - y1) * e).toFixed(1));
+          now.setAttribute("cx", (x1 + (x2 - x1) * e).toFixed(1));
+          now.setAttribute("cy", (y1 + (y2 - y1) * e).toFixed(1));
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }
+  }
+
+  function renderPerfTimeline(data, clubs, meta) {
+    const el = $("#perfTimeline");
+    if (!el) return;
+    const nS = data.sessions.length;
+    if (nS < 1) { el.innerHTML = '<p class="empty">No sessions to plot.</p>'; return; }
+    const W = 320, H = 132, padL = 28, padR = 28, padT = 10, padB = 22;
+    let html = '<div class="perf-multi">';
+    clubs.forEach((club) => {
+      const cells = data.cells.get(club) || [];
+      const vals = [];
+      cells.forEach((c) => {
+        if (!c) return;
+        const a = meta.raw(c), lo = meta.lo(c), hi = meta.hi(c);
+        if (a != null) vals.push(a);
+        if (lo != null) vals.push(lo);
+        if (hi != null) vals.push(hi);
+      });
+      const color = clubColor(club);
+      const short = clubDef(club).short || club;
+      html += '<article class="perf-mini" data-club="' + escapeHtml(club) + '"><h4><i class="perf-db-swatch" style="background:' + color + '"></i>' + escapeHtml(short) + "</h4>";
+      if (vals.length < 1) {
+        html += '<p class="empty" style="padding:16px 8px">No ' + meta.label.toLowerCase() + " yet.</p></article>";
+        return;
+      }
+      let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      if (lo === hi) { lo -= 1; hi += 1; }
+      const pad = (hi - lo) * 0.14 || 1;
+      lo -= pad; hi += pad;
+      const xOf = (i) => padL + (nS <= 1 ? 0.5 : i / (nS - 1)) * (W - padL - padR);
+      const yOf = (v) => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
+      let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escapeHtml(club) + ' timeline">';
+      const step = (hi - lo) > 40 ? niceStep(hi - lo) : (hi - lo) > 8 ? 5 : (hi - lo) > 2 ? 1 : 0.2;
+      for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-6; v += step) {
+        svg += '<line x1="' + padL + '" y1="' + yOf(v) + '" x2="' + (W - padR) + '" y2="' + yOf(v) + '" stroke="rgba(255,255,255,.06)"/>';
+      }
+      svg += '<text x="' + (padL - 4) + '" y="' + (yOf(hi) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="700">' + (meta.id === "smash" ? fmt(hi, 2) : Math.round(meta.id === "clubSpeed" || meta.id === "ballSpeed" ? hi : toDisp(hi) || hi)) + "</text>";
+      const pts = [];
+      cells.forEach((c, i) => {
+        const a = meta.raw(c);
+        if (a == null) return;
+        pts.push(xOf(i).toFixed(1) + "," + yOf(a).toFixed(1));
+        const yLo = yOf(meta.lo(c) != null ? meta.lo(c) : a);
+        const yHi = yOf(meta.hi(c) != null ? meta.hi(c) : a);
+        const tip = escapeHtml([
+          club + " · " + niceDate(data.sessions[i].date),
+          "Avg " + meta.fmt(a),
+          meta.lo(c) != null ? "Middle 80% " + meta.fmt(meta.lo(c)).replace(/ [a-z]+$/i, "") + "–" + meta.fmt(meta.hi(c)) : "",
+          c.n + " shot" + (c.n === 1 ? "" : "s")
+        ].filter(Boolean).join("\n"));
+        svg += '<line class="perf-whisker" data-si="' + i + '" x1="' + xOf(i) + '" x2="' + xOf(i) + '" y1="' + yLo.toFixed(1) + '" y2="' + yHi.toFixed(1) + '" stroke="' + color + '" stroke-opacity=".4" stroke-width="4" stroke-linecap="round"/>';
+        svg += '<circle class="perf-avg" data-si="' + i + '" data-tip="' + tip + '" cx="' + xOf(i).toFixed(1) + '" cy="' + yOf(a).toFixed(1) + '" r="5" fill="' + color + '" stroke="#071018" stroke-width=".8" style="cursor:pointer"/>';
+      });
+      if (pts.length > 1) svg += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + color + '" stroke-opacity=".35" stroke-width="1.4"/>';
+      data.sessions.forEach((s, i) => {
+        if (i % Math.ceil(nS / 4) !== 0 && i !== nS - 1) return;
+        svg += '<text x="' + xOf(i) + '" y="' + (H - 6) + '" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">' + escapeHtml(niceDate(s.date).replace(/ 20\d\d/, "")) + "</text>";
+      });
+      svg += '<rect class="perf-playhead" data-role="head" x="0" y="' + padT + '" width="2" height="' + (H - padT - padB) + '" fill="rgba(62,224,255,.7)" opacity=".0"/>';
+      svg += "</svg></article>";
+      html += svg;
+    });
+    html += "</div>";
+    el.innerHTML = html;
+    bindChartTips(el, "[data-tip]");
+  }
+  function niceStep(span) {
+    const raw = span / 3;
+    const pow = Math.pow(10, Math.floor(Math.log10(raw || 1)));
+    const n = raw / pow;
+    if (n < 1.5) return pow;
+    if (n < 3.5) return 2 * pow;
+    if (n < 7.5) return 5 * pow;
+    return 10 * pow;
+  }
+
+  function renderPerfBag(data, clubs) {
+    const el = $("#perfBag");
+    if (!el) return;
+    const useTotal = state.distMode === "total";
+    const nS = data.sessions.length;
+    const rows = [];
+    data.cells.forEach((cells, club) => {
+      if (clubs.indexOf(club) < 0) return;
+      const vals = cells.map((c) => c && (useTotal ? c.avgTotal : c.avgCarry));
+      if (vals.every((v) => v == null)) return;
+      rows.push({ club, vals, short: clubDef(club).short || club, color: clubColor(club) });
+    });
+    if (!rows.length) { el.innerHTML = '<p class="empty">No distance numbers to build a bag ladder.</p>'; return; }
+    let maxV = 0;
+    rows.forEach((r) => r.vals.forEach((v) => { if (v != null && v > maxV) maxV = v; }));
+    const maxDist = niceMaxDisp(Math.max(maxV, 80));
+    const W = 640, H = 420, padL = 86, padR = 28, padT = 18, padB = 28;
+    const yOf = (v) => padT + (1 - (Math.max(0, toDisp(v) || 0) / maxDist)) * (H - padT - padB);
+    let svg = '<div class="perf-bag-stage"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Bag evolution ladder">';
+    const tick = maxDist > 200 ? 50 : 25;
+    for (let d = 0; d <= maxDist; d += tick) {
+      const yb = padT + (1 - d / maxDist) * (H - padT - padB);
+      const major = d % (tick * 2) === 0;
+      svg += '<line x1="' + padL + '" y1="' + yb + '" x2="' + (W - padR) + '" y2="' + yb + '" stroke="' + (major ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.06)") + '"/>';
+      svg += '<text x="' + (padL - 8) + '" y="' + (yb + 4) + '" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + "</text>";
+    }
+    svg += '<text x="16" y="' + ((padT + H - padB) / 2) + '" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="11" font-family="DM Sans, sans-serif" transform="rotate(-90 16 ' + ((padT + H - padB) / 2) + ')">' + (useTotal ? "Total" : "Carry") + " (" + unitShort() + ")</text>";
+    const colW = (W - padL - padR);
+    rows.forEach((r, i) => {
+      const x = padL + 28 + (rows.length <= 1 ? colW / 2 : (i / (rows.length - 1)) * (colW - 56));
+      svg += '<g class="perf-bag-club" data-club="' + escapeHtml(r.club) + '" data-vals="' + escapeHtml(JSON.stringify(r.vals)) + '" opacity="0">';
+      svg += '<line class="perf-bag-stem" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + (H - padB) + '" y2="' + (H - padB) + '" stroke="' + r.color + '" stroke-opacity=".25" stroke-width="2"/>';
+      svg += '<circle class="perf-bag-dot" cx="' + x.toFixed(1) + '" cy="' + (H - padB) + '" r="8" fill="' + r.color + '" stroke="#071018" stroke-width="1"/>';
+      svg += '<text class="perf-bag-lab" x="' + (x + 12).toFixed(1) + '" y="' + (H - padB) + '" fill="#eef6f0" font-size="13" font-family="Barlow Condensed, sans-serif" font-weight="700" paint-order="stroke" stroke="#0c1319" stroke-width="3">' + escapeHtml(r.short) + "</text>";
+      svg += "</g>";
+    });
+    svg += "</svg></div>";
+    el.innerHTML = svg;
+    el._bag = { rows, yOf, H, padB, useTotal };
+  }
+
+  function perfSyncPlayhead(idx, data) {
+    if (!data) return;
+    // timeline playhead line
+    $$("#perfTimeline .perf-mini").forEach((panel) => {
+      const svg = panel.querySelector("svg");
+      if (!svg) return;
+      const nS = data.sessions.length;
+      const W = 320, padL = 28, padR = 28;
+      const x = padL + (nS <= 1 ? 0.5 : idx / (nS - 1)) * (W - padL - padR);
+      const head = panel.querySelector(".perf-playhead");
+      if (head) {
+        head.setAttribute("x", (x - 1).toFixed(1));
+        head.setAttribute("opacity", "0.85");
+      }
+      panel.querySelectorAll(".perf-avg").forEach((c) => {
+        const on = Number(c.getAttribute("data-si")) === idx;
+        c.setAttribute("r", on ? 6.5 : 5);
+        c.setAttribute("stroke-width", on ? 1.6 : 0.8);
+      });
+    });
+    // bag ladder positions
+    const bagEl = $("#perfBag");
+    const bag = bagEl && bagEl._bag;
+    if (bag) {
+      if (perfPlay.bagAnim) cancelAnimationFrame(perfPlay.bagAnim);
+      const dur = reduceMotion() ? 0 : 450;
+      const targets = bag.rows.map((r) => {
+        const g = bagEl.querySelector('.perf-bag-club[data-club="' + cssAttr(r.club) + '"]');
+        if (!g) return null;
+        const dot = g.querySelector(".perf-bag-dot");
+        const lab = g.querySelector(".perf-bag-lab");
+        const stem = g.querySelector(".perf-bag-stem");
+        let last = null;
+        for (let i = idx; i >= 0; i--) if (r.vals[i] != null) { last = r.vals[i]; break; }
+        const present = r.vals[idx] != null;
+        const v = present ? r.vals[idx] : last;
+        const toY = v != null ? bag.yOf(v) : (bag.H - bag.padB);
+        const fromY = dot ? parseFloat(dot.getAttribute("cy")) : toY;
+        const fromOp = present ? 1 : (last != null ? 0.22 : 0);
+        const startOp = parseFloat(g.style.opacity || "0");
+        const appear = present && (isNaN(startOp) || startOp < 0.4);
+        return { g, dot, lab, stem, fromY: appear ? toY : (isNaN(fromY) ? toY : fromY), toY, fromOp: isNaN(startOp) ? 0 : startOp, toOp: present ? 1 : fromOp, present, hasVal: v != null };
+      }).filter(Boolean);
+      const apply = (t) => {
+        const e = 1 - Math.pow(1 - t, 2);
+        targets.forEach((o) => {
+          const y = o.fromY + (o.toY - o.fromY) * e;
+          const op = o.fromOp + (o.toOp - o.fromOp) * e;
+          if (o.dot) o.dot.setAttribute("cy", y.toFixed(1));
+          if (o.lab) o.lab.setAttribute("y", (y + 4).toFixed(1));
+          if (o.stem) o.stem.setAttribute("y2", y.toFixed(1));
+          o.g.style.opacity = String(op);
+          o.g.style.visibility = o.hasVal || op > 0.05 ? "visible" : "hidden";
+        });
+      };
+      if (!dur) { apply(1); return; }
+      const t0 = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / dur);
+        apply(t);
+        if (t < 1) perfPlay.bagAnim = requestAnimationFrame(step);
+        else perfPlay.bagAnim = 0;
+      };
+      perfPlay.bagAnim = requestAnimationFrame(step);
+    }
+  }
+    function cssAttr(s) {
+    return String(s).replace(/"/g, '\\"');
+  }
+
+  function renderPerfHeat(data, clubs) {
+    const el = $("#perfHeat");
+    if (!el) return;
+    const useTotal = state.distMode === "total";
+    let html = '<div class="perf-heat-wrap"><table class="perf-heat"><thead><tr><th></th>';
+    data.sessions.forEach((s) => {
+      html += '<th class="sess">' + escapeHtml(niceDate(s.date).replace(/ 20\d\d/, "")) + "</th>";
+    });
+    html += "</tr></thead><tbody>";
+    const widths = [];
+    clubs.forEach((club) => {
+      (data.cells.get(club) || []).forEach((c) => {
+        if (!c) return;
+        const w = useTotal && c.p10t != null ? (c.p90t - c.p10t) : c.spread;
+        if (w != null) widths.push(w);
+      });
+    });
+    const wLo = 6, wHi = 28; // yd reference; colour scale in source yards
+    function colOf(w) {
+      if (w == null) return null;
+      const t = clamp((w - wLo) / (wHi - wLo), 0, 1);
+      // green -> amber -> red
+      if (t < 0.5) {
+        const u = t / 0.5;
+        return lerpColor([61, 255, 154], [255, 176, 32], u);
+      }
+      return lerpColor([255, 176, 32], [255, 77, 90], (t - 0.5) / 0.5);
+    }
+    clubs.forEach((club) => {
+      html += '<tr><th class="club">' + escapeHtml(clubDef(club).short || club) + "</th>";
+      (data.cells.get(club) || []).forEach((c, i) => {
+        if (!c) { html += '<td><span class="cell is-empty"></span></td>'; return; }
+        const w = useTotal && c.p10t != null ? (c.p90t - c.p10t) : c.spread;
+        const fill = colOf(w);
+        const tip = escapeHtml([
+          club + " · " + niceDate(data.sessions[i].date),
+          w != null ? ("Spread " + fmtDist(w) + " " + unitShort() + " (middle 80%)") : "No spread yet",
+          "Avg " + (useTotal ? fmtDist(c.avgTotal) : fmtDist(c.avgCarry)) + " " + unitShort(),
+          c.n + " shot" + (c.n === 1 ? "" : "s")
+        ].join("\n"));
+        const bg = fill ? "background:" + fill : "";
+        html += '<td><span class="cell" tabindex="0" data-tip="' + tip + '" style="' + bg + '"></span></td>';
+      });
+      html += "</tr>";
+    });
+    html += '</tbody></table></div>';
+    html += '<div class="perf-heat-legend"><span>Tighter</span><span class="perf-heat-scale"></span><span>Wider</span></div>';
+    el.innerHTML = html;
+    bindChartTips(el, "[data-tip]");
+  }
+  function lerpColor(a, b, t) {
+    const r = Math.round(a[0] + (b[0] - a[0]) * t);
+    const g = Math.round(a[1] + (b[1] - a[1]) * t);
+    const bl = Math.round(a[2] + (b[2] - a[2]) * t);
+    return "rgba(" + r + "," + g + "," + bl + ",.82)";
+  }
+
+  function renderPerfStrike(data, clubs) {
+    const el = $("#perfStrike");
+    if (!el) return;
+    const set = new Set(clubs);
+    const cols = data.sessRows.map((sr, i) => {
+      let good = 0, ok = 0, poor = 0;
+      sr.shots.forEach((s) => {
+        if (!set.has(s.club) || s.smash == null) return;
+        const b = smashGoodFor(s.club);
+        if (s.smash >= b.good) good++;
+        else if (s.smash >= b.ok) ok++;
+        else poor++;
+      });
+      const tot = good + ok + poor;
+      return { i, date: sr.sess.date, good, ok, poor, tot };
+    });
+    if (!cols.some((c) => c.tot)) { el.innerHTML = '<p class="empty">No smash numbers for the selected clubs.</p>'; return; }
+    const W = 720, H = 220, padL = 36, padR = 12, padT = 12, padB = 36;
+    const n = cols.length;
+    const gap = 8;
+    const barW = Math.max(10, Math.min(42, ((W - padL - padR) - gap * n) / n));
+    const xOf = (i) => padL + i * ((W - padL - padR) / n) + (((W - padL - padR) / n) - barW) / 2;
+    const yOf = (p) => padT + (1 - p) * (H - padT - padB);
+    let svg = '<div class="perf-strike-legend">';
+    svg += '<span><i class="smash-swatch poor"></i>Poor</span><span><i class="smash-swatch ok"></i>OK</span><span><i class="smash-swatch good"></i>Good</span></div>';
+    svg += '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Strike quality over time">';
+    [0, 0.5, 1].forEach((p) => {
+      svg += '<line x1="' + padL + '" y1="' + yOf(p) + '" x2="' + (W - padR) + '" y2="' + yOf(p) + '" stroke="rgba(255,255,255,.08)"/>';
+      svg += '<text x="' + (padL - 6) + '" y="' + (yOf(p) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="700">' + Math.round(p * 100) + "%</text>";
+    });
+    cols.forEach((c, i) => {
+      const x = xOf(i);
+      const tip = escapeHtml([
+        niceDate(c.date),
+        c.tot ? (c.good + " good · " + c.ok + " ok · " + c.poor + " poor of " + c.tot) : "No smash data",
+        c.tot ? (Math.round((c.good / c.tot) * 100) + "% good strikes") : ""
+      ].filter(Boolean).join("\n"));
+      if (!c.tot) {
+        svg += '<rect x="' + x + '" y="' + yOf(0) + '" width="' + barW + '" height="0" fill="rgba(255,255,255,.06)" data-tip="' + tip + '"/>';
+      } else {
+        let y = yOf(0);
+        [["poor", c.poor, "rgba(255,77,90,.85)"], ["ok", c.ok, "rgba(255,176,32,.85)"], ["good", c.good, "rgba(61,255,154,.8)"]].forEach((seg) => {
+          const h = (seg[1] / c.tot) * (H - padT - padB);
+          y -= h;
+          if (h > 0) svg += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + barW + '" height="' + h.toFixed(1) + '" fill="' + seg[2] + '" data-tip="' + tip + '"/>';
+        });
+      }
+      if (i % Math.ceil(n / 6) === 0 || i === n - 1) {
+        svg += '<text x="' + (x + barW / 2) + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="10" font-family="DM Sans, sans-serif">' + escapeHtml(niceDate(c.date).replace(/ 20\d\d/, "")) + "</text>";
+      }
+    });
+    svg += "</svg>";
+    el.innerHTML = svg;
+    bindChartTips(el, "[data-tip]");
+  }
+
+  /* ---- What to work on ---- */
+  function pooledRecent(data, club) {
+    const cells = data.cells.get(club) || [];
+    const idx = [];
+    cells.forEach((c, i) => { if (c) idx.push(i); });
+    const last = idx.slice(-2);
+    const shots = [];
+    last.forEach((i) => {
+      data.sessRows[i].shots.forEach((s) => { if (s.club === club) shots.push(s); });
+    });
+    const row = shots.length ? clubPerfRow(club, shots) : null;
+    const dates = last.map((i) => data.sessions[i].date);
+    return { shots, row, dates, nSess: last.length };
+  }
+  function smashGainYards(row) {
+    if (!row || row.avgSmash == null || row.avgChs == null || row.avgCarry == null || !row.avgSmash) return 0;
+    const target = row.band.good;
+    if (row.avgSmash >= target - 0.005) return 0;
+    const newBall = row.avgChs * target;
+    const ratio = row.carryPerBall || (row.avgBall ? row.avgCarry / row.avgBall : null);
+    if (!ratio) return 0;
+    return Math.max(0, newBall * ratio - row.avgCarry);
+  }
+  function speedGainYards(row, mid) {
+    if (!row || row.avgChs == null || row.avgSmash == null || row.avgCarry == null) return 0;
+    if (row.avgChs >= mid) return 0;
+    const newBall = mid * row.avgSmash;
+    const ratio = row.carryPerBall || (row.avgBall ? row.avgCarry / row.avgBall : null);
+    if (!ratio) return 0;
+    return Math.max(0, newBall * ratio - row.avgCarry);
+  }
+
+  function diagnosePerf(data, clubs) {
+    const issues = [];
+    const recentRows = [];
+    clubs.forEach((club) => {
+      const pool = pooledRecent(data, club);
+      if (pool.row && pool.row.n >= 6) recentRows.push({ club, pool });
+    });
+    recentRows.forEach(({ club, pool }) => {
+      const r = pool.row;
+      const def = clubDef(club);
+      const kind = def.kind || "iron";
+      const ref = speedRef(club);
+      const speedOk = r.avgChs == null || r.avgChs >= ref.low;
+      const dates = pool.dates.map(niceDate).join(" and ");
+
+      if (r.avgSmash != null && r.avgSmash < r.band.good - 0.03 && speedOk && r.n >= 6) {
+        const yds = smashGainYards(r);
+        issues.push({
+          club, kind: "strike", yards: yds, illu: "strike",
+          title: "Off-centre strike with " + (def.short || club),
+          evidence: "Average smash is " + fmt(r.avgSmash, 2) + " against a good-strike target of " + fmt(r.band.good, 2) + ", with club speed " + fmt(r.avgChs, 1) + " mph — in a normal range (" + ref.band + "). " + (r.goodN ? (r.goodN + " of " + r.n + " recent shots were in the good band. ") : ("None of the " + r.n + " recent shots were in the good band. ")) + "Based on " + dates + ".",
+          causes: ["The face was probably missed — toe, heel, thin or heavy — so ball speed lagged the swing you made.", "A slightly closed or open face at the same speed can also cut smash, but the LM1 cannot tell those apart from a simple miss."],
+          drills: ["Dust the face with foot powder or a marker spray and hit ten balls. You’re looking for a mark in the middle, not a number on the watch.", "Slow the swing about 10% and only add speed back when the mark stays central."]
+        });
+      }
+      if (r.avgChs != null && r.avgChs < ref.low && r.n >= 6) {
+        const yds = speedGainYards(r, ref.mid);
+        issues.push({
+          club, kind: "speed", yards: yds, illu: "speed",
+          title: "Club speed is down with " + (def.short || club),
+          evidence: "Average club speed is " + fmt(r.avgChs, 1) + " mph. A typical recreational range for this club is " + ref.band + ". Based on " + dates + ".",
+          causes: ["The body may not be rotating enough through the ball — hips and trail side stalling, arms doing the work.", "Tempo can be rushed from the top, so the sequence (ground, hips, torso, arms) never quite stacks."],
+          drills: ["Feet-together three-quarter swings, starting the downswing with the lead hip rather than the hands.", "A slow pump at the top: pause, shift, then swing — ten balls without chasing distance."]
+        });
+      }
+      if ((kind === "iron" || kind === "wedge") && r.avgRollRatio != null && r.avgRollRatio > 0.10 && r.n >= 6) {
+        const extra = (r.avgRollRatio - 0.10) * (r.avgCarry || 0);
+        issues.push({
+          club, kind: "deloft", yards: Math.max(0, extra * 0.5), illu: "deloft",
+          title: "A lot of roll on " + (def.short || club) + " — likely a low launch",
+          evidence: "Average roll is " + fmt((r.avgRollRatio || 0) * 100, 0) + "% of carry (about " + fmtDist((r.avgTotal || 0) - (r.avgCarry || 0)) + " " + unitShort() + " of run). More than about 10% on an iron usually means the ball came in lower and flatter than typical. Based on " + dates + ".",
+          causes: ["The shaft may be leaning too much at impact (delofted), or the strike is a little fat, both of which lower launch and often spin.", "The LM1 does not measure launch or spin — this is inferred from the carry-to-roll split."],
+          drills: ["Clip a tee just above the turf: you want a thin divot after the ball, not a deep chunk or a pick.", "Feel the handle only slightly ahead at impact — don’t pile on extra forward lean."]
+        });
+      }
+      if (String(club) === "Driver" && r.avgRollRatio != null && r.avgRollRatio < 0.08 && r.avgCarry != null && r.n >= 6) {
+        issues.push({
+          club, kind: "steep", yards: Math.max(0, (0.15 - r.avgRollRatio) * r.avgCarry * 0.35), illu: "steep",
+          title: "Driver is flying short and not rolling — possibly too steep or too much spin",
+          evidence: "Carry averages " + fmtDist(r.avgCarry) + " " + unitShort() + " with only " + fmt((r.avgRollRatio || 0) * 100, 0) + "% roll. A driver that lands steep, often from a downward blow or extra spin, tends not to run. Based on " + dates + ".",
+          causes: ["A steep, chopping path into the ball can add spin and cut carry.", "Launch may be too high and steep, or too low with heavy spin — the LM1 cannot separate those."],
+          drills: ["Tee it a touch higher and feel the club sweeping through, not chopping down.", "A headcover just outside and behind the ball can discourage a steep, out-to-in chop — use it as a guide, not a measured path."]
+        });
+      }
+      const typ = typicalCarryPerBall(club);
+      if (r.carryPerBall != null && r.avgBall != null && r.carryPerBall < typ * 0.90 && r.n >= 6) {
+        const yds = Math.max(0, typ * r.avgBall - r.avgCarry);
+        issues.push({
+          club, kind: "window", yards: yds, illu: "window",
+          title: "Carry is short for this ball speed with " + (def.short || club),
+          evidence: "You’re getting " + fmt(isMetres() ? r.carryPerBall * YD_TO_M : r.carryPerBall, 2) + " " + unitWord() + " of carry per mph of ball speed; a typical window is around " + fmt(isMetres() ? typ * YD_TO_M : typ, 2) + ". Ball speed is " + fmt(r.avgBall, 1) + " mph. Based on " + dates + ".",
+          causes: ["Launch or spin is probably outside the useful window — too low and the ball falls out, too high and it balloons.", "Those two look the same to the LM1, which does not measure launch or spin."],
+          drills: ["On irons, notice the divot: heavy (behind the ball) or thin (no divot) both shrink carry for the same ball speed.", "A mid-height tee drill: clip the tee without burying the head, then try the same feel off the turf."]
+        });
+      }
+      const spreadWide = r.spread != null && (r.spread > 18 || (r.avgCarry && r.spread > r.avgCarry * 0.22));
+      const speedWide = r.chsSd != null && r.chsSd > 5.5;
+      if ((spreadWide || speedWide) && r.n >= 8) {
+        const shortSide = r.p10c != null && r.avgCarry != null ? Math.max(0, r.avgCarry - r.p10c) : 0;
+        issues.push({
+          club, kind: "inconsistent", yards: shortSide, illu: "scatter",
+          title: "The " + (def.short || club) + " numbers jump around",
+          evidence: (r.spread != null ? ("The middle 80% of carries spans " + fmtDist(r.spread) + " " + unitShort() + ". ") : "") + (speedWide ? ("Club speed varies by about " + fmt(r.chsSd, 1) + " mph (one standard deviation). ") : "") + r.n + " shots in " + dates + ".",
+          causes: ["Contact on the face is probably moving around, or the tempo is changing from swing to swing.", "A few mis-struck balls will also stretch the window — check the Flagged list if many are already marked."],
+          drills: ["One club, one 8-shot block, same routine and a quiet tempo count (for example 1–2). Don’t chase the long one.", "If you have face spray, use it for this block and keep only the swings with a central mark."]
+        });
+      }
+    });
+    // gapping among selected clubs using the most recent appearance of each
+    const latest = recentRows.map(({ club, pool }) => ({ club, carry: pool.row.avgCarry, short: clubDef(club).short || club })).filter((x) => x.carry != null).sort((a, b) => sortClubs(a.club, b.club));
+    for (let i = 0; i < latest.length - 1; i++) {
+      const a = latest[i], b = latest[i + 1];
+      const gap = a.carry - b.carry;
+      if (gap < 8) {
+        issues.push({
+          club: a.club, kind: "gap", yards: Math.max(0, 12 - gap), illu: "gap",
+          title: a.short + " and " + b.short + " are covering the same window",
+          evidence: gap <= 0
+            ? ( "Recent average carry is " + fmtDist(a.carry) + " " + unitShort() + " (" + a.short + ") and " + fmtDist(b.carry) + " " + unitShort() + " (" + b.short + "). " + b.short + " is carrying about " + fmtDist(Math.abs(gap)) + " " + unitShort() + " farther than " + a.short + " — they overlap. A healthy step is about " + fmtThreshRange(10, 15) + "." )
+            : ( "Recent average carry is " + fmtDist(a.carry) + " " + unitShort() + " (" + a.short + ") and " + fmtDist(b.carry) + " " + unitShort() + " (" + b.short + ") — a gap of only " + fmtDist(gap) + " " + unitShort() + ". A healthy step is about " + fmtThreshRange(10, 15) + "." ),
+          causes: ["The lofts, shafts or how each club is being struck may have drifted so two clubs fly a similar number.", "Until the gap opens, they are doing the same job on the course."],
+          drills: ["On the next range visit, hit both clubs in the same block and confirm the overlap still holds.", "If it does, think about a different loft or leaving one of them out of the bag on tighter courses."]
+        });
+      }
+    }
+    issues.sort((a, b) => (b.yards || 0) - (a.yards || 0));
+    const gaps = issues.filter((i) => i.kind === "gap");
+    const rest = issues.filter((i) => i.kind !== "gap");
+    return rest.concat(gaps.slice(0, 2)).sort((a, b) => (b.yards || 0) - (a.yards || 0)).slice(0, 7);
+  }
+
+  function illuSvg(kind) {
+    const anim = reduceMotion() ? "" : ' class="is-anim"';
+    const stamp = '<text x="8" y="12" fill="rgba(245,240,200,.7)" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="0.08em">ILLUSTRATION</text>';
+    if (kind === "strike") {
+      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Centre versus off-centre strike illustration">' + stamp +
+        '<rect x="22" y="32" width="156" height="68" rx="12" fill="#24332a" stroke="#c5d4cb" stroke-width="2"/>' +
+        '<rect x="30" y="40" width="140" height="52" rx="6" fill="#1a2620" stroke="rgba(255,255,255,.14)"/>' +
+        '<line x1="38" y1="52" x2="162" y2="52" stroke="rgba(255,255,255,.12)" />' +
+        '<line x1="38" y1="64" x2="162" y2="64" stroke="rgba(255,255,255,.12)" />' +
+        '<line x1="38" y1="76" x2="162" y2="76" stroke="rgba(255,255,255,.12)" />' +
+        '<ellipse cx="100" cy="66" rx="20" ry="14" fill="none" stroke="#3dff9a" stroke-width="2" stroke-dasharray="3 2"/>' +
+        '<text x="100" y="70" text-anchor="middle" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">centre</text>' +
+        '<text x="38" y="118" fill="rgba(255,255,255,.55)" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="700">HEEL</text>' +
+        '<text x="162" y="118" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="700">TOE</text>' +
+        '<text x="100" y="128" text-anchor="middle" fill="rgba(245,240,200,.55)" font-size="7" font-family="DM Sans, sans-serif">angles are illustrative</text>' +
+        (reduceMotion() ? '<circle cx="156" cy="66" r="10" fill="#eef6f0" stroke="#c9b48a" stroke-width="1.4"/>' :
+          '<circle cx="156" cy="66" r="10" fill="#eef6f0" stroke="#c9b48a" stroke-width="1.4"><animate attributeName="cx" values="156;100;156" dur="2.8s" repeatCount="indefinite"/></circle>') +
+        "</svg>";
+    }
+    if (kind === "speed") {
+      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Body rotation and speed illustration">' + stamp +
+        '<line x1="88" y1="110" x2="88" y2="70" stroke="#8aa196" stroke-width="3" stroke-linecap="round"/>' +
+        '<circle cx="88" cy="58" r="8" fill="none" stroke="#eef6f0" stroke-width="2"/>' +
+        '<path d="M88 70 L88 90 L72 110" fill="none" stroke="#8aa196" stroke-width="3" stroke-linecap="round"/>' +
+        '<path d="M88 90 L104 110" fill="none" stroke="#8aa196" stroke-width="3" stroke-linecap="round"/>' +
+        '<path d="M88 78 L58 50" fill="none" stroke="#3ee0ff" stroke-width="2.4" stroke-linecap="round"/>' +
+        '<path d="M70 40 A46 46 0 0 1 150 78" fill="none" stroke="rgba(62,224,255,.55)" stroke-width="1.6" stroke-dasharray="4 3"/>' +
+        (reduceMotion() ? "" : '<circle r="3.5" fill="#3ee0ff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M70 40 A46 46 0 0 1 150 78"/></circle>') +
+        '<text x="130" y="44" fill="rgba(62,224,255,.8)" font-size="9" font-family="DM Sans, sans-serif">hips unwind</text></svg>';
+    }
+    if (kind === "deloft") {
+      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Delofted versus typical impact illustration">' + stamp +
+        '<line x1="20" y1="100" x2="180" y2="100" stroke="#14733a" stroke-width="6"/>' +
+        '<line x1="70" y1="28" x2="100" y2="100" stroke="#ff4d5a" stroke-width="3" stroke-linecap="round"/>' +
+        '<line x1="130" y1="36" x2="148" y2="100" stroke="#3dff9a" stroke-width="3" stroke-linecap="round"/>' +
+        '<path d="M100 96 Q128 86 160 92" fill="none" stroke="#ff4d5a" stroke-width="1.4" opacity=".7"/>' +
+        '<path d="M148 96 Q170 60 190 48" fill="none" stroke="#3dff9a" stroke-width="1.4" opacity=".85"/>' +
+        '<text x="58" y="22" fill="#ff4d5a" font-size="8" font-family="DM Sans, sans-serif">too much lean</text>' +
+        '<text x="132" y="22" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">typical</text>' +
+        '<text x="40" y="122" fill="rgba(255,255,255,.4)" font-size="8" font-family="DM Sans, sans-serif">angles are illustrative</text></svg>';
+    }
+    if (kind === "steep") {
+      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Steep versus sweeping driver illustration">' + stamp +
+        '<line x1="20" y1="100" x2="180" y2="100" stroke="#14733a" stroke-width="6"/>' +
+        '<ellipse cx="108" cy="92" rx="8" ry="6" fill="#eef6f0" stroke="#c9b48a"/>' +
+        '<line x1="48" y1="20" x2="100" y2="92" stroke="#ff4d5a" stroke-width="3" stroke-linecap="round"/>' +
+        '<line x1="40" y1="70" x2="120" y2="92" stroke="#3dff9a" stroke-width="3" stroke-linecap="round" opacity=".85"/>' +
+        '<text x="44" y="18" fill="#ff4d5a" font-size="8" font-family="DM Sans, sans-serif">steep</text>' +
+        '<text x="24" y="68" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">sweep</text>' +
+        '<text x="40" y="122" fill="rgba(255,255,255,.4)" font-size="8" font-family="DM Sans, sans-serif">angles are illustrative</text></svg>';
+    }
+    if (kind === "window") {
+      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Launch window illustration">' + stamp +
+        '<line x1="16" y1="110" x2="190" y2="110" stroke="#14733a" stroke-width="5"/>' +
+        '<path d="M20 110 Q90 100 180 108" fill="none" stroke="rgba(255,77,90,.7)" stroke-width="1.6"/>' +
+        '<path d="M20 110 Q90 40 188 70" fill="none" stroke="#3dff9a" stroke-width="2"/>' +
+        '<path d="M20 110 Q80 8 170 20" fill="none" stroke="rgba(255,176,32,.75)" stroke-width="1.6"/>' +
+        '<text x="150" y="104" fill="rgba(255,77,90,.85)" font-size="8" font-family="DM Sans, sans-serif">too low</text>' +
+        '<text x="150" y="58" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">useful</text>' +
+        '<text x="148" y="18" fill="var(--amber)" font-size="8" font-family="DM Sans, sans-serif">too high</text></svg>';
+    }
+    if (kind === "scatter") {
+      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Inconsistent versus tight strike illustration">' + stamp +
+        '<rect x="24" y="28" width="70" height="80" rx="6" fill="#152018" stroke="rgba(255,255,255,.12)"/>' +
+        '<rect x="106" y="28" width="70" height="80" rx="6" fill="#152018" stroke="rgba(255,255,255,.12)"/>' +
+        '<circle cx="44" cy="50" r="4" fill="#ff4d5a"/><circle cx="70" cy="88" r="4" fill="#ff4d5a"/><circle cx="58" cy="66" r="4" fill="#ff4d5a"/><circle cx="80" cy="48" r="4" fill="#ff4d5a"/>' +
+        '<circle cx="136" cy="66" r="4" fill="#3dff9a"/><circle cx="142" cy="70" r="4" fill="#3dff9a"/><circle cx="140" cy="62" r="4" fill="#3dff9a"/><circle cx="146" cy="66" r="4" fill="#3dff9a"/>' +
+        '<text x="59" y="122" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">spread out</text>' +
+        '<text x="141" y="122" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">repeatable</text></svg>';
+    }
+    return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Club gapping illustration">' + stamp +
+      '<line x1="40" y1="20" x2="40" y2="118" stroke="rgba(255,255,255,.2)"/>' +
+      '<circle cx="40" cy="50" r="7" fill="#00E8FF"/><circle cx="40" cy="58" r="7" fill="#FF2F7A" opacity=".9"/>' +
+      '<line x1="120" y1="20" x2="120" y2="118" stroke="rgba(255,255,255,.2)"/>' +
+      '<circle cx="120" cy="44" r="7" fill="#00E8FF"/><circle cx="120" cy="78" r="7" fill="#FF2F7A"/>' +
+      '<text x="56" y="56" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">overlap</text>' +
+      '<text x="136" y="64" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">a useful gap</text></svg>';
+  }
+
+  function renderPerfWork(data, clubs) {
+    const el = $("#perfWork");
+    if (!el) return;
+    const issues = diagnosePerf(data, clubs);
+    if (!issues.length) {
+      el.innerHTML = '<p class="empty">No clear pattern-based flags with the current filters — either the recent samples are small, or the numbers sit close to the targets used here.</p>';
+      return;
+    }
+    let html = '<div class="work-list">';
+    issues.forEach((iss) => {
+      html += '<article class="work-item" data-kind="' + escapeHtml(iss.kind) + '">';
+      html += '<div class="work-illu">' + illuSvg(iss.illu) + "</div><div class=\"work-body\">";
+      html += "<h4>" + escapeHtml(iss.title) + "</h4>";
+      if (iss.yards != null && iss.yards >= 0.5) {
+        html += '<div class="work-yards">' + fmtDist(iss.yards) + " " + unitShort() + "<span>estimated on the table</span></div>";
+      }
+      html += '<p class="work-evidence">' + escapeHtml(iss.evidence) + "</p>";
+      html += '<div class="work-k">Likely causes <span class="work-tag">inferred</span></div><ul class="work-causes">';
+      iss.causes.forEach((c) => { html += "<li>" + escapeHtml(c) + "</li>"; });
+      html += '</ul><div class="work-k">Try this</div><ul class="work-drills">';
+      iss.drills.forEach((c) => { html += "<li>" + escapeHtml(c) + "</li>"; });
+      html += "</ul></div></article>";
+    });
+    html += "</div>";
+    el.innerHTML = html;
+  }
+
+  function bindPerformance() {
+    const clubs = $("#perfClubs");
+    if (clubs) clubs.onclick = (e) => {
+      const b = e.target.closest("[data-pc]");
+      if (!b) return;
+      togglePerfClub(b.getAttribute("data-pc"));
+    };
+    const stat = $("#perfStat");
+    if (stat) stat.onclick = (e) => {
+      const b = e.target.closest("[data-ps]");
+      if (!b) return;
+      state.perfStat = b.getAttribute("data-ps");
+      savePerfPrefs();
+      renderPerformance();
+    };
+    const play = $("#perfPlayBtn");
+    if (play) play.onclick = () => perfTogglePlay();
+    const scrub = $("#perfScrub");
+    if (scrub) scrub.oninput = () => {
+      perfStopPlay();
+      perfSetIndex(Number(scrub.value), perfPlay.data);
+    };
+  }
+
   function renderProgress() {
     const el = $("#progressChart");
     el.style.height = "";
@@ -3012,7 +4099,7 @@ function fmtThresh(yd) {
     renderScatter();
     renderSmash();
     renderTrends();
-    renderProgress();
+    if (state.view === "performance") renderPerformance();
     renderDerived();
     renderFlags();
   }
@@ -3115,13 +4202,20 @@ function fmtThresh(yd) {
 
   function showView(name) {
     state.view = name;
+    saveViewName();
     $$(".view").forEach((v) => v.classList.toggle("active", v.id === "view-" + name));
     $$("nav.tabs button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-view") === name));
     window.scrollTo(0, 0);
     if (name !== "sessions") resetSessEdit();
     const rf = $("#rangeFilters");
-    if (rf) rf.hidden = name !== "range";
+    if (rf) rf.hidden = (name !== "range" && name !== "performance");
+    const sw = $("#sessionSwitcher");
+    if (sw) sw.hidden = (name === "performance");
+    const fb = $("#filterBar");
+    if (fb) fb.classList.toggle("is-perf", name === "performance");
     if (name === "sessions") renderSessionsView();
+    if (name === "performance") renderPerformance();
+    renderCounts();
   }
 
   function sessionTally(sess) {
@@ -4044,12 +5138,16 @@ function renderSessionGrid() {
     loadUnits();
     loadDispMode();
     loadScatterClubs();
+    loadPerfPrefs();
     bind();
+    bindPerformance();
     syncUnitButtons();
     fillSessionSelect();
     if (state.sessions.length) {
-      showView("range");
+      const v = loadViewName();
+      state.view = v;
       renderAll();
+      showView(v);
     } else {
       showView("import");
     }
