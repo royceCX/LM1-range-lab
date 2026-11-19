@@ -5324,14 +5324,56 @@ function fmtThresh(yd) {
   function isRowEditing(i) {
     return !!sessEdit.rows[i];
   }
+  function captureSessScroll() {
+    const wrap = document.querySelector("#sessShotTable .table-wrap");
+    const list = $("#sessList");
+    return {
+      win: window.scrollY || window.pageYOffset || 0,
+      wrap: wrap ? wrap.scrollTop : 0,
+      list: list ? list.scrollTop : 0
+    };
+  }
+  function restoreSessScroll(snap) {
+    if (!snap) return;
+    const apply = () => {
+      window.scrollTo(0, snap.win);
+      const wrap = document.querySelector("#sessShotTable .table-wrap");
+      if (wrap) wrap.scrollTop = snap.wrap;
+      const list = $("#sessList");
+      if (list) list.scrollTop = snap.list;
+    };
+    apply();
+    requestAnimationFrame(() => { apply(); requestAnimationFrame(apply); });
+    setTimeout(apply, 0);
+  }
+  function withSessScroll(fn) {
+    const created = !withSessScroll._lock;
+    if (created) withSessScroll._lock = captureSessScroll();
+    try { return fn(); }
+    finally {
+      if (created) {
+        const snap = withSessScroll._lock;
+        withSessScroll._lock = null;
+        restoreSessScroll(snap);
+      }
+    }
+  }
+  function focusSessField(el) {
+    if (!el) return;
+    try { el.focus({ preventScroll: true }); } catch (e) { try { el.focus(); } catch (e2) {} }
+    try { if (el.select) el.select(); } catch (e) {}
+    if (withSessScroll._lock) restoreSessScroll(withSessScroll._lock);
+  }
   function startRowEdit(i) {
     const sess = editingSession();
     if (!sess || !sess.shots || !sess.shots[i]) return;
     if (!sessEdit.rows[i]) sessEdit.rows[i] = cloneDraft(sess.shots[i]);
-    renderSessTable();
-    const tr = document.querySelector('#sessEditTable tr[data-i="' + i + '"]');
-    const inp = tr && tr.querySelector("input[data-f],select[data-f]");
-    if (inp) setTimeout(() => { try { inp.focus(); inp.select && inp.select(); } catch (e) {} }, 0);
+    withSessScroll(() => {
+      if (!repaintSessRow(i)) renderSessTable();
+      const tr = document.querySelector('#sessEditTable tr[data-i="' + i + '"]');
+      const inp = tr && tr.querySelector("input[data-f],select[data-f]");
+      focusSessField(inp);
+    });
   }
   function startEditAll() {
     const sess = editingSession();
@@ -5413,7 +5455,9 @@ function fmtThresh(yd) {
   function cancelRowEdit(i) {
     delete sessEdit.rows[i];
     if (!Object.keys(sessEdit.rows).length) sessEdit.all = false;
-    renderSessTable();
+    withSessScroll(() => {
+      if (!repaintSessRow(i)) renderSessTable();
+    });
   }
   function saveEditAll() {
     const sess = editingSession();
@@ -5448,9 +5492,77 @@ function fmtThresh(yd) {
     renderSessTable();
   }
 
+  function sessTableRowHtml(r, fl, editable) {
+    const edited = rowIsEdited(r.sess, r.i);
+    const ov = r.sh.includeOverride || "auto";
+    const status = (fl && fl.flag) || (ov === "exclude" ? "excluded" : "ok");
+    const statusLbl = ov === "include" && fl && fl.flag ? fl.flag + " · kept in" : (ov === "exclude" && !(fl && fl.flag) ? "excluded" : ((fl && fl.flag) || "ok"));
+    const rowEditing = editable && isRowEditing(r.i);
+    const src = rowEditing ? sessEdit.rows[r.i] : r.sh;
+    let html = '<tr class="' + (edited ? "edited " : "") + (ov === "exclude" ? "excluded-row " : "") + (rowEditing ? "row-editing" : "") + '" data-sess="' + escapeHtml(r.sess.id) + '" data-i="' + r.i + '">';
+    if (!editable) html += "<td>" + escapeHtml(r.sess.name || niceDate(r.sess.date)) + "</td>";
+    html += "<td>";
+    if (editable) {
+      html += '<div class="row-actions">';
+      if (rowEditing && !sessEdit.all) {
+        html += '<button type="button" class="icon-btn tick" data-act="save-row" title="Save shot" aria-label="Save shot">' + iconSvg("check") + "</button>";
+        html += '<button type="button" class="icon-btn cross" data-act="cancel-row" title="Cancel" aria-label="Cancel shot edit">' + iconSvg("x") + "</button>";
+      } else if (!sessEdit.all) {
+        html += '<button type="button" class="icon-btn" data-act="edit-row" title="Edit shot" aria-label="Edit shot">' + iconSvg("pencil") + "</button>";
+      }
+      html += "</div>";
+    }
+    if (edited) html += '<span class="edit-flag" title="Edited"></span>';
+    if (rowEditing) html += '<input type="number" inputmode="numeric" data-f="shotNo" aria-label="Shot number" value="' + (src.shotNo == null ? "" : escapeHtml(src.shotNo)) + '">';
+    else html += '<span class="shot-no">' + (r.sh.shotNo == null ? "—" : r.sh.shotNo) + "</span>";
+    html += "</td>";
+    if (rowEditing) {
+      html += '<td><select data-f="club" aria-label="Club">' + clubSelectHtml(src.club) + "</select></td>";
+      html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="clubSpeed" aria-label="Club speed" value="' + inputNum(src.clubSpeed, 1, false) + '"></td>';
+      html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="ballSpeed" aria-label="Ball speed" value="' + inputNum(src.ballSpeed, 1, false) + '"></td>';
+      html += '<td><input type="number" step="0.01" inputmode="decimal" data-f="smash" aria-label="Smash factor" value="' + inputNum(src.smash, 2, false) + '"></td>';
+      html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="carry" aria-label="Carry" value="' + inputNum(src.carry, 1, true) + '"></td>';
+      html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="total" aria-label="Total" value="' + inputNum(src.total, 1, true) + '"></td>';
+    } else {
+      html += "<td><span class='club-dot' style='background:" + clubColor(r.sh.club) + "'></span>" + escapeHtml(r.sh.club) + "</td>";
+      html += "<td>" + fmt(r.sh.clubSpeed, 1) + "</td><td>" + fmt(r.sh.ballSpeed, 1) + "</td><td>" + fmt(r.sh.smash, 2) + "</td>";
+      html += "<td>" + fmtDist(r.sh.carry) + "</td><td>" + fmtDist(r.sh.total) + "</td>";
+    }
+    html += "<td><span class='tag " + status + "'>" + escapeHtml(statusLbl) + "</span>";
+    if (editable && (edited || r.sh.includeOverride)) html += '<button type="button" class="btn linkish" data-act="revert-row">Revert</button>';
+    html += "</td>";
+    html += '<td><div class="inc-seg" role="group" aria-label="Include in stats">';
+    ["auto", "include", "exclude"].forEach((mode) => {
+      const lab = mode === "auto" ? "Auto" : (mode === "include" ? "In" : "Out");
+      const cls = "active " + (mode === "include" ? "in" : (mode === "exclude" ? "out" : "auto"));
+      html += '<button type="button" data-act="override" data-mode="' + mode + '"' + (ov === mode || (mode === "auto" && !r.sh.includeOverride) ? ' class="' + cls + '"' : "") + ">" + lab + "</button>";
+    });
+    html += "</div></td>";
+    html += "</tr>";
+    return html;
+  }
+  function repaintSessRow(i) {
+    const sess = editingSession();
+    const tr = document.querySelector('#sessEditTable tr[data-i="' + i + '"]');
+    if (!sess || !tr || !sess.shots || sess.shots[i] == null) return null;
+    const visible = [];
+    (sess.shots || []).forEach((sh, idx) => {
+      if (shotInSessClubFilter(sh)) visible.push({ sess, sh, i: idx });
+    });
+    const flagged = flagShots(visible.map((r, n) => Object.assign({ _sessionId: r.sess.id, _i: r.i, _n: n }, r.sh)));
+    const n = visible.findIndex((r) => r.i === i);
+    if (n < 0) return null;
+    const tmp = document.createElement("tbody");
+    tmp.innerHTML = sessTableRowHtml(visible[n], flagged[n] || {}, true);
+    const neu = tmp.firstElementChild;
+    if (!neu) return null;
+    tr.replaceWith(neu);
+    return neu;
+  }
   function renderSessTable() {
     const el = $("#sessShotTable");
     if (!el) return;
+    return withSessScroll(() => {
     const sess = editingSession();
     const editable = !!sess;
     if (!editable) {
@@ -5507,59 +5619,12 @@ function fmtThresh(yd) {
     const heads = ["Shot", "Club", "Club spd", "Ball spd", "Smash", "Carry (" + unitShort() + ")", "Total (" + unitShort() + ")", "Status", "Include"];
     if (!editable) heads.unshift("Session");
     html += heads.map((h) => "<th>" + h + "</th>").join("") + "</tr></thead><tbody>";
-    rows.forEach((r, n) => {
-      const fl = flagged[n] || {};
-      const edited = rowIsEdited(r.sess, r.i);
-      const ov = r.sh.includeOverride || "auto";
-      const status = fl.flag || (ov === "exclude" ? "excluded" : "ok");
-      const statusLbl = ov === "include" && fl.flag ? fl.flag + " · kept in" : (ov === "exclude" && !fl.flag ? "excluded" : (fl.flag || "ok"));
-      const rowEditing = editable && isRowEditing(r.i);
-      const src = rowEditing ? sessEdit.rows[r.i] : r.sh;
-      html += '<tr class="' + (edited ? "edited " : "") + (ov === "exclude" ? "excluded-row " : "") + (rowEditing ? "row-editing" : "") + '" data-sess="' + escapeHtml(r.sess.id) + '" data-i="' + r.i + '">';
-      if (!editable) html += "<td>" + escapeHtml(r.sess.name || niceDate(r.sess.date)) + "</td>";
-      html += "<td>";
-      if (editable) {
-        html += '<div class="row-actions">';
-        if (rowEditing && !sessEdit.all) {
-          html += '<button type="button" class="icon-btn tick" data-act="save-row" title="Save shot" aria-label="Save shot">' + iconSvg("check") + "</button>";
-          html += '<button type="button" class="icon-btn cross" data-act="cancel-row" title="Cancel" aria-label="Cancel shot edit">' + iconSvg("x") + "</button>";
-        } else if (!sessEdit.all) {
-          html += '<button type="button" class="icon-btn" data-act="edit-row" title="Edit shot" aria-label="Edit shot">' + iconSvg("pencil") + "</button>";
-        }
-        html += "</div>";
-      }
-      if (edited) html += '<span class="edit-flag" title="Edited"></span>';
-      if (rowEditing) html += '<input type="number" inputmode="numeric" data-f="shotNo" aria-label="Shot number" value="' + (src.shotNo == null ? "" : escapeHtml(src.shotNo)) + '">';
-      else html += '<span class="shot-no">' + (r.sh.shotNo == null ? "—" : r.sh.shotNo) + "</span>";
-      html += "</td>";
-      if (rowEditing) {
-        html += '<td><select data-f="club" aria-label="Club">' + clubSelectHtml(src.club) + "</select></td>";
-        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="clubSpeed" aria-label="Club speed" value="' + inputNum(src.clubSpeed, 1, false) + '"></td>';
-        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="ballSpeed" aria-label="Ball speed" value="' + inputNum(src.ballSpeed, 1, false) + '"></td>';
-        html += '<td><input type="number" step="0.01" inputmode="decimal" data-f="smash" aria-label="Smash factor" value="' + inputNum(src.smash, 2, false) + '"></td>';
-        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="carry" aria-label="Carry" value="' + inputNum(src.carry, 1, true) + '"></td>';
-        html += '<td><input type="number" step="0.1" inputmode="decimal" data-f="total" aria-label="Total" value="' + inputNum(src.total, 1, true) + '"></td>';
-      } else {
-        html += "<td><span class='club-dot' style='background:" + clubColor(r.sh.club) + "'></span>" + escapeHtml(r.sh.club) + "</td>";
-        html += "<td>" + fmt(r.sh.clubSpeed, 1) + "</td><td>" + fmt(r.sh.ballSpeed, 1) + "</td><td>" + fmt(r.sh.smash, 2) + "</td>";
-        html += "<td>" + fmtDist(r.sh.carry) + "</td><td>" + fmtDist(r.sh.total) + "</td>";
-      }
-      html += "<td><span class='tag " + status + "'>" + escapeHtml(statusLbl) + "</span>";
-      if (editable && (edited || r.sh.includeOverride)) html += '<button type="button" class="btn linkish" data-act="revert-row">Revert</button>';
-      html += "</td>";
-      html += '<td><div class="inc-seg" role="group" aria-label="Include in stats">';
-      ["auto", "include", "exclude"].forEach((mode) => {
-        const lab = mode === "auto" ? "Auto" : (mode === "include" ? "In" : "Out");
-        const cls = "active " + (mode === "include" ? "in" : (mode === "exclude" ? "out" : "auto"));
-        html += '<button type="button" data-act="override" data-mode="' + mode + '"' + (ov === mode || (mode === "auto" && !r.sh.includeOverride) ? ' class="' + cls + '"' : "") + ">" + lab + "</button>";
-      });
-      html += "</div></td>";
-      html += "</tr>";
-    });
+    rows.forEach((r, n) => { html += sessTableRowHtml(r, flagged[n] || {}, editable); });
     html += "</tbody></table>";
     el.innerHTML = toolbar + '<div class="table-wrap">' + html + "</div>";
     placeEditBar();
     bindSessTable(el);
+    });
   }
 
   function hideEditBar() {
@@ -5731,41 +5796,26 @@ function fmtThresh(yd) {
   }
   function afterShotChange(rebuildTable, opts) {
     opts = opts || {};
-    const winY = window.scrollY;
-    const wrap = document.querySelector("#sessShotTable .table-wrap");
-    const wrapY = wrap ? wrap.scrollTop : 0;
-    const list = $("#sessList");
-    const listY = list ? list.scrollTop : 0;
-    saveStore();
-    renderAll();
-    if (rebuildTable) renderSessionsView();
-    else {
-      renderSessList();
-      renderSessTiles();
-      renderSessMeta();
-    }
-    window.scrollTo(0, winY);
-    const wrap2 = document.querySelector("#sessShotTable .table-wrap");
-    if (wrap2) wrap2.scrollTop = wrapY;
-    const list2 = $("#sessList");
-    if (list2) list2.scrollTop = listY;
-    const focusI = opts.rowIndex;
-    if (focusI != null && !Number.isNaN(Number(focusI))) {
-      const tr = document.querySelector('#sessEditTable tr[data-i="' + focusI + '"]');
-      if (tr) {
-        tr.classList.add("just-saved");
-        const wr = tr.closest(".table-wrap");
-        if (wr) {
-          const top = tr.offsetTop, bot = top + tr.offsetHeight;
-          if (top < wr.scrollTop) wr.scrollTop = Math.max(0, top - 16);
-          else if (bot > wr.scrollTop + wr.clientHeight) wr.scrollTop = bot - wr.clientHeight + 16;
-        }
-        const focusEl = tr.querySelector('[data-act="edit-row"]') || tr;
-        try { focusEl.focus({ preventScroll: true }); } catch (e) {}
-        window.setTimeout(() => { tr.classList.remove("just-saved"); }, 1400);
+    withSessScroll(() => {
+      saveStore();
+      renderAll();
+      if (rebuildTable) renderSessionsView();
+      else {
+        renderSessList();
+        renderSessTiles();
+        renderSessMeta();
       }
-    }
-    window.scrollTo(0, winY);
+      const focusI = opts.rowIndex;
+      if (focusI != null && !Number.isNaN(Number(focusI))) {
+        const tr = document.querySelector('#sessEditTable tr[data-i="' + focusI + '"]');
+        if (tr) {
+          tr.classList.add("just-saved");
+          const focusEl = tr.querySelector('[data-act="edit-row"]') || tr;
+          focusSessField(focusEl);
+          window.setTimeout(() => { tr.classList.remove("just-saved"); }, 1400);
+        }
+      }
+    });
   }
   function revertRow(sess, i) {
     ensureOriginal(sess);
@@ -5791,6 +5841,7 @@ function fmtThresh(yd) {
   }
 
   function renderSessionsView() {
+    withSessScroll(() => {
     $("#sessCountBadge").innerHTML = "<strong>" + state.sessions.length + "</strong> session" + (state.sessions.length === 1 ? "" : "s") + " · <strong>" + state.sessions.reduce((n, s) => n + (s.shots || []).length, 0) + "</strong> shots";
     if (!state.sessions.length) {
       resetSessEdit();
@@ -5806,6 +5857,7 @@ function fmtThresh(yd) {
     renderSessMeta();
     renderSessTiles();
     renderSessTable();
+    });
   }
 function renderSessionGrid() {
     renderSessionsView();
