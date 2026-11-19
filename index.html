@@ -541,16 +541,22 @@ nav.tabs{flex-shrink:1}
 .perf-bag-stage{position:relative;width:100%;min-height:280px}
 .perf-bag-stage svg{width:100%;height:auto;display:block}
 
-.perf-heat-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
-.perf-heat{border-collapse:separate;border-spacing:3px;min-width:max-content}
-.perf-heat th,.perf-heat td{font-size:11px;text-align:center;padding:0}
-.perf-heat th.sess{font-weight:650;color:var(--dim);font-size:10px;white-space:nowrap;padding:0 2px 4px;font-family:var(--cond);letter-spacing:.03em}
-.perf-heat th.club{text-align:right;padding:0 8px 0 0;font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--text);white-space:nowrap}
-.perf-heat .cell{width:46px;height:28px;border-radius:5px;display:block;cursor:pointer;box-sizing:border-box;border:1px solid transparent}
-.perf-heat .cell:hover,.perf-heat .cell:focus{border-color:rgba(238,246,240,.45);outline:none}
-.perf-heat .cell.is-empty{background:rgba(255,255,255,.04)}
-.perf-heat-legend{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
-.perf-heat-scale{display:inline-flex;height:8px;width:88px;border-radius:99px;background:linear-gradient(90deg,#3dff9a,#ffb020,#ff4d5a)}
+.cons-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 12px}
+.cons-panel{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:8px 8px 6px;min-width:0}
+.cons-panel.is-faint{opacity:.55}
+.cons-head{margin:0 0 4px;min-width:0}
+.cons-club{margin:0;font-family:var(--cond);font-size:15px;font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:6px;line-height:1.2;color:var(--text)}
+.cons-stat{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 8px;margin:2px 0 0;font-size:11px;color:var(--muted);line-height:1.3}
+.cons-stat strong{font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.02em;color:var(--text);font-variant-numeric:tabular-nums}
+.cons-trend{font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.cons-trend.up{color:var(--green)}
+.cons-trend.down{color:var(--red)}
+.cons-trend.amber{color:var(--amber)}
+.cons-panel svg{width:100%;height:auto;display:block}
+.cons-note{margin:8px 0 0;font-size:11px;color:var(--dim)}
+@media (max-width:900px){
+  .cons-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 
 .perf-strike{width:100%}
 .perf-strike svg{width:100%;height:auto;display:block}
@@ -592,11 +598,8 @@ nav.tabs{flex-shrink:1}
 
 #view-performance .card{scroll-margin-top: 88px}
 .perf-db svg{width:100%;height:56px;display:block}
-.perf-heat{width:100%}
-.perf-heat .cell{width:auto;min-width:52px;height:32px}
 @media (max-width:640px){
   #view-performance .card{scroll-margin-top: 108px}
-  .perf-heat .cell{min-width:46px;height:28px}
 }
 
 
@@ -803,8 +806,8 @@ nav.tabs{flex-shrink:1}
       </section>
 
       <section class="card" id="perf-heat-card">
-        <h3>Consistency over time <button type="button" class="help-btn" data-help="perf-heat" aria-label="About the consistency heatmap">?</button></h3>
-        <p class="sub" id="perfHeatSub">How wide the middle 80% of shots was in each session. Green is tighter, red is more spread out.</p>
+        <h3>Consistency over time <button type="button" class="help-btn" data-help="perf-heat" aria-label="About consistency over time">?</button></h3>
+        <p class="sub" id="perfHeatSub">Thinner band = more repeatable distance. Shows where 8 of 10 shots landed each session.</p>
         <div id="perfHeat"></div>
       </section>
       <section class="card" id="perf-strike-card">
@@ -1186,6 +1189,7 @@ function fmtThresh(yd) {
     set("flagsSub", "Misreads are numbers that don’t make physical sense. Mishits are poor but plausible contact.");
     set("perfBagSub", "Average " + kind + " for each club on a distance ladder, for the session on the play bar. Play or scrub to walk through your visits.");
     set("perfTvnSub", "How this club’s " + kind + ", speed, smash and estimated height changed from one visit to another. Green is an improvement, red is a drop. Height and the flight path are estimated.");
+    set("perfHeatSub", "Thinner band = more repeatable distance. Shows where 8 of 10 shots landed each session.");
     const ex = document.getElementById("excludeMishits");
     if (ex && ex.closest("label")) ex.closest("label").title = "Hide likely poor contact (mishits) and impossible-looking readings (misreads) from the averages.";
     const best = document.getElementById("bestN");
@@ -2560,7 +2564,7 @@ function fmtThresh(yd) {
       "tvn-spread": { title: "Carry spread · from above", body: "A bird’s-eye view of how far the shots flew. The ellipse runs along the target line and shows the middle 80% of carries. Width left-to-right is only for readability — the LM1 does not record side or face data, so this is not shot shape." },
       "perf-bag": { title: "Bag evolution", body: "Average " + kind + " for each club, lined up as a bag ladder for the session on the play bar. Solid dots are this visit; the dashed ring is your first session; hollow rings are earlier visits; a faded dot is a club you didn’t hit this time, shown at its last known distance. The line between clubs is the gap — red means they overlap or sit tight, amber means a wide hole. Play or scrub to walk through your visits. Units follow the Yards / Metres toggle." },
       "perf-timeline": { title: "Session timeline", body: "One panel per club, across every imported session. Each visit is a dot at that session’s average — " + kind + ", speed, smash or spread, depending on the toolbar — with a whisker for the middle 80% of shots (P10–P90). A short whisker is a tight group; a long one means the number jumped around. The play bar’s date is the same session shown in Bag evolution. Distance units follow the Yards / Metres toggle." },
-      "perf-heat": { title: "Consistency over time", body: "A colour grid of how tightly each club repeated in each session. Each cell is the width of the middle 80% of shots (P10–P90), in " + unitWord() + ". Green is a tighter group, red is more spread out, and a blank cell means that club wasn’t hit (or has no spread yet) on that day. Read across a row to see whether a club is becoming more consistent." },
+      "perf-heat": { title: "Consistency over time", body: "Each panel is one club. The soft band is where the middle 8 of 10 shots landed in each session (P10–P90 carry), in " + unitWord() + ". A thinner band means more repeatable distance; a wider band means the number jumped around. The thin line is the median carry. If a visit is missing, the band breaks — that club wasn’t hit, not a guess. The headline is half the latest band’s width, compared with the first session you have. Units follow the Yards / Metres toggle." },
       "perf-strike": { title: "Strike quality over time", body: "Stacked bars show the share of poor, OK and good strikes in each session, using the same smash-factor thresholds as the smash gauges — a simple read of how well you found the face. A larger good share is a better day of contact; more poor strikes usually means weaker contact. This uses smash only: the LM1 does not measure path, face or strike location." },
       "perf-work": { title: "What to work on", body: "Pattern-based suggestions from the stats the LM1 does measure — distance, speed, smash and how tightly shots grouped. They are inferred, not a launch-monitor diagnosis: the LM1 does not measure path, face, spin, launch or loft. Treat each card as something to look at with a coach or a fuller monitor, not as a confirmed fault." },
       "import": { title: "Import a range session", body: "Paste a shot table from the Shot Scope dashboard, or upload one or more .tsv / .csv files. A direct paste works even when each value is on its own line. Filenames like YYYY-MM-DD.tsv set the session date automatically. Preview the parsed shots before you save. Nothing leaves this browser." }
@@ -3475,7 +3479,7 @@ function fmtThresh(yd) {
     const p90c = carry.length ? quantile(carry, 0.9) : null;
     return {
       club, n: arr.length, band,
-      avgCarry: mean(carry), avgTotal: mean(total), avgChs: mean(chs), avgBall: mean(ball), avgSmash: mean(smash),
+      avgCarry: mean(carry), medCarry: median(carry), avgTotal: mean(total), medTotal: median(total), avgChs: mean(chs), avgBall: mean(ball), avgSmash: mean(smash),
       p10c, p90c, spread: (p10c != null && p90c != null) ? (p90c - p10c) : null,
       p10t: total.length ? quantile(total, 0.1) : null, p90t: total.length ? quantile(total, 0.9) : null,
       p10s: chs.length ? quantile(chs, 0.1) : null, p90s: chs.length ? quantile(chs, 0.9) : null,
@@ -4646,61 +4650,236 @@ function fmtThresh(yd) {
   }
 
 
+  function consFinite(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+  function consSmoothPath(pts) {
+    if (!pts.length) return "";
+    const fmt = (p) => consFinite(p.x).toFixed(1) + " " + consFinite(p.y).toFixed(1);
+    if (pts.length === 1) return "M " + fmt(pts[0]);
+    if (pts.length === 2) return "M " + fmt(pts[0]) + " L " + fmt(pts[1]);
+    let d = "M " + fmt(pts[0]);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[i + 2] || p2;
+      const c1x = p1.x + (p2.x - p0.x) / 6;
+      const c1y = p1.y + (p2.y - p0.y) / 6;
+      const c2x = p2.x - (p3.x - p1.x) / 6;
+      const c2y = p2.y - (p3.y - p1.y) / 6;
+      d += " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " + c2x.toFixed(1) + " " + c2y.toFixed(1) + " " + fmt(p2);
+    }
+    return d;
+  }
+  function consHalfDisp(spreadYd) {
+    const half = consFinite(spreadYd);
+    if (half == null) return null;
+    const d = toDisp(half / 2);
+    if (d == null || !Number.isFinite(d)) return null;
+    return Math.round(d);
+  }
+  function consPoint(c) {
+    if (!c) return null;
+    const lo = consFinite(c.p10c);
+    const hi = consFinite(c.p90c);
+    const mid = consFinite(c.medCarry != null ? c.medCarry : c.avgCarry);
+    if (lo == null && hi == null && mid == null) return null;
+    const lo2 = lo != null ? lo : (mid != null ? mid : hi);
+    const hi2 = hi != null ? hi : (mid != null ? mid : lo);
+    return { lo: Math.min(lo2, hi2), hi: Math.max(lo2, hi2), mid: mid != null ? mid : (lo2 + hi2) / 2, spread: (lo != null && hi != null) ? (hi - lo) : null, n: c.n, raw: c };
+  }
   function renderPerfHeat(data, clubs) {
     const el = $("#perfHeat");
     if (!el) return;
-    const useTotal = state.distMode === "total";
-    let html = '<div class="perf-heat-wrap"><table class="perf-heat"><thead><tr><th></th>';
-    data.sessions.forEach((s) => {
-      html += '<th class="sess">' + escapeHtml(niceDate(s.date).replace(/ 20\d\d/, "")) + "</th>";
-    });
-    html += "</tr></thead><tbody>";
-    const widths = [];
-    clubs.forEach((club) => {
-      (data.cells.get(club) || []).forEach((c) => {
-        if (!c) return;
-        const w = useTotal && c.p10t != null ? (c.p90t - c.p10t) : c.spread;
-        if (w != null) widths.push(w);
-      });
-    });
-    const wLo = 6, wHi = 28; // yd reference; colour scale in source yards
-    function colOf(w) {
-      if (w == null) return null;
-      const t = clamp((w - wLo) / (wHi - wLo), 0, 1);
-      // green -> amber -> red
-      if (t < 0.5) {
-        const u = t / 0.5;
-        return lerpColor([61, 255, 154], [255, 176, 32], u);
-      }
-      return lerpColor([255, 176, 32], [255, 77, 90], (t - 0.5) / 0.5);
+    const u = unitShort();
+    const sessions = data.sessions || [];
+    if (!sessions.length) {
+      el.innerHTML = '<p class="empty">Import range sessions to see how tightly each club repeated.</p>';
+      return;
     }
-    clubs.forEach((club) => {
-      html += '<tr><th class="club">' + escapeHtml(clubDef(club).short || club) + "</th>";
-      (data.cells.get(club) || []).forEach((c, i) => {
-        if (!c) { html += '<td><span class="cell is-empty"></span></td>'; return; }
-        const w = useTotal && c.p10t != null ? (c.p90t - c.p10t) : c.spread;
-        const fill = colOf(w);
-        const tip = escapeHtml([
-          club + " · " + niceDate(data.sessions[i].date),
-          w != null ? ("Spread " + fmtDist(w) + " " + unitShort() + " (middle 80%)") : "No spread yet",
-          "Avg " + (useTotal ? fmtDist(c.avgTotal) : fmtDist(c.avgCarry)) + " " + unitShort(),
-          c.n + " shot" + (c.n === 1 ? "" : "s")
-        ].join("\n"));
-        const bg = fill ? "background:" + fill : "";
-        html += '<td><span class="cell" tabindex="0" data-tip="' + tip + '" style="' + bg + '"></span></td>';
-      });
-      html += "</tr>";
+    const ordered = (clubs && clubs.length ? clubs : data.clubs).slice();
+    const ready = [];
+    const faint = [];
+    ordered.forEach((club) => {
+      const cells = data.cells.get(club) || [];
+      const hits = [];
+      cells.forEach((c, i) => { const p = consPoint(c); if (p) hits.push({ i, p }); });
+      if (hits.length >= 2) ready.push({ club, cells, hits });
+      else if (hits.length === 1) faint.push({ club, cells, hits });
     });
-    html += '</tbody></table></div>';
-    html += '<div class="perf-heat-legend"><span>Tighter</span><span class="perf-heat-scale"></span><span>Wider</span></div>';
+    if (!ready.length && !faint.length) {
+      el.innerHTML = '<p class="empty">No carry numbers for the selected clubs.</p>';
+      return;
+    }
+
+    function shortDate(iso) {
+      return niceDate(iso).replace(/ 20\d\d/, "");
+    }
+    function panelSvg(item, dim) {
+      const W = 280, H = 118, padL = 28, padR = 8, padT = 8, padB = 18;
+      const nS = sessions.length;
+      const xOf = (i) => padL + (nS <= 1 ? (W - padL - padR) / 2 : (i / (nS - 1)) * (W - padL - padR));
+      let loYd = Infinity, hiYd = -Infinity;
+      item.hits.forEach((h) => {
+        if (h.p.lo < loYd) loYd = h.p.lo;
+        if (h.p.hi > hiYd) hiYd = h.p.hi;
+      });
+      if (!Number.isFinite(loYd) || !Number.isFinite(hiYd)) return "";
+      const span = Math.max(hiYd - loYd, 6);
+      const pad = Math.max(span * 0.18, 4);
+      loYd -= pad;
+      hiYd += pad;
+      const yOf = (yd) => padT + (1 - (yd - loYd) / (hiYd - loYd)) * (H - padT - padB);
+      const color = clubColor(item.club);
+      let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escapeHtml(item.club) + ' consistency">';
+
+      const yTicks = 3;
+      for (let t = 0; t < yTicks; t++) {
+        const yd = loYd + (hiYd - loYd) * (t / (yTicks - 1));
+        const y = yOf(yd);
+        svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="rgba(255,255,255,.06)"/>';
+        if (t === 0 || t === yTicks - 1) {
+          svg += '<text x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(fmt0(toDisp(yd))) + "</text>";
+        }
+      }
+
+      // runs of consecutive hits
+      const runs = [];
+      item.hits.forEach((h) => {
+        const last = runs[runs.length - 1];
+        if (last && h.i === last[last.length - 1].i + 1) last.push(h);
+        else runs.push([h]);
+      });
+      const midPts = (run) => run.map((h) => ({ x: xOf(h.i), y: yOf(h.p.mid) }));
+      const hiPts = (run) => run.map((h) => ({ x: xOf(h.i), y: yOf(h.p.hi) }));
+      const loPts = (run) => run.map((h) => ({ x: xOf(h.i), y: yOf(h.p.lo) }));
+
+      runs.forEach((run) => {
+        const hi = hiPts(run), lo = loPts(run), mid = midPts(run);
+        if (run.length === 1) {
+          const x = xOf(run[0].i);
+          const y1 = yOf(run[0].p.hi), y2 = yOf(run[0].p.lo);
+          svg += '<path d="M ' + (x - 5).toFixed(1) + ' ' + y1.toFixed(1) + ' H ' + (x + 5).toFixed(1) + ' V ' + y2.toFixed(1) + ' H ' + (x - 5).toFixed(1) + ' Z" fill="' + color + '" fill-opacity="' + (dim ? ".12" : ".22") + '"/>';
+          svg += '<line x1="' + (x - 5).toFixed(1) + '" x2="' + (x + 5).toFixed(1) + '" y1="' + yOf(run[0].p.mid).toFixed(1) + '" y2="' + yOf(run[0].p.mid).toFixed(1) + '" stroke="' + color + '" stroke-width="1.4" stroke-opacity="' + (dim ? ".45" : ".9") + '" stroke-linecap="round"/>';
+        } else {
+          const top = consSmoothPath(hi);
+          const bot = consSmoothPath(lo.slice().reverse());
+          // rebuild bottom as continuation: start from last hi, already have top path ending at last hi; better join properly
+          const loRev = lo.slice().reverse();
+          let band = top;
+          // line to first reversed lo (same x as last hi)
+          band += " L " + loRev[0].x.toFixed(1) + " " + loRev[0].y.toFixed(1);
+          if (loRev.length === 2) band += " L " + loRev[1].x.toFixed(1) + " " + loRev[1].y.toFixed(1);
+          else if (loRev.length > 2) {
+            for (let i = 0; i < loRev.length - 1; i++) {
+              const p0 = loRev[i - 1] || loRev[i];
+              const p1 = loRev[i];
+              const p2 = loRev[i + 1];
+              const p3 = loRev[i + 2] || p2;
+              const c1x = p1.x + (p2.x - p0.x) / 6;
+              const c1y = p1.y + (p2.y - p0.y) / 6;
+              const c2x = p2.x - (p3.x - p1.x) / 6;
+              const c2y = p2.y - (p3.y - p1.y) / 6;
+              band += " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " + c2x.toFixed(1) + " " + c2y.toFixed(1) + " " + p2.x.toFixed(1) + " " + p2.y.toFixed(1);
+            }
+          }
+          band += " Z";
+          svg += '<path d="' + band + '" fill="' + color + '" fill-opacity="' + (dim ? ".10" : ".22") + '"/>';
+          svg += '<path d="' + top + '" fill="none" stroke="' + color + '" stroke-width="0.8" stroke-opacity="' + (dim ? ".25" : ".4") + '"/>';
+          svg += '<path d="' + consSmoothPath(lo) + '" fill="none" stroke="' + color + '" stroke-width="0.8" stroke-opacity="' + (dim ? ".25" : ".4") + '"/>';
+          svg += '<path d="' + consSmoothPath(mid) + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-opacity="' + (dim ? ".5" : ".92") + '" stroke-linecap="round" stroke-linejoin="round"/>';
+        }
+      });
+
+      // dashed connectors across gaps
+      for (let r = 0; r < runs.length - 1; r++) {
+        const a = runs[r][runs[r].length - 1];
+        const b = runs[r + 1][0];
+        svg += '<line x1="' + xOf(a.i).toFixed(1) + '" y1="' + yOf(a.p.mid).toFixed(1) + '" x2="' + xOf(b.i).toFixed(1) + '" y2="' + yOf(b.p.mid).toFixed(1) + '" stroke="' + color + '" stroke-width="1" stroke-opacity=".28" stroke-dasharray="3 3" stroke-linecap="round"/>';
+      }
+
+      // latest session edge marks
+      if (!dim && item.hits.length) {
+        const last = item.hits[item.hits.length - 1];
+        const x = xOf(last.i);
+        const yHi = yOf(last.p.hi), yLo = yOf(last.p.lo);
+        svg += '<line x1="' + x.toFixed(1) + '" y1="' + yHi.toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + yLo.toFixed(1) + '" stroke="' + color + '" stroke-width="1.2" stroke-opacity=".7"/>';
+        svg += '<line x1="' + (x - 4).toFixed(1) + '" x2="' + (x + 4).toFixed(1) + '" y1="' + yHi.toFixed(1) + '" y2="' + yHi.toFixed(1) + '" stroke="' + color + '" stroke-width="1.4" stroke-opacity=".8" stroke-linecap="round"/>';
+        svg += '<line x1="' + (x - 4).toFixed(1) + '" x2="' + (x + 4).toFixed(1) + '" y1="' + yLo.toFixed(1) + '" y2="' + yLo.toFixed(1) + '" stroke="' + color + '" stroke-width="1.4" stroke-opacity=".8" stroke-linecap="round"/>';
+      }
+
+      const firstLab = sessions[0] ? shortDate(sessions[0].date) : "";
+      const lastLab = sessions[nS - 1] ? shortDate(sessions[nS - 1].date) : "";
+      if (firstLab) svg += '<text x="' + xOf(0).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="start" fill="rgba(255,255,255,.4)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(firstLab) + "</text>";
+      if (lastLab && nS > 1) svg += '<text x="' + xOf(nS - 1).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(lastLab) + "</text>";
+
+      // hover/tap targets
+      const slot = nS <= 1 ? (W - padL - padR) : ((W - padL - padR) / Math.max(1, nS - 1));
+      for (let i = 0; i < nS; i++) {
+        const cx = xOf(i);
+        const x0 = Math.max(padL, cx - slot / 2);
+        const x1 = Math.min(W - padR, cx + slot / 2);
+        const hit = item.hits.find((h) => h.i === i);
+        const date = shortDate(sessions[i].date);
+        let tip;
+        if (hit) {
+          const half = consHalfDisp(hit.p.spread);
+          const med = toDisp(hit.p.mid);
+          tip = [
+            date,
+            half != null ? ("most shots within ±" + half + " " + u) : "No spread yet",
+            Number.isFinite(med) ? ("median " + fmt0(med) + " " + u) : "No median",
+            (hit.p.n || 0) + " shot" + (hit.p.n === 1 ? "" : "s")
+          ].join("\n");
+        } else {
+          tip = date + "\nNot hit this session";
+        }
+        svg += '<rect data-tip="' + escapeHtml(tip) + '" x="' + x0.toFixed(1) + '" y="' + padT + '" width="' + Math.max(2, x1 - x0).toFixed(1) + '" height="' + (H - padT - padB) + '" fill="transparent" cursor="pointer"/>';
+      }
+      svg += "</svg>";
+      return svg;
+    }
+
+    function panelHtml(item, dim) {
+      const latest = item.hits[item.hits.length - 1];
+      const first = item.hits[0];
+      const nowHalf = latest ? consHalfDisp(latest.p.spread) : null;
+      const thenHalf = first ? consHalfDisp(first.p.spread) : null;
+      let trend = "";
+      if (!dim && nowHalf != null && thenHalf != null && item.hits.length >= 2) {
+        const d = nowHalf - thenHalf;
+        let tone = "flat";
+        if (d <= -1) tone = "up";
+        else if (d >= 3) tone = "down";
+        else if (d >= 1) tone = "amber";
+        trend = '<span class="cons-trend ' + tone + '">was ±' + thenHalf + " " + u + "</span>";
+      } else if (dim) {
+        trend = '<span class="cons-trend">needs more sessions</span>';
+      }
+      const headline = nowHalf != null
+        ? ('<span>most shots within <strong>±' + nowHalf + " " + u + "</strong></span>")
+        : "<span>No spread yet</span>";
+      let h = '<article class="cons-panel' + (dim ? " is-faint" : "") + '">';
+      h += '<div class="cons-head"><h4 class="cons-club"><i class="perf-db-swatch" style="background:' + clubColor(item.club) + '"></i>' + escapeHtml(item.club) + "</h4>";
+      h += '<div class="cons-stat">' + headline + trend + "</div></div>";
+      h += panelSvg(item, dim);
+      h += "</article>";
+      return h;
+    }
+
+    const byClub = new Map();
+    ready.forEach((item) => byClub.set(item.club, { item, dim: false }));
+    faint.forEach((item) => byClub.set(item.club, { item, dim: true }));
+    let html = '<div class="cons-grid">';
+    ordered.forEach((club) => {
+      const rec = byClub.get(club);
+      if (rec) html += panelHtml(rec.item, rec.dim);
+    });
+    html += "</div>";
     el.innerHTML = html;
     bindChartTips(el, "[data-tip]");
-  }
-  function lerpColor(a, b, t) {
-    const r = Math.round(a[0] + (b[0] - a[0]) * t);
-    const g = Math.round(a[1] + (b[1] - a[1]) * t);
-    const bl = Math.round(a[2] + (b[2] - a[2]) * t);
-    return "rgba(" + r + "," + g + "," + bl + ",.82)";
   }
 
   function renderPerfStrike(data, clubs) {
