@@ -104,8 +104,9 @@ main{flex:1;padding:16px 18px 48px;max-width:1440px;width:100%;margin:0 auto}
 .rail-swatch{width:10px;height:28px;border-radius:3px}
 .rail-chip .name{font-weight:700;font-size:14px}
 .rail-chip .meta{font-size:11px;color:var(--muted)}
-.rail-chip .yards{font-family:var(--cond);font-size:28px;font-weight:700;letter-spacing:.02em;line-height:1;font-variant-numeric:tabular-nums}
-.rail-chip .yards span{font-size:13px;color:var(--muted);margin-left:2px;font-weight:600}
+.rail-chip .yards{font-family:var(--cond);font-size:28px;font-weight:700;letter-spacing:.02em;line-height:1;font-variant-numeric:tabular-nums;text-align:right}
+.rail-chip .yards .u{font-size:11px;color:var(--muted);margin-left:3px;font-weight:600;letter-spacing:.04em}
+.rail-chip .yards .rail-max{display:block;margin-top:3px;font-family:var(--font);font-size:10px;font-weight:650;color:var(--muted);letter-spacing:0;line-height:1.15;white-space:nowrap}
 .rail-gap{display:flex;align-items:center;gap:8px;padding:1px 8px 1px 18px;color:var(--dim);font-size:11px;letter-spacing:.04em;text-transform:uppercase}
 .rail-gap .line{flex:1;height:1px;background:var(--line-strong)}
 .rail-gap.tight{color:var(--red)}
@@ -381,7 +382,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 .scatter-summary strong{display:block;margin-bottom:4px;font-size:14px}
 .scatter-sum-row{color:var(--muted);font-size:12.5px;margin-top:2px}
 #scatterChart{min-height:0}
-#scatterChart svg{width:100%;height:auto;aspect-ratio:920/440}
+#scatterChart svg{width:100%;height:auto;display:block}
 .disp-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 10px;font-size:12px;color:var(--muted)}
 .disp-legend span{display:inline-flex;align-items:center;gap:6px}
 .disp-swatch{display:inline-block;width:12px;height:8px;border-radius:2px;background:#3ee0ff}
@@ -1419,7 +1420,9 @@ function fmtThresh(yd) {
     const note = $("#heroNote");
     updateHeroCopy();
     if (mode === "flight") {
-      note.innerHTML = "<em>Estimated</em> flight — the LM1 does not record launch, spin or apex. Height is inferred from the club, this shot’s carry and smash, then landed at measured carry. The dashed line on the ground is roll to total.";
+      note.innerHTML = state.distMode === "total"
+        ? "<em>Estimated</em> flight — the LM1 does not record launch, spin or apex. Height is inferred from the club, this shot’s carry and smash. Dots sit at measured total (end of roll); the dashed line on the ground is roll from carry."
+        : "<em>Estimated</em> flight — the LM1 does not record launch, spin or apex. Height is inferred from the club, this shot’s carry and smash. Dots sit at measured carry (where the ball lands); roll to total is shown faintly.";
       canvas.innerHTML = drawFlightSvg(shots);
     } else {
       note.innerHTML = "<em>Carry spread only — lateral position is for readability, not direction data.</em> This is a flat bird’s-eye view. Each dot is a shot at its measured " + (state.distMode === "total" ? "total" : "carry") + ". The ellipse simply encloses that club’s cluster. Hover or tap a dot for the full numbers.";
@@ -1750,8 +1753,10 @@ function fmtThresh(yd) {
       }
       svg += '<polyline class="shot-path-hit" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" data-club="' + escapeHtml(s.club) + '" fill="none" stroke="transparent" stroke-width="12" points="' + pts.join(" ") + '" style="cursor:pointer"/>';
       svg += '<polyline class="shot-path" data-tip="' + tip + '" fill="none" stroke="' + color + '" stroke-width="1.7" stroke-opacity=".62" points="' + pts.join(" ") + '" style="pointer-events:none"/>';
+      const useTotal = state.distMode === "total" && s.total != null;
       if (s.total != null && s.total > est.carry) {
-        svg += '<line class="shot-roll" data-tip="' + tip + '" x1="' + xOf(d) + '" y1="' + yOf(0) + '" x2="' + xOf(toDisp(s.total)) + '" y2="' + yOf(0) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="4 4" stroke-opacity=".75" style="cursor:pointer"/>';
+        const rollOp = useTotal ? ".8" : ".18";
+        svg += '<line class="shot-roll" data-tip="' + tip + '" x1="' + xOf(d) + '" y1="' + yOf(0) + '" x2="' + xOf(toDisp(s.total)) + '" y2="' + yOf(0) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="4 4" stroke-opacity="' + rollOp + '" style="cursor:pointer"/>';
       }
       svg += '<circle class="shot-apex" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" cx="' + apexPt.x.toFixed(1) + '" cy="' + apexPt.y.toFixed(1) + '" r="3.2" fill="' + color + '" fill-opacity=".9" stroke="#041208" stroke-width=".6" style="cursor:pointer"/>';
     });
@@ -1759,11 +1764,13 @@ function fmtThresh(yd) {
     shots.forEach((s, i) => {
       const est = estimates[i];
       if (!est || est.carry <= 0) return;
-      const d = toDisp(est.carry);
+      const useTotal = state.distMode === "total" && s.total != null;
+      const endYd = useTotal ? s.total : est.carry;
+      const d = toDisp(endYd);
       const color = clubColor(s.club);
       const tip = escapeHtml(flightTip(s, est));
       const land = { x: xOf(d), y: Math.min(yOf(0), (H - padB) - 3.4) };
-      svg += '<circle class="shot-dot" tabindex="0" role="button" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" data-club="' + escapeHtml(s.club) + '" cx="' + land.x.toFixed(1) + '" cy="' + land.y.toFixed(1) + '" r="4.2" fill="' + color + '" stroke="#041208" stroke-width=".7" style="cursor:pointer"><title>' + tip + "</title></circle>";
+      svg += '<circle class="shot-dot" tabindex="0" role="button" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" data-club="' + escapeHtml(s.club) + '" data-end="' + endYd + '" data-carry="' + (est.carry || "") + '" data-total="' + (s.total != null ? s.total : "") + '" cx="' + land.x.toFixed(1) + '" cy="' + land.y.toFixed(1) + '" r="4.2" fill="' + color + '" stroke="#041208" stroke-width=".7" style="cursor:pointer"><title>' + tip + "</title></circle>";
     });
     if (!shots.length) {
       svg += '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="16">No shots to show with the current filters</text>';
@@ -1868,7 +1875,10 @@ function fmtThresh(yd) {
       html += '<span class="rail-swatch" style="background:' + def.color + '"></span>';
       html += '<span><div class="name">' + escapeHtml(def.short || row.club) + '</div><div class="meta">' + escapeHtml(row.club) + ' · ' + row.n + ' shot' + (row.n === 1 ? "" : "s") + '</div></span>';
       const railDist = (r) => state.distMode === "total" ? r.avgTotal : r.avgCarry;
-      html += '<span class="yards">' + fmtDist(railDist(row)) + '<span>' + unitShort() + '</span></span>';
+      const railMax = (r) => state.distMode === "total" ? r.maxTotal : r.maxCarry;
+      html += '<span class="yards">' + fmtDist(railDist(row)) + '<span class="u"> avg ' + unitShort() + '</span>';
+      if (railMax(row) != null) html += '<span class="rail-max">Longest ' + fmtDist(railMax(row)) + ' ' + unitShort() + '</span>';
+      html += '</span>';
       html += "</button>";
       if (next && railDist(next) != null && railDist(row) != null) {
         const gap = railDist(row) - railDist(next);
@@ -2007,7 +2017,7 @@ function fmtThresh(yd) {
     const ideal = fmtThreshRange(10, 15);
     const all = {
       range: { title: "Range view", body: "This is a flat bird’s-eye view of the selected session (or all sessions). Height on the page is your measured carry or total, depending on the toggle. Left–right position is not real shot shape — the LM1 does not record start line or spin — it is only spaced so clusters are easy to read. The ellipse is a simple envelope of that club’s shots, not a statistical accuracy model." },
-      flight: { title: "Flight (estimated)", body: "The LM1 does not measure launch angle, spin or apex, so these trajectories are estimates, not a launch-monitor trace. For each shot we start from a typical amateur apex-to-carry ratio for that club — a driver is a flatter flight, a pitching wedge a higher one — then scale that by this shot’s carry and nudge the height using smash and ball speed relative to your other shots with the same club. A little stable jitter is added so similar shots don’t stack on one line. On a full shot the estimated peak is often a little over " + fmtThresh(20) + " " + unitShort() + ", and landing is steeper on shorter clubs. The dashed line on the ground is roll from carry to total. Treat the shape as a sketch." },
+      flight: { title: "Flight (estimated)", body: "The LM1 does not measure launch angle, spin or apex, so these trajectories are estimates, not a launch-monitor trace. For each shot we start from a typical amateur apex-to-carry ratio for that club — a driver is a flatter flight, a pitching wedge a higher one — then scale that by this shot’s carry and nudge the height using smash and ball speed relative to your other shots with the same club. A little stable jitter is added so similar shots don’t stack on one line. On a full shot the estimated peak is often a little over " + fmtThresh(20) + " " + unitShort() + ", and landing is steeper on shorter clubs. The dashed line on the ground is roll from carry to total. Use the Carry/Total switch to sit the dots at landing or at the end of roll. Treat the shape as a sketch." },
       "tile-shots": { title: "Shots", body: "This is how many shots are feeding the averages after your session, mishit and Best-N filters. Flagged shots stay in the Flagged table even when they are excluded here. The club chips beside the range do not change this number — they only change the tee view." },
       "tile-peak": { title: "Peak distance", body: "This is the single longest used shot in the current filters, using carry or total depending on the toggle. It is a high-water mark, not a typical result. One jumper can set this tile, so read it with the club summary and dispersion, not on its own." },
       "tile-smash": { title: "Average smash", body: "Smash factor is ball speed divided by club speed — a simple read of how well the ball was struck. A well-struck driver is often around 1.48–1.50; mid-irons typically sit lower, around 1.33–1.38. A sudden drop usually means a weaker strike or a misread." },
@@ -2368,6 +2378,8 @@ function fmtThresh(yd) {
     renderScatter();
   }
 
+
+
   function renderScatter() {
     const all = shotsForStats().filter((s) => s.clubSpeed != null && s.ballSpeed != null);
     const el = $("#scatterChart");
@@ -2400,7 +2412,25 @@ function fmtThresh(yd) {
       return;
     }
 
-    const W = 920, H = 440, padL = 50, padR = 96, padT = 18, padB = 46;
+    const cssW = el.clientWidth || 800;
+    const narrow = cssW < 520;
+    const W = narrow ? 560 : 900;
+    const H = narrow ? 420 : 440;
+    const padL = narrow ? 46 : 52;
+    const padR = 18;
+    const padT = 22;
+    const padB = 46;
+    const FONT_TICK = "Barlow Condensed, Arial Narrow, sans-serif";
+    const FONT_UI = "DM Sans, system-ui, sans-serif";
+    const tickFs = 12;
+    const labFs = narrow ? 11 : 12;
+    const axisFs = 11;
+    const GRID_MAJ = "rgba(255,255,255,.12)";
+    const GRID_MIN = "rgba(255,255,255,.06)";
+    const TICK = "rgba(255,255,255,.7)";
+    const TICK_DIM = "rgba(255,255,255,.55)";
+    const AXIS = "rgba(255,255,255,.5)";
+
     let minC = 1e9, maxC = 0, minB = 1e9, maxB = 0;
     shots.forEach((s) => {
       minC = Math.min(minC, s.clubSpeed); maxC = Math.max(maxC, s.clubSpeed);
@@ -2412,74 +2442,54 @@ function fmtThresh(yd) {
     const y1 = Math.ceil((maxB + 10) / 10) * 10;
     const xOf = (v) => padL + ((v - x0) / (x1 - x0)) * (W - padL - padR);
     const yOf = (v) => H - padB - ((v - y0) / (y1 - y0)) * (H - padT - padB);
-    const clipX = (v) => Math.max(padL, Math.min(W - padR, v));
-    const clipY = (v) => Math.max(padT, Math.min(H - padB, v));
 
+    // Solid, muted tints of the app red / amber / green — low-alpha overlays on navy read as maroon/teal.
     const bands = [
-      { lo: 0, hi: 1.20, fill: "rgba(255,77,90,.11)" },
-      { lo: 1.20, hi: 1.30, fill: "rgba(255,176,32,.10)" },
-      { lo: 1.30, hi: 1.40, fill: "rgba(212,255,63,.08)" },
-      { lo: 1.40, hi: 1.50, fill: "rgba(62,224,122,.10)" },
-      { lo: 1.50, hi: 2.20, fill: "rgba(62,224,255,.09)" }
+      { lo: 0, hi: 1.20, fill: "#3a181c" },
+      { lo: 1.20, hi: 1.30, fill: "#2e2410" },
+      { lo: 1.30, hi: 1.45, fill: "#123226" },
+      { lo: 1.45, hi: 8, fill: "#164a32" }
     ];
     const lines = [
-      [1.50, "1.50 driver ideal"],
-      [1.38, "1.38 iron ideal"],
-      [1.30, "1.30"],
-      [1.20, "1.20"]
+      [1.50, "1.50 driver ideal", 0.22],
+      [1.38, "1.38 iron ideal", 0.18],
+      [1.30, "1.30", 0.90],
+      [1.20, "1.20", 0.92]
     ];
 
     function bandPoly(lo, hi) {
       const corners = [
         [x0, x0 * lo], [x1, x1 * lo], [x1, x1 * hi], [x0, x0 * hi]
-      ].map(([x, y]) => [clipX(xOf(x)), clipY(yOf(y))]);
+      ].map(([x, y]) => [xOf(x), yOf(y)]);
       return corners.map((p) => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" ");
     }
-
-    let inner = "";
-    inner += '<defs><clipPath id="scatterClip"><rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (H - padT - padB) + '"/></clipPath></defs>';
-    inner += '<g clip-path="url(#scatterClip)">';
-    bands.forEach((b) => {
-      inner += '<polygon points="' + bandPoly(b.lo, b.hi) + '" fill="' + b.fill + '" stroke="none"/>';
-    });
-    lines.forEach(([sm]) => {
-      const xa = clipX(xOf(x0)), ya = clipY(yOf(x0 * sm));
-      const xb = clipX(xOf(x1)), yb = clipY(yOf(x1 * sm));
-      inner += '<line x1="' + xa + '" y1="' + ya + '" x2="' + xb + '" y2="' + yb + '" stroke="rgba(255,255,255,.22)" stroke-dasharray="5 4"/>';
-    });
-    inner += "</g>";
-    // labels in a right-hand column; if a line exits the top, stack downward in smash order
-    let lastLabY = padT - 2;
-    lines.forEach(([sm, lab]) => {
-      let ly = clipY(yOf(Math.min(Math.max(x1 * sm, y0), y1)));
-      if (ly < lastLabY + 13) ly = lastLabY + 13;
-      lastLabY = ly;
-      inner += '<text x="' + (W - padR + 6) + '" y="' + (ly + 3) + '" fill="#9eb4a8" font-size="10" font-family="DM Sans, sans-serif">' + lab + "</text>";
-    });
-    // grid + ticks
-    for (let v = x0; v <= x1; v += 10) {
-      const major = v % 20 === 0;
-      inner += '<line x1="' + xOf(v) + '" y1="' + padT + '" x2="' + xOf(v) + '" y2="' + (H - padB) + '" stroke="' + (major ? "rgba(160,200,180,.12)" : "rgba(160,200,180,.06)") + '"/>';
-      if (major) inner += '<text x="' + xOf(v) + '" y="' + (H - padB + 16) + '" text-anchor="middle" fill="#8aa196" font-size="11">' + v + "</text>";
+    function visibleSeg(sm) {
+      const raw = [
+        [x0, sm * x0],
+        [x1, sm * x1],
+        [y0 / sm, y0],
+        [y1 / sm, y1]
+      ].filter(([x, y]) => x >= x0 - 1e-6 && x <= x1 + 1e-6 && y >= y0 - 1e-6 && y <= y1 + 1e-6);
+      raw.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+      const pts = [];
+      raw.forEach((p) => {
+        if (!pts.length || Math.hypot(p[0] - pts[pts.length - 1][0], p[1] - pts[pts.length - 1][1]) > 1e-4) pts.push(p);
+      });
+      if (pts.length < 2) return null;
+      return { xA: pts[0][0], yA: pts[0][1], xB: pts[pts.length - 1][0], yB: pts[pts.length - 1][1] };
     }
-    const yStep = (y1 - y0) > 80 ? 20 : 10;
-    for (let v = y0; v <= y1; v += yStep) {
-      inner += '<line x1="' + padL + '" y1="' + yOf(v) + '" x2="' + (W - padR) + '" y2="' + yOf(v) + '" stroke="rgba(160,200,180,.08)"/>';
-      inner += '<text x="' + (padL - 8) + '" y="' + (yOf(v) + 4) + '" text-anchor="end" fill="#8aa196" font-size="11">' + v + "</text>";
+    function textW(s, fs) { return String(s).length * fs * 0.55; }
+    function boxesOverlap(a, b, pad) {
+      const p = pad || 3;
+      return !(a.x + a.w + p < b.x || b.x + b.w + p < a.x || a.y + a.h + p < b.y || b.y + b.h + p < a.y);
     }
-    inner += '<text x="' + ((padL + W - padR) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="#8aa196" font-size="12">Club speed (mph)</text>';
-    inner += '<text x="16" y="14" fill="#8aa196" font-size="12">Ball speed (mph)</text>';
-
-    shots.forEach((s) => {
-      const tip = escapeHtml([
-        s.club + " #" + (s.shotNo || ""),
-        "Club speed " + fmt(s.clubSpeed, 1) + " mph",
-        "Ball speed " + fmt(s.ballSpeed, 1) + " mph",
-        "Smash " + fmt(s.smash, 2),
-        s.carry != null ? "Carry " + fmtDist(s.carry) + " " + unitShort() : ""
-      ].filter(Boolean).join("\n"));
-      inner += '<circle class="scatter-dot" data-tip="' + tip + '" cx="' + xOf(s.clubSpeed).toFixed(1) + '" cy="' + yOf(s.ballSpeed).toFixed(1) + '" r="4.6" fill="' + clubColor(s.club) + '" fill-opacity=".88" stroke="#071018" stroke-width=".6" style="cursor:pointer"/>';
-    });
+    function boxHitsCircles(box, circles) {
+      return (circles || []).some((c) => {
+        const nx = Math.max(box.x, Math.min(box.x + box.w, c.x));
+        const ny = Math.max(box.y, Math.min(box.y + box.h, c.y));
+        return Math.hypot(c.x - nx, c.y - ny) < c.r;
+      });
+    }
 
     const avgs = shown.map((club) => {
       const arr = shots.filter((s) => s.club === club);
@@ -2494,7 +2504,85 @@ function fmtThresh(yd) {
         carry: mean(arr.map((s) => s.carry).filter((v) => v != null))
       };
     });
-    const labelAvgs = avgs.length <= 6;
+    const obstacles = shots.map((s) => ({ x: xOf(s.clubSpeed), y: yOf(s.ballSpeed), r: 9 }))
+      .concat(avgs.map((a) => ({ x: xOf(a.cs), y: yOf(a.bs), r: 18 })));
+
+    let inner = "";
+    inner += '<defs><clipPath id="scatterClip"><rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (H - padT - padB) + '"/></clipPath></defs>';
+    inner += '<rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (H - padT - padB) + '" fill="#0c1319"/>';
+    inner += '<g clip-path="url(#scatterClip)">';
+    bands.forEach((b) => {
+      inner += '<polygon points="' + bandPoly(b.lo, b.hi) + '" fill="' + b.fill + '" stroke="none"/>';
+    });
+    lines.forEach(([sm]) => {
+      const seg = visibleSeg(sm);
+      if (!seg) return;
+      inner += '<line x1="' + xOf(seg.xA).toFixed(1) + '" y1="' + yOf(seg.yA).toFixed(1) + '" x2="' + xOf(seg.xB).toFixed(1) + '" y2="' + yOf(seg.yB).toFixed(1) + '" stroke="rgba(255,255,255,.28)" stroke-dasharray="5 4"/>';
+    });
+    inner += "</g>";
+
+    for (let v = x0; v <= x1; v += 10) {
+      const major = v % 20 === 0;
+      inner += '<line x1="' + xOf(v) + '" y1="' + padT + '" x2="' + xOf(v) + '" y2="' + (H - padB) + '" stroke="' + (major ? GRID_MAJ : GRID_MIN) + '"/>';
+      if (major) inner += '<text x="' + xOf(v) + '" y="' + (H - padB + 16) + '" text-anchor="middle" fill="' + TICK + '" font-size="' + tickFs + '" font-family="' + FONT_TICK + '" font-weight="700">' + v + "</text>";
+    }
+    const yStep = (y1 - y0) > 80 ? 20 : 10;
+    for (let v = y0; v <= y1; v += yStep) {
+      inner += '<line x1="' + padL + '" y1="' + yOf(v) + '" x2="' + (W - padR) + '" y2="' + yOf(v) + '" stroke="' + GRID_MIN + '"/>';
+      inner += '<text x="' + (padL - 8) + '" y="' + (yOf(v) + 4) + '" text-anchor="end" fill="' + TICK_DIM + '" font-size="' + tickFs + '" font-family="' + FONT_TICK + '" font-weight="700">' + v + "</text>";
+    }
+    inner += '<text x="' + ((padL + W - padR) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" fill="' + AXIS + '" font-size="' + axisFs + '" font-family="' + FONT_UI + '">Club speed (mph)</text>';
+    inner += '<text x="14" y="' + ((padT + H - padB) / 2) + '" text-anchor="middle" fill="' + AXIS + '" font-size="' + axisFs + '" font-family="' + FONT_UI + '" transform="rotate(-90 14 ' + ((padT + H - padB) / 2) + ')">Ball speed (mph)</text>';
+
+    const taken = [];
+    lines.forEach(([sm, lab, tPref]) => {
+      const seg = visibleSeg(sm);
+      if (!seg) return;
+      const w = textW(lab, labFs);
+      const h = labFs + 5;
+      const tryT = [tPref];
+      for (let k = 1; k <= 16; k++) {
+        tryT.push(tPref - k * 0.05, tPref + k * 0.05);
+      }
+      let best = null, bestScore = -1e9;
+      tryT.forEach((rawT) => {
+        const t = Math.max(0.08, Math.min(0.94, rawT));
+        const px = xOf(seg.xA + (seg.xB - seg.xA) * t);
+        const py = yOf(seg.yA + (seg.yB - seg.yA) * t) - 8;
+        const box = { x: px - w / 2, y: py - h + 3, w: w, h: h };
+        if (box.x < padL + 2 || box.x + box.w > W - padR - 2) return;
+        if (box.y < padT + 1 || box.y + box.h > H - padB - 2) return;
+        if (taken.some((b) => boxesOverlap(b, box, 6))) return;
+        const hit = boxHitsCircles(box, obstacles);
+        let nearest = 999;
+        obstacles.forEach((c) => {
+          const nx = Math.max(box.x, Math.min(box.x + box.w, c.x));
+          const ny = Math.max(box.y, Math.min(box.y + box.h, c.y));
+          nearest = Math.min(nearest, Math.hypot(c.x - nx, c.y - ny) - c.r);
+        });
+        const score = (hit ? -400 : 80) + nearest - Math.abs(t - tPref) * 12;
+        if (score > bestScore) { bestScore = score; best = { px: px, py: py, box: box, hit: hit }; }
+      });
+      if (!best || best.hit) {
+        // last resort: keep a clear slot even if slightly closer
+        if (!best) return;
+      }
+      taken.push(best.box);
+      inner += '<text x="' + best.px.toFixed(1) + '" y="' + best.py.toFixed(1) + '" text-anchor="middle" fill="' + TICK + '" font-size="' + labFs + '" font-family="' + FONT_TICK + '" font-weight="700" stroke="#0c1319" stroke-width="3.5" paint-order="stroke" style="pointer-events:none">' + lab + "</text>";
+    });
+
+    shots.forEach((s) => {
+      const tip = escapeHtml([
+        s.club + " #" + (s.shotNo || ""),
+        "Club speed " + fmt(s.clubSpeed, 1) + " mph",
+        "Ball speed " + fmt(s.ballSpeed, 1) + " mph",
+        "Smash " + fmt(s.smash, 2),
+        s.carry != null ? "Carry " + fmtDist(s.carry) + " " + unitShort() : ""
+      ].filter(Boolean).join("\n"));
+      inner += '<circle class="scatter-dot" data-tip="' + tip + '" cx="' + xOf(s.clubSpeed).toFixed(1) + '" cy="' + yOf(s.ballSpeed).toFixed(1) + '" r="4.6" fill="' + clubColor(s.club) + '" fill-opacity=".88" stroke="#071018" stroke-width=".6" style="cursor:pointer"/>';
+    });
+
+    const avgBoxes = [];
     avgs.forEach((a) => {
       const tip = escapeHtml([
         a.club + " average",
@@ -2506,9 +2594,41 @@ function fmtThresh(yd) {
       const cx = xOf(a.cs), cy = yOf(a.bs);
       inner += '<circle class="scatter-avg" data-tip="' + tip + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="8" fill="none" stroke="' + a.color + '" stroke-width="2.4" style="cursor:pointer"/>';
       inner += '<circle class="scatter-avg" data-tip="' + tip + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="2.2" fill="' + a.color + '" style="pointer-events:none"/>';
-      if (labelAvgs) {
-        inner += '<text x="' + (cx + 11).toFixed(1) + '" y="' + (cy - 8).toFixed(1) + '" fill="#eef6f0" font-size="11" font-weight="700" font-family="DM Sans, sans-serif" style="pointer-events:none" stroke="#071018" stroke-width="3" paint-order="stroke">' + escapeHtml(a.short) + "</text>";
+      const w = textW(a.short, labFs);
+      const h = labFs + 3;
+      const cands = [
+        [cx + 11, cy - 8, "start"],
+        [cx + 11, cy + 16, "start"],
+        [cx - 11, cy - 8, "end"],
+        [cx - 11, cy + 16, "end"],
+        [cx, cy - 16, "middle"],
+        [cx, cy + 20, "middle"],
+        [cx + 11, cy + 4, "start"],
+        [cx - 11, cy + 4, "end"],
+        [cx + 16, cy - 20, "start"],
+        [cx - 16, cy - 20, "end"],
+        [cx + 16, cy + 22, "start"],
+        [cx - 16, cy + 22, "end"]
+      ];
+      let pick = null;
+      for (let i = 0; i < cands.length; i++) {
+        const [x, y, anchor] = cands[i];
+        const left = anchor === "end" ? x - w : anchor === "middle" ? x - w / 2 : x;
+        const box = { x: left, y: y - labFs, w: w, h: h };
+        if (box.x < padL - 6 || box.x + box.w > W - padR + 8) continue;
+        if (box.y < padT - 8 || box.y + box.h > H - padB + 6) continue;
+        if (avgBoxes.some((b) => boxesOverlap(b, box, 4)) || taken.some((b) => boxesOverlap(b, box, 4))) continue;
+        if (boxHitsCircles(box, obstacles.filter((c) => Math.hypot(c.x - cx, c.y - cy) > 2))) continue;
+        pick = { x: x, y: y, anchor: anchor, box: box };
+        break;
       }
+      if (!pick) {
+        const [x, y, anchor] = cands[0];
+        const left = anchor === "end" ? x - w : x;
+        pick = { x: x, y: y, anchor: anchor, box: { x: left, y: y - labFs, w: w, h: h } };
+      }
+      avgBoxes.push(pick.box);
+      inner += '<text x="' + pick.x.toFixed(1) + '" y="' + pick.y.toFixed(1) + '" text-anchor="' + pick.anchor + '" fill="#eef6f0" font-size="' + labFs + '" font-weight="700" font-family="' + FONT_TICK + '" style="pointer-events:none" stroke="#071018" stroke-width="3.2" paint-order="stroke">' + escapeHtml(a.short) + "</text>";
     });
 
     el.innerHTML = svgWrap(inner, W, H, "Club speed versus ball speed");
