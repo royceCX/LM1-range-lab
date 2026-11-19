@@ -315,13 +315,71 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   #unitMode{flex:0 0 auto}
   #rangeCanvas{min-height:280px}
   .hero-stage,.club-rail{min-height:0}
-  body{overflow-x:hidden}
+  body{overflow-x:clip}
   .toast{left:12px;right:12px}
 }
+
+.sticky-chrome{position:sticky;top:0;z-index:45;background:rgba(7,11,16,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.sticky-chrome header.appbar{position:static;background:transparent;backdrop-filter:none;border-bottom:0;z-index:auto}
+.filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:4px 18px 10px}
+.filter-bar .badge{margin-left:auto}
+.filter-bar .tog{font-size:13px;color:var(--text)}
+.filter-bar select{background:var(--bg-2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:4px 8px}
+.hero-head{margin:0 0 10px;grid-column:1 / -1}
+.hero-head h3{margin:0 0 4px;font-family:var(--cond);font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+.card h3,.hero-head h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.help-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;padding:0;border-radius:50%;border:1px solid var(--line-strong);background:var(--elev-2);color:var(--muted);font-size:13px;font-weight:800;line-height:1;cursor:pointer;flex:0 0 auto}
+.help-btn:hover,.help-btn:focus-visible,.help-btn[aria-expanded="true"]{border-color:rgba(62,224,255,.55);color:var(--cyan)}
+#helpPopover{position:fixed;z-index:90;max-width:320px;width:min(320px,calc(100vw - 24px));background:var(--elev);border:1px solid rgba(62,224,255,.35);border-radius:12px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.45);color:var(--text)}
+#helpPopover .help-pop-title{margin:0 0 6px;font-family:var(--cond);font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--cyan)}
+#helpPopover .help-pop-body{margin:0;font-size:13px;line-height:1.45;color:var(--text)}
+.tile{position:relative}
+.tile .k{display:flex;align-items:center;gap:6px}
+.tile .help-btn{width:18px;height:18px;font-size:11px}
+.gap-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 12px;font-size:12px;color:var(--muted)}
+.gap-legend span{display:inline-flex;align-items:center;gap:6px}
+.gap-swatch{width:10px;height:10px;border-radius:99px;display:inline-block}
+.gap-swatch.ideal{background:#3ee07a}
+.gap-swatch.wide{background:var(--amber)}
+.gap-swatch.tight{background:var(--red)}
+.gap-chart{display:flex;flex-direction:column;gap:0;min-width:0}
+.gap-axis{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);padding:0 0 6px 92px;font-variant-numeric:tabular-nums}
+.gap-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;align-items:center;min-height:28px}
+.gap-name{font-size:13px;font-weight:650;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gap-track{position:relative;height:22px;background:rgba(255,255,255,.03);border-radius:6px;overflow:visible}
+.gap-range{position:absolute;top:3px;height:16px;border-radius:5px;opacity:.35}
+.gap-bar{position:absolute;top:4px;left:0;height:14px;border-radius:5px;min-width:2px}
+.gap-avg{position:absolute;top:50%;transform:translate(6px,-50%);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;color:#eef6f0;text-shadow:0 1px 2px rgba(0,0,0,.65)}
+.gap-step{display:flex;justify-content:flex-start;padding:4px 0 4px 92px}
+.gap-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:650;border:1px solid transparent}
+.gap-badge.ideal{background:rgba(62,224,122,.14);color:#5CFF6B;border-color:rgba(62,224,122,.35)}
+.gap-badge.ok{background:rgba(62,224,255,.1);color:var(--cyan);border-color:rgba(62,224,255,.28)}
+.gap-badge.narrow,.gap-badge.wide{background:rgba(255,176,32,.12);color:var(--amber);border-color:rgba(255,176,32,.35)}
+.gap-badge.tight,.gap-badge.overlap{background:rgba(255,77,90,.14);color:var(--red);border-color:rgba(255,77,90,.35)}
+@media (max-width:640px){
+  .filter-bar{padding:4px 10px 8px;gap:6px 8px}
+  .filter-bar .badge{margin-left:0;width:100%}
+  .gap-axis{padding-left:0}
+  .gap-row{grid-template-columns:1fr;gap:2px}
+  .gap-name{text-align:left}
+  .gap-step{padding-left:0}
+  .help-btn{min-width:26px;min-height:26px}
+}
+
+
+.range-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;flex:1 1 auto}
+@media (max-width:640px){
+  .sticky-chrome{display:contents}
+  header.appbar{position:static;background:var(--bg)}
+  .filter-bar{position:sticky;top:0;z-index:45;background:rgba(7,11,16,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:6px 10px 8px}
+  .filter-bar .session-switcher{flex:1 1 100%;max-width:none}
+}
+
 </style>
 </head>
 <body>
 <div id="app">
+  <div class="sticky-chrome" id="stickyChrome">
   <header class="appbar">
     <div class="brand">
       <div class="logo">LM1</div>
@@ -336,39 +394,45 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       <button type="button" data-view="sessions">Sessions</button>
     </nav>
     <div class="header-actions">
-      <div class="seg" id="unitMode" role="group" aria-label="Distance units">
-        <button type="button" data-unit="yd" class="active">Yards</button>
-        <button type="button" data-unit="m">Metres</button>
-      </div>
-      <div class="session-switcher" id="sessionSwitcher">
-        <button type="button" class="btn icon" id="btnSessPrev" aria-label="Previous session">‹</button>
-        <select id="sessionSelect" aria-label="Session"></select>
-        <button type="button" class="btn icon" id="btnSessNext" aria-label="Next session">›</button>
-      </div>
       <button type="button" class="btn ghost" id="btnExportJson">Backup JSON</button>
       <button type="button" class="btn ghost" id="btnImportJson">Restore</button>
       <input type="file" id="jsonFile" accept=".json,application/json" hidden>
     </div>
   </header>
+  <div class="filter-bar" id="filterBar">
+    <div class="seg" id="unitMode" role="group" aria-label="Distance units">
+      <button type="button" data-unit="yd" class="active">Yards</button>
+      <button type="button" data-unit="m">Metres</button>
+    </div>
+    <div class="session-switcher" id="sessionSwitcher">
+      <button type="button" class="btn icon" id="btnSessPrev" aria-label="Previous session">‹</button>
+      <select id="sessionSelect" aria-label="Session"></select>
+      <button type="button" class="btn icon" id="btnSessNext" aria-label="Next session">›</button>
+    </div>
+    <div class="range-filters" id="rangeFilters">
+      <label class="tog"><input type="checkbox" id="excludeMishits" checked> Exclude mishits / misreads</label>
+      <label class="tog">Best-N <select id="bestN"><option value="1" selected>All used</option><option value="0.75">Top 75%</option><option value="0.5">Top 50%</option><option value="0.25">Top 25%</option></select></label>
+      <div class="seg" id="distMode" role="group" aria-label="Distance type">
+        <button type="button" data-dist="carry" class="active">Carry</button>
+        <button type="button" data-dist="total">Total</button>
+      </div>
+      <span class="badge" id="shotCounts"></span>
+    </div>
+  </div>
+  </div>
 
   <main>
     <section id="view-range" class="view active">
-      <div class="toolbar" id="rangeToolbar">
-        <label class="tog"><input type="checkbox" id="excludeMishits" checked> Exclude mishits / misreads</label>
-        <label class="tog">Best-N <select id="bestN"><option value="1" selected>All used</option><option value="0.75">Top 75%</option><option value="0.5">Top 50%</option><option value="0.25">Top 25%</option></select></label>
-        <span class="badge" id="shotCounts"></span>
-      </div>
-
       <section id="hero" class="hero">
+        <div class="hero-head">
+          <h3>Range view <button type="button" class="help-btn" data-help="range" aria-label="About the range view">?</button></h3>
+          <p class="sub" id="heroSub">Each dot is a shot at its measured carry or total. Side-to-side spread is only for readability.</p>
+        </div>
         <div class="hero-stage">
           <div class="hero-toggles">
             <div class="seg" id="viewMode">
               <button type="button" data-mode="range" class="active">Range</button>
               <button type="button" data-mode="flight">Flight (estimated)</button>
-            </div>
-            <div class="seg" id="distMode">
-              <button type="button" data-dist="carry" class="active">Carry</button>
-              <button type="button" data-dist="total">Total</button>
             </div>
           </div>
           <div id="rangeCanvas"></div>
@@ -379,48 +443,48 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 
       <section class="tiles" id="heroTiles"></section>
       <section class="card" id="club-table">
-        <h3>Club summary</h3>
-        <p class="sub">Averages use the current filters. Dispersion window is carry P10–P90. Consistency is based on carry standard deviation.</p>
+        <h3>Club summary <button type="button" class="help-btn" data-help="summary" aria-label="About club summary">?</button></h3>
+        <p class="sub">Per-club averages and spread for the current filters.</p>
         <div class="table-wrap" id="summaryTable"></div>
       </section>
       <section class="card" id="gapping">
-        <h3>Club gapping</h3>
-        <p class="sub" id="gapSub">Average carry bars with total distance overlay. Gaps are between consecutive clubs in the bag. Tight &lt; 8 yd, wide &gt; 18 yd.</p>
+        <h3>Club gapping <button type="button" class="help-btn" data-help="gapping" aria-label="About club gapping">?</button></h3>
+        <p class="sub" id="gapSub">Average distance per club, and the gap to the next club in the bag.</p>
         <div class="chart-box tall" id="gapChart"></div>
       </section>
       <section class="card" id="dispersion">
-        <h3>Carry dispersion</h3>
-        <p class="sub">Box plot of carry per club (P10, Q1, median, Q3, P90) with every shot marked. Excluded shots omitted when the filter is on.</p>
+        <h3 id="dispTitle">Carry dispersion <button type="button" class="help-btn" data-help="dispersion" aria-label="About carry dispersion">?</button></h3>
+        <p class="sub" id="dispSub">How tightly each club’s shots group around its typical distance.</p>
         <div class="chart-box" id="dispChart"></div>
       </section>
       <section class="card" id="scatter">
-        <h3>Club speed vs ball speed</h3>
-        <p class="sub">Points coloured by club. Reference lines are smash-factor contours (ball ÷ club). Typical tour-quality smash: driver ~1.50, mid-irons ~1.33–1.38.</p>
+        <h3>Club speed vs ball speed <button type="button" class="help-btn" data-help="scatter" aria-label="About club speed vs ball speed">?</button></h3>
+        <p class="sub">Each shot plotted by club speed and ball speed, with smash-factor lines.</p>
         <div class="chart-box tall" id="scatterChart"></div>
       </section>
       <section class="card" id="smash">
-        <h3>Smash factor vs typical benchmarks</h3>
-        <p class="sub">Each shot is a dot; the diamond is the club average; the dashed mark is a typical benchmark for that club (not your potential guarantee).</p>
+        <h3>Smash factor vs typical benchmarks <button type="button" class="help-btn" data-help="smash" aria-label="About smash factor">?</button></h3>
+        <p class="sub">Your smash on each shot compared with a typical number for that club.</p>
         <div class="chart-box" id="smashChart"></div>
       </section>
       <section class="card" id="trends-session">
-        <h3>First shots vs last shots</h3>
-        <p class="sub">For the current session, each club’s first 10 shots versus its last 10 (or first half versus last half if there are fewer than 20). A way to see warm-up or fatigue. Select a single session — this is not combined across days.</p>
+        <h3>First shots vs last shots <button type="button" class="help-btn" data-help="trends" aria-label="About first vs last shots">?</button></h3>
+        <p class="sub">Whether carry, speed or smash changed from the start of this session to the end.</p>
         <div id="trendChart"></div>
       </section>
       <section class="card" id="trends-progress">
-        <h3>Progress across sessions</h3>
-        <p class="sub">Average carry, club speed and smash for each club across every imported session (current mishit filter and club chips still apply). Green and red badges are the change versus the previous session; the takeaway and the footer compare with the first time that club was recorded.</p>
+        <h3>Progress across sessions <button type="button" class="help-btn" data-help="progress" aria-label="About progress across sessions">?</button></h3>
+        <p class="sub">How each club’s average distance, speed and smash have changed from session to session.</p>
         <div id="progressChart"></div>
       </section>
       <section class="card" id="derived">
-        <h3>Derived stats</h3>
-        <p class="sub" id="derivedSub">Carry efficiency is carry yards per mph of club speed. Potential carry scales existing carry by (benchmark smash ÷ actual smash) — smash only, no launch data. Best-N is the top carry percentile for each club.</p>
+        <h3>Derived stats <button type="button" class="help-btn" data-help="derived" aria-label="About derived stats">?</button></h3>
+        <p class="sub" id="derivedSub">Efficiency and an estimated carry if smash reached a typical benchmark.</p>
         <div class="table-wrap" id="derivedTable"></div>
       </section>
       <section class="card" id="mishits">
-        <h3>Flagged shots</h3>
-        <p class="sub">Misreads are physically implausible LM1 values (e.g. smash &lt; 0.9 or &gt; 1.56, impossible club speed, zero carry, total shorter than carry). Mishits are poor but plausible contact. The exclude toggle hides both from averages and charts; they remain listed here.</p>
+        <h3>Flagged shots <button type="button" class="help-btn" data-help="flags" aria-label="About flagged shots">?</button></h3>
+        <p class="sub">Shots in the current session (or all sessions) marked as a misread or a likely mishit.</p>
         <div class="table-wrap" id="flagTable"></div>
       </section>
     </section>
@@ -480,6 +544,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   <div class="modal" role="dialog" aria-modal="true" id="modalBox"></div>
 </div>
 <div class="toast" id="toast" hidden></div>
+<div id="helpPopover" hidden role="tooltip">
+  <p class="help-pop-title"></p>
+  <p class="help-pop-body"></p>
+</div>
 
 <script>/**
  * Skipped minification because the original files appears to be already minified.
@@ -660,11 +728,11 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     $$("#unitMode button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-unit") === (state.units === "m" ? "m" : "yd")));
   }
   function updateUnitCopy() {
-    const u = unitShort();
-    const gap = document.getElementById("gapSub");
-    if (gap) gap.innerHTML = "Average carry bars with total distance overlay. Gaps are between consecutive clubs in the bag. Tight &lt; " + fmtDist(8) + " " + u + ", wide &gt; " + fmtDist(18) + " " + u + ".";
+    const kind = state.distMode === "total" ? "total" : "carry";
+    const hero = document.getElementById("heroSub");
+    if (hero) hero.textContent = "Each dot is a shot at its measured " + kind + ". Side-to-side spread is only for readability.";
     const der = document.getElementById("derivedSub");
-    if (der) der.innerHTML = "Carry efficiency is carry " + unitWord() + " per mph of club speed. Potential carry scales existing carry by (benchmark smash ÷ actual smash) — smash only, no launch data. Best-N is the top carry percentile for each club.";
+    if (der) der.textContent = "Efficiency and an estimated carry if smash reached a typical benchmark.";
   }
   function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
   function uid(prefix) { return (prefix || "id") + "-" + Math.random().toString(36).slice(2, 9); }
@@ -1114,14 +1182,14 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     if (s.includeOverride === "include") return false;
     return !!(state.excludeMishits && s.flag);
   }
+  function filteredShots() {
+    return applyBestN(allShotsRaw().filter((s) => !shotExcluded(s)));
+  }
   function usedShots() {
-    let shots = allShotsRaw();
-    shots = shots.filter((s) => isClubSelected(s.club));
-    shots = shots.filter((s) => !shotExcluded(s));
-    return applyBestN(shots);
+    return filteredShots().filter((s) => isClubSelected(s.club));
   }
   function shotsForStats() {
-    return usedShots();
+    return filteredShots();
   }
     function distOf(s) { return state.distMode === "total" ? s.total : s.carry; }
 
@@ -1472,10 +1540,11 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       html += '<button type="button" class="rail-chip' + (on && !allOn ? " active" : on ? "" : " dim") + '" data-club="' + escapeHtml(row.club) + '">';
       html += '<span class="rail-swatch" style="background:' + def.color + '"></span>';
       html += '<span><div class="name">' + escapeHtml(def.short || row.club) + '</div><div class="meta">' + escapeHtml(row.club) + ' · ' + row.n + ' shot' + (row.n === 1 ? "" : "s") + '</div></span>';
-      html += '<span class="yards">' + fmtDist(row.avgCarry) + '<span>' + unitShort() + '</span></span>';
+      const railDist = (r) => state.distMode === "total" ? r.avgTotal : r.avgCarry;
+      html += '<span class="yards">' + fmtDist(railDist(row)) + '<span>' + unitShort() + '</span></span>';
       html += "</button>";
-      if (next && next.avgCarry != null && row.avgCarry != null) {
-        const gap = row.avgCarry - next.avgCarry;
+      if (next && railDist(next) != null && railDist(row) != null) {
+        const gap = railDist(row) - railDist(next);
         let cls = "", label = "gap";
         if (gap < 1) { cls = " tight"; label = "overlap"; }
         else if (gap < 8) { cls = " tight"; label = "tight gap"; }
@@ -1508,7 +1577,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 
   /* ---------------- Tiles, tables, charts ---------------- */
   function renderCounts() {
-    const raw = allShotsRaw().filter((s) => isClubSelected(s.club));
+    const raw = allShotsRaw();
     const misreads = raw.filter((s) => s.flag === "misread").length;
     const mishits = raw.filter((s) => s.flag === "mishit").length;
     const excluded = misreads + mishits;
@@ -1520,27 +1589,30 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   }
 
   function renderTiles() {
-    const shots = usedShots();
-    const raw = allShotsRaw().filter((s) => isClubSelected(s.club));
-    const carry = shots.map((s) => s.carry).filter((v) => v != null);
+    const shots = shotsForStats();
+    const raw = allShotsRaw();
+    const dists = shots.map((s) => distOf(s)).filter((v) => v != null);
     const smash = shots.map((s) => s.smash).filter((v) => v != null);
     const chs = shots.map((s) => s.clubSpeed).filter((v) => v != null);
-    const peak = carry.length ? Math.max.apply(null, carry) : null;
-    const peakShot = shots.find((s) => s.carry === peak);
+    const peak = dists.length ? Math.max.apply(null, dists) : null;
+    const peakShot = shots.find((s) => distOf(s) === peak);
     const perClubCons = clubStats(shots).map((r) => r.consistency).filter((v) => v != null);
     const cons = perClubCons.length ? mean(perClubCons) : null;
-    const eff = shots.filter((s) => s.carry != null && s.clubSpeed).map((s) => s.carry / s.clubSpeed);
-    const clubs = clubsInPlay(shots);
+    const eff = shots.filter((s) => distOf(s) != null && s.clubSpeed).map((s) => distOf(s) / s.clubSpeed);
+    const kind = state.distMode === "total" ? "total" : "carry";
+    function helpBtn(key, label) {
+      return ' <button type="button" class="help-btn" data-help="' + key + '" aria-label="About ' + label + '">?</button>';
+    }
     const tiles = [
-      { k: "Shots", v: String(shots.length), s: (state.excludeMishits ? raw.filter((s) => s.flag).length + " excluded" : "including flagged") },
-      { k: "Peak carry", v: fmtDist(peak), u: unitShort(), s: peakShot ? peakShot.club : "" },
-      { k: "Avg smash", v: fmt(mean(smash), 2), s: "selected clubs" },
-      { k: "Avg club speed", v: fmt(mean(chs), 1), u: "mph", s: "" },
-      { k: "Consistency", v: cons == null ? "—" : fmt0(cons), s: "100 = tight carry SD" },
-      { k: "Carry / mph", v: fmt(toDisp(mean(eff)), 2), u: unitShort(), s: "carry efficiency" }
+      { k: "Shots", help: "tile-shots", v: String(shots.length), s: (state.excludeMishits ? raw.filter((s) => s.flag).length + " excluded" : "including flagged") },
+      { k: "Peak " + kind, help: "tile-peak", v: fmtDist(peak), u: unitShort(), s: peakShot ? peakShot.club : "longest used shot" },
+      { k: "Avg smash", help: "tile-smash", v: fmt(mean(smash), 2), s: "ball speed ÷ club speed" },
+      { k: "Avg club speed", help: "tile-speed", v: fmt(mean(chs), 1), u: "mph", s: "at impact" },
+      { k: "Consistency", help: "tile-cons", v: cons == null ? "—" : fmt0(cons), s: "100 = tight carry SD" },
+      { k: kind[0].toUpperCase() + kind.slice(1) + " / mph", help: "tile-eff", v: fmt(toDisp(mean(eff)), 2), u: unitShort(), s: kind + " efficiency" }
     ];
-    $("#heroTiles").innerHTML = tiles.map((t) =>
-      '<div class="tile"><div class="k">' + t.k + '</div><div class="v">' + t.v + (t.u ? '<span class="u">' + t.u + "</span>" : "") + '</div><div class="s">' + (t.s || "") + "</div></div>"
+    $("#heroTiles").innerHTML = tiles.map((tile) =>
+      '<div class="tile"><div class="k">' + tile.k + helpBtn(tile.help, tile.k) + '</div><div class="v">' + tile.v + (tile.u ? '<span class="u">' + tile.u + "</span>" : "") + '</div><div class="s">' + (tile.s || "") + "</div></div>"
     ).join("");
   }
 
@@ -1548,7 +1620,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const rows = clubStats(shotsForStats());
     const raw = allShotsRaw();
     const totalsByClub = {};
-    raw.forEach((s) => { if (isClubSelected(s.club)) totalsByClub[s.club] = (totalsByClub[s.club] || 0) + 1; });
+    raw.forEach((s) => { totalsByClub[s.club] = (totalsByClub[s.club] || 0) + 1; });
     if (!rows.length) {
       $("#summaryTable").innerHTML = '<p class="empty">No shots to summarise.</p>';
       return;
@@ -1583,8 +1655,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   }
 
   function renderFlags() {
-    const raw = allShotsRaw().filter((s) => isClubSelected(s.club) && s.flag);
-    if (!raw.length) { $("#flagTable").innerHTML = '<p class="empty">No flagged shots in the current club filter. Nice work — or import a session.</p>'; return; }
+    const raw = allShotsRaw().filter((s) => s.flag);
+    if (!raw.length) { $("#flagTable").innerHTML = '<p class="empty">No flagged shots in the current session. Nice work — or import a session.</p>'; return; }
     let html = '<table class="stats"><thead><tr><th>Shot</th><th>Session</th><th>Club</th><th>Type</th><th>Club spd</th><th>Ball spd</th><th>Smash</th><th>Carry</th><th>Total</th><th>Why</th></tr></thead><tbody>';
     raw.forEach((s) => {
       html += "<tr><td>" + (s.shotNo == null ? "—" : s.shotNo) + "</td><td>" + escapeHtml(niceDate(s._sessionDate) || s._sessionName || "") + "</td>";
@@ -1601,47 +1673,184 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     return '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="' + escapeHtml(label || "Chart") + '">' + inner + "</svg>";
   }
 
-  function renderGapping() {
-    const rows = clubStats(shotsForStats());
-    const el = $("#gapChart");
-    if (rows.length < 1) { el.innerHTML = '<p class="empty">Need at least one club.</p>'; return; }
-    const W = 920, H = Math.max(240, 28 + rows.length * 42 + 40);
-    const padL = 100, padR = 80, padT = 16, padB = 36;
-    const maxD = Math.max.apply(null, rows.map((r) => Math.max(toDisp(r.avgTotal) || 0, toDisp(r.avgCarry) || 0))) || 100;
-    const maxX = Math.ceil((maxD + (toDisp(15) || 15)) / 25) * 25;
-    const xOf = (d) => padL + (d / maxX) * (W - padL - padR);
-    let inner = "";
-    for (let x = 0; x <= maxX; x += 25) {
-      inner += '<line x1="' + xOf(x) + '" y1="' + padT + '" x2="' + xOf(x) + '" y2="' + (H - padB) + '" stroke="rgba(160,200,180,.1)"/>';
-      inner += '<text x="' + xOf(x) + '" y="' + (H - 12) + '" text-anchor="middle" fill="#8aa196" font-size="11" font-family="Barlow Condensed,sans-serif">' + x + (x === 0 ? (" " + unitShort()) : "") + "</text>";
+  const HELP_COPY = {
+    range: { title: "Range view", body: "This is a flat bird’s-eye view of the selected session (or all sessions). Height on the page is your measured carry or total, depending on the toggle. Left–right position is not real shot shape — the LM1 does not record start line or spin — it is only spaced so clusters are easy to read. The ellipse is a simple envelope of that club’s shots, not a statistical accuracy model." },
+    "tile-shots": { title: "Shots", body: "This is how many shots are feeding the averages after your session, mishit and Best-N filters. Flagged shots stay in the Flagged table even when they are excluded here. The club chips beside the range do not change this number — they only change the tee view." },
+    "tile-peak": { title: "Peak distance", body: "This is the single longest used shot in the current filters, using carry or total depending on the toggle. It is a high-water mark, not a typical result. One jumper can set this tile, so read it with the club summary and dispersion, not on its own." },
+    "tile-smash": { title: "Average smash", body: "Smash factor is ball speed divided by club speed — a simple read of how well the ball was struck. A well-struck driver is often around 1.48–1.50; mid-irons typically sit lower, around 1.33–1.38. A sudden drop usually means a weaker strike or a misread." },
+    "tile-speed": { title: "Average club speed", body: "Club speed is the engine behind distance. Higher speed can add carry, but only if smash stays solid. Compare this with distance and smash: speed up and smash down often means you swung harder and struck it worse." },
+    "tile-cons": { title: "Consistency", body: "This score tightens as carry standard deviation shrinks, averaged across clubs. A high number means more repeatable distance, which makes club choice on the course easier. A low number means a wide spread — useful to know before you trust a single yardage." },
+    "tile-eff": { title: "Distance per mph", body: "This is distance divided by club speed — how much you get from the speed you produced. A rise usually means better contact or a more useful flight. A fall with similar speed often points to a weaker strike. The figure uses carry or total depending on the toggle." },
+    summary: { title: "Club summary", body: "Each row is one club after your session, mishit and Best-N filters. Average, median and max show typical versus best distance. Carry SD and the P10–P90 window are the spread you should plan for: a tight window is a club you can trust; a wide one means the number on the card can easily come up short or long." },
+    gapping: { title: "Club gapping", body: "Each bar is that club’s average carry or total, depending on the toggle. The lighter band is the P10–P90 range — where most of those shots actually finished. The badge between clubs is the gap between averages. A 10–15 yard step is a healthy gap; a tight or overlapping gap means two clubs can fly the same number; a wide gap is a hole in the bag." },
+    dispersion: { title: "Distance dispersion", body: "For each club, the box is the middle of your shots and the whiskers run from P10 to P90. The white line is the median, and the dots are individual shots. A short box means predictable distance; a long box or lots of outliers means that club can surprise you on the course. This is distance spread only, not left–right accuracy." },
+    scatter: { title: "Club speed vs ball speed", body: "Ball speed is largely what became distance; club speed is how fast you swung. Smash is ball speed ÷ club speed, drawn as the reference lines. Points on a higher line were struck better for that speed. A cluster that moves right (more club speed) without moving up (more ball speed) is swinging harder without better contact." },
+    smash: { title: "Smash factor vs benchmarks", body: "The dots are individual shots, the diamond is your average, and the dashed mark is a typical benchmark for that club — a reference, not a promise. If your diamond sits under the mark, there is usually speed you are not turning into ball speed, often from a strike issue. Driver benchmarks sit near 1.50; irons are lower." },
+    trends: { title: "First shots vs last shots", body: "For the selected session only, we compare the first shots with the last shots of each club — first 10 versus last 10 when you have enough, otherwise first half versus last half. A drop in distance or smash late can be fatigue or losing the strike; a rise can be a slow warm-up. This is not combined across days." },
+    progress: { title: "Progress across sessions", body: "Each card is one club across every imported session, using your mishit, Best-N and units filters — not the range-view club chips. Green and red badges are the change versus the previous session. The takeaway and footer compare your latest visit with the first time we have that club on file." },
+    derived: { title: "Derived stats", body: "Carry efficiency is carry per mph of club speed — a compact way to see how well speed became distance. Potential carry only scales your existing carry by (benchmark smash ÷ actual smash). It is not a launch-monitor max: the LM1 has no launch angle or spin, so this is a smash-only sketch of what better contact might have been worth." },
+    flags: { title: "Flagged shots", body: "Misreads are values that do not make physical sense for an LM1 — for example smash well outside a normal range, zero carry, or total shorter than carry. Mishits are poor but plausible contact. The exclude toggle hides both from averages and charts; they stay in this list so you can review them. This table follows the selected session, not the club chips or Best-N." }
+  };
+
+  function bindHelp() {
+    const pop = $("#helpPopover");
+    if (!pop) return;
+    let openBtn = null;
+    let leaveTimer = null;
+    function closeHelp() {
+      pop.hidden = true;
+      if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+      openBtn = null;
     }
+    function placeHelp(btn) {
+      const r = btn.getBoundingClientRect();
+      const vw = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
+      const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+      pop.hidden = false;
+      const pr = pop.getBoundingClientRect();
+      let x = r.left;
+      let y = r.bottom + 8;
+      if (x + pr.width > vw - 10) x = Math.max(10, vw - pr.width - 10);
+      if (y + pr.height > vh - 10) y = Math.max(10, r.top - pr.height - 8);
+      pop.style.left = x + "px";
+      pop.style.top = y + "px";
+    }
+    function openHelp(btn) {
+      const key = btn.getAttribute("data-help");
+      const copy = HELP_COPY[key];
+      if (!copy) return;
+      pop.querySelector(".help-pop-title").textContent = copy.title;
+      pop.querySelector(".help-pop-body").textContent = copy.body;
+      if (openBtn && openBtn !== btn) openBtn.setAttribute("aria-expanded", "false");
+      openBtn = btn;
+      btn.setAttribute("aria-expanded", "true");
+      bindHelp._ignoreScroll = Date.now() + 400;
+      placeHelp(btn);
+    }
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest && e.target.closest(".help-btn");
+      if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (openBtn === btn && !pop.hidden) closeHelp();
+        else openHelp(btn);
+        return;
+      }
+      if (e.target.closest && e.target.closest("#helpPopover")) return;
+      closeHelp();
+    });
+    const fineHover = () => window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    document.addEventListener("mouseover", (e) => {
+      if (!fineHover()) return;
+      const btn = e.target.closest && e.target.closest(".help-btn");
+      if (!btn) return;
+      clearTimeout(leaveTimer);
+      openHelp(btn);
+    });
+    document.addEventListener("mouseout", (e) => {
+      if (!fineHover()) return;
+      const fromBtn = e.target.closest && e.target.closest(".help-btn");
+      const rel = e.relatedTarget;
+      const toPop = rel && rel.closest && rel.closest("#helpPopover");
+      const toBtn = rel && rel.closest && rel.closest(".help-btn");
+      if (fromBtn && !toPop && !toBtn) leaveTimer = setTimeout(closeHelp, 220);
+    });
+    pop.addEventListener("mouseenter", () => clearTimeout(leaveTimer));
+    pop.addEventListener("mouseleave", () => { leaveTimer = setTimeout(closeHelp, 180); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeHelp(); });
+    window.addEventListener("resize", closeHelp);
+    window.addEventListener("scroll", () => {
+      if (Date.now() < (bindHelp._ignoreScroll || 0)) return;
+      closeHelp();
+    }, true);
+  }
+
+  function gapKind(gapYd) {
+    if (gapYd == null || Number.isNaN(gapYd)) return null;
+    if (gapYd <= 0) return "overlap";
+    if (gapYd < 7) return "tight";
+    if (gapYd < 10) return "narrow";
+    if (gapYd <= 15) return "ideal";
+    if (gapYd <= 18) return "ok";
+    return "wide";
+  }
+  function gapKindLabel(kind) {
+    return ({ overlap: "overlap", tight: "tight", narrow: "a little tight", ideal: "ideal", ok: "a little wide", wide: "wide" })[kind] || "";
+  }
+
+  function renderGapping() {
+    const shots = shotsForStats();
+    const el = $("#gapChart");
+    const by = new Map();
+    shots.forEach((s) => {
+      const d = distOf(s);
+      if (d == null) return;
+      if (!by.has(s.club)) by.set(s.club, []);
+      by.get(s.club).push(d);
+    });
+    const clubs = Array.from(by.keys()).sort(sortClubs);
+    if (!clubs.length) { el.innerHTML = '<p class="empty">Need at least one club.</p>'; return; }
+    const rows = clubs.map((club) => {
+      const arr = by.get(club).slice().sort((a, b) => a - b);
+      return { club, short: clubDef(club).short || club, color: clubColor(club), n: arr.length, avg: mean(arr), p10: quantile(arr, 0.1), p90: quantile(arr, 0.9) };
+    });
+    const maxD = Math.max.apply(null, rows.map((r) => Math.max(toDisp(r.p90) || 0, toDisp(r.avg) || 0))) || 100;
+    const maxX = Math.max(50, Math.ceil((maxD + (toDisp(10) || 10)) / 25) * 25);
+    const ticks = [];
+    for (let x = 0; x <= maxX; x += (maxX > 200 ? 50 : 25)) ticks.push(x);
+    const u = unitShort();
+    const kindName = state.distMode === "total" ? "total" : "carry";
+    let html = '<div class="gap-legend">';
+    html += '<span><i class="gap-swatch ideal"></i>10–15 ' + u + " ideal gap</span>";
+    html += '<span><i class="gap-swatch wide"></i>Wider than ' + fmtDist(18) + " " + u + " (a hole)</span>";
+    html += '<span><i class="gap-swatch tight"></i>Under ' + fmtDist(7) + " " + u + " or overlap (tight)</span>";
+    html += "</div>";
+    html += '<div class="gap-chart" role="img" aria-label="Club gapping">';
+    html += '<div class="gap-axis">' + ticks.map((x, i) => "<span>" + x + (i === 0 ? " " + u : "") + "</span>").join("") + "</div>";
+    const pct = (yd) => Math.max(0, Math.min(100, (toDisp(yd) / maxX) * 100));
     rows.forEach((r, i) => {
-      const y = padT + 10 + i * 42;
-      const color = clubColor(r.club);
-      if (r.avgTotal != null) {
-        inner += '<rect x="' + xOf(0) + '" y="' + (y + 6) + '" width="' + Math.max(0, xOf(toDisp(r.avgTotal)) - xOf(0)) + '" height="16" rx="3" fill="' + color + '" fill-opacity=".22" stroke="' + color + '" stroke-opacity=".5"/>';
-      }
-      if (r.avgCarry != null) {
-        inner += '<rect x="' + xOf(0) + '" y="' + (y + 4) + '" width="' + Math.max(0, xOf(toDisp(r.avgCarry)) - xOf(0)) + '" height="20" rx="4" fill="' + color + '"/>';
-        inner += '<text x="' + (xOf(toDisp(r.avgCarry)) + 8) + '" y="' + (y + 19) + '" fill="#eef6f0" font-size="13" font-family="Barlow Condensed,sans-serif" font-weight="700">' + fmtDist(r.avgCarry) + "</text>";
-      }
-      inner += '<text x="' + (padL - 10) + '" y="' + (y + 18) + '" text-anchor="end" fill="#eef6f0" font-size="13" font-family="DM Sans,sans-serif" font-weight="650">' + escapeHtml(r.club) + "</text>";
-      if (i < rows.length - 1 && r.avgCarry != null && rows[i + 1].avgCarry != null) {
-        const gap = r.avgCarry - rows[i + 1].avgCarry;
-        const col = gap < 1 || gap < 8 ? "#ff4d5a" : gap > 18 ? "#ffb020" : "#8aa196";
-        const lab = gap < 1 ? "overlap " : "gap ";
-        inner += '<text x="' + (W - 8) + '" y="' + (y + 36) + '" text-anchor="end" fill="' + col + '" font-size="11">' + lab + fmtDist(Math.abs(gap)) + uSuf() + "</text>";
+      const left = (r.p10 != null) ? pct(r.p10) : pct(r.avg);
+      const right = (r.p90 != null) ? pct(r.p90) : pct(r.avg);
+      const avgP = pct(r.avg);
+      const labelLeft = Math.max(avgP, right);
+      html += '<div class="gap-row">';
+      html += '<div class="gap-name" title="' + escapeHtml(r.club) + '">' + escapeHtml(r.club) + "</div>";
+      html += '<div class="gap-track">';
+      html += '<div class="gap-range" style="left:' + left + "%;width:" + Math.max(1.5, right - left) + "%;background:" + r.color + '"></div>';
+      html += '<div class="gap-bar" style="width:' + avgP + "%;background:" + r.color + '"></div>';
+      html += '<span class="gap-avg" style="left:' + labelLeft + '%">' + fmtDist(r.avg) + " " + u + "</span>";
+      html += "</div></div>";
+      const nxt = rows[i + 1];
+      if (nxt && r.avg != null && nxt.avg != null) {
+        const gapYd = r.avg - nxt.avg;
+        const roundedYd = Math.round(gapYd);
+        const kind = gapKind(roundedYd);
+        const absLab = fmtDist(Math.abs(roundedYd <= 0 ? 0 : roundedYd)) + " " + u;
+        const text = kind === "overlap"
+          ? (r.short + " → " + nxt.short + ": " + absLab + " overlap")
+          : (r.short + " → " + nxt.short + ": " + absLab + " gap (" + gapKindLabel(kind) + ")");
+        html += '<div class="gap-step"><span class="gap-badge ' + kind + '">' + escapeHtml(text) + "</span></div>";
       }
     });
-    el.innerHTML = svgWrap(inner, W, H, "Club gapping");
+    html += "</div>";
+    el.innerHTML = html;
+    const sub = $("#gapSub");
+    if (sub) sub.textContent = "Average " + kindName + " per club, with a lighter P10–P90 band, and the gap to the next club in the bag.";
   }
+
   function renderDispersion() {
-    const shots = usedShots();
+    const shots = shotsForStats();
     const el = $("#dispChart");
     const clubs = clubsInPlay(shots);
     if (!clubs.length) { el.innerHTML = '<p class="empty">No shots.</p>'; return; }
     const by = new Map();
-    shots.forEach((s) => { if (s.carry != null) { if (!by.has(s.club)) by.set(s.club, []); by.get(s.club).push(s.carry); } });
+    shots.forEach((s) => { const d = distOf(s); if (d != null) { if (!by.has(s.club)) by.set(s.club, []); by.get(s.club).push(d); } });
+    const dispH = $("#dispTitle");
+    if (dispH) {
+      const btn = dispH.querySelector(".help-btn");
+      dispH.childNodes[0].nodeValue = (state.distMode === "total" ? "Total dispersion " : "Carry dispersion ");
+      if (btn && btn.parentNode !== dispH) dispH.appendChild(btn);
+    }
     const W = 920, rowH = 44, padL = 100, padR = 24, padT = 10, padB = 30;
     const H = padT + padB + clubs.length * rowH;
     let maxD = 0;
@@ -1669,10 +1878,10 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         inner += '<circle cx="' + xOf(toDisp(v)) + '" cy="' + (y + jx) + '" r="2.4" fill="' + color + '" stroke="#071018" stroke-width=".5"/>';
       });
     });
-    el.innerHTML = svgWrap(inner, W, H, "Carry dispersion");
+    el.innerHTML = svgWrap(inner, W, H, (state.distMode === "total" ? "Total" : "Carry") + " dispersion");
   }
   function renderScatter() {
-    const shots = usedShots().filter((s) => s.clubSpeed != null && s.ballSpeed != null);
+    const shots = shotsForStats().filter((s) => s.clubSpeed != null && s.ballSpeed != null);
     const el = $("#scatterChart");
     if (!shots.length) { el.innerHTML = '<p class="empty">No speed data.</p>'; return; }
     if (window.Chart) return renderScatterChartJS(shots, el);
@@ -1760,7 +1969,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
   }
 
   function renderSmash() {
-    const shots = usedShots().filter((s) => s.smash != null);
+    const shots = shotsForStats().filter((s) => s.smash != null);
     const el = $("#smashChart");
     const clubs = clubsInPlay(shots);
     if (!clubs.length) { el.innerHTML = '<p class="empty">No smash data.</p>'; return; }
@@ -1812,7 +2021,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       el.innerHTML = '<p class="empty">This comparison is for one range session — pick a session in the header to see whether carry or speed changed from the first shots to the last.</p>';
       return;
     }
-    const shots = usedShots().slice().sort((a, b) => (a.shotNo || 0) - (b.shotNo || 0) || (a._i || 0) - (b._i || 0));
+    const shots = shotsForStats().slice().sort((a, b) => (a.shotNo || 0) - (b.shotNo || 0) || (a._i || 0) - (b._i || 0));
     const clubs = clubsInPlay(shots);
     if (!clubs.length) { el.innerHTML = '<p class="empty">No shots in this session with the current filters.</p>'; return; }
     let html = '<div class="fl-grid">';
@@ -1834,7 +2043,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       }
       function pack(a) {
         return {
-          carry: mean(a.map((s) => s.carry).filter((v) => v != null)),
+          carry: mean(a.map((s) => distOf(s)).filter((v) => v != null)),
           speed: mean(a.map((s) => s.clubSpeed).filter((v) => v != null)),
           smash: mean(a.map((s) => s.smash).filter((v) => v != null))
         };
@@ -1851,7 +2060,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       const take = clubDef(club).short + " " + bits.join(", ") + " from the " + labF.toLowerCase() + " to the " + labL.toLowerCase() + ".";
       function col(lab, pack, deltas) {
         return '<div class="fl-col"><div class="k">' + lab + " · " + (lab === labF ? first.length : last.length) + ' shots</div>' +
-          '<div class="stat"><span class="lab">Carry</span><span class="val">' + fmtDist(pack.carry) + ' <span class="u">' + unitShort() + '</span>' + (deltas ? deltaBadge(toDisp(dC), 0, uSuf()) : "") + "</span></div>" +
+          '<div class="stat"><span class="lab">' + (state.distMode === "total" ? "Total" : "Carry") + '</span><span class="val">' + fmtDist(pack.carry) + ' <span class="u">' + unitShort() + '</span>' + (deltas ? deltaBadge(toDisp(dC), 0, uSuf()) : "") + "</span></div>" +
           '<div class="stat"><span class="lab">Club speed</span><span class="val">' + fmt(pack.speed, 1) + (deltas ? deltaBadge(dV, 1) : "") + "</span></div>" +
           '<div class="stat"><span class="lab">Smash</span><span class="val">' + fmt(pack.smash, 2) + (deltas ? deltaBadge(dS, 2) : "") + "</span></div></div>";
       }
@@ -1875,14 +2084,13 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const byClub = new Map();
     dates.forEach((sess) => {
       let shots = flagShots((sess.shots || []).map((s, i) => Object.assign({ _sessionId: sess.id, _sessionDate: sess.date }, s, { _i: i })));
-      shots = shots.filter((s) => isClubSelected(s.club));
       shots = shots.filter((s) => !shotExcluded(s));
       shots = applyBestN(shots);
       clubStats(shots).forEach((r) => {
         if (!byClub.has(r.club)) byClub.set(r.club, []);
         byClub.get(r.club).push({
           date: sess.date, name: sess.name, n: r.n,
-          carry: r.avgCarry, speed: r.avgChs, smash: r.avgSmash
+          carry: (state.distMode === "total" ? r.avgTotal : r.avgCarry), speed: r.avgChs, smash: r.avgSmash
         });
       });
     });
@@ -1912,7 +2120,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       }
       html += '<article class="prog-card"><header><span class="club-dot" style="background:' + clubColor(club) + '"></span>' + escapeHtml(club) + "</header>";
       html += '<p class="takeaway">' + escapeHtml(take) + "</p>";
-      html += '<table class="prog-table"><thead><tr><th>Session</th><th class="num">Carry</th><th class="num">Speed</th><th class="num">Smash</th></tr></thead><tbody>';
+      html += '<table class="prog-table"><thead><tr><th>Session</th><th class="num">' + (state.distMode === "total" ? "Total" : "Carry") + '</th><th class="num">Speed</th><th class="num">Smash</th></tr></thead><tbody>';
       rows.forEach((r, i) => {
         const prev = i > 0 ? rows[i - 1] : null;
         const bar = Math.round(((r.carry || 0) / maxC) * 100);
@@ -2061,6 +2269,8 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     $$("nav.tabs button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-view") === name));
     window.scrollTo(0, 0);
     if (name !== "sessions") resetSessEdit();
+    const rf = $("#rangeFilters");
+    if (rf) rf.hidden = name !== "range";
     if (name === "sessions") renderSessionsView();
   }
 
@@ -2939,8 +3149,10 @@ function renderSessionGrid() {
       if (!b) return;
       state.distMode = b.getAttribute("data-dist");
       $$("#distMode button").forEach((x) => x.classList.toggle("active", x === b));
-      renderHero();
+      renderAll();
+      if (state.view === "sessions") renderSessionsView();
     };
+    bindHelp();
     $("#btnPreviewPaste").onclick = previewPaste;
     $("#btnPickFiles").onclick = () => $("#fileInput").click();
     $("#fileInput").onchange = (e) => handleFiles(e.target.files);
