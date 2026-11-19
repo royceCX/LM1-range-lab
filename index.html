@@ -164,9 +164,12 @@ textarea.paste{width:100%;min-height:280px;background:#0a1016;border:1px dashed 
 .sess-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
 .sess-tiles .tile{min-height:72px;padding:10px 12px}
 .sess-tiles .tile .v{font-size:26px}
-.sess-club-avgs{display:flex;flex-wrap:wrap;gap:6px}
-.sess-club-avgs span{display:inline-flex;align-items:center;gap:6px;background:var(--elev);border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:12px;color:var(--muted)}
-.sess-club-avgs b{color:var(--text);font-variant-numeric:tabular-nums}
+.sess-club-avgs{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sess-club-avgs .scatter-chip{cursor:pointer}
+.sess-club-avgs .scatter-chip b{color:inherit;font-variant-numeric:tabular-nums;font-weight:650}
+.sess-club-avgs .scatter-chip.active b{color:var(--text)}
+#sessEditTable tr.just-saved td{background:rgba(62,224,255,.10);transition:background .8s ease}
+#sessEditTable tr{transition:background .8s ease}
 .sess-list{background:var(--elev);border:1px solid var(--line);border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:6px;max-height:min(78vh,920px);overflow:auto;position:sticky;top:70px}
 .sess-list h2{margin:0 6px 4px;font-family:var(--cond);font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:650;white-space:nowrap}
 .sess-item{display:block;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:12px;padding:10px 10px;color:inherit}
@@ -974,12 +977,12 @@ nav.tabs{flex-shrink:1}
 
   const CLUB_DEFS = [
     { id: "Driver", color: "#00E8FF", launch: 13, land: 38, smash: 1.5, kind: "wood", short: "D" },
-    { id: "2 Wood", color: "#FF6B00", launch: 13.5, land: 39, smash: 1.49, kind: "wood", short: "2W" },
-    { id: "3 Wood", color: "#7C4DFF", launch: 14, land: 40, smash: 1.48, kind: "wood", short: "3W" },
-    { id: "4 Wood", color: "#C6FF00", launch: 14.5, land: 40, smash: 1.48, kind: "wood", short: "4W" },
-    { id: "5 Wood", color: "#FF2F7A", launch: 15, land: 41, smash: 1.47, kind: "wood", short: "5W" },
-    { id: "7 Wood", color: "#FFCF00", launch: 16, land: 42, smash: 1.46, kind: "wood", short: "7W" },
-    { id: "9 Wood", color: "#1B8CFF", launch: 17, land: 42, smash: 1.45, kind: "wood", short: "9W" },
+    { id: "2 Wood", color: "#FF6B00", launch: 13.5, land: 39, smash: 1.49, kind: "wood", short: "2Wd" },
+    { id: "3 Wood", color: "#7C4DFF", launch: 14, land: 40, smash: 1.48, kind: "wood", short: "3Wd" },
+    { id: "4 Wood", color: "#C6FF00", launch: 14.5, land: 40, smash: 1.48, kind: "wood", short: "4Wd" },
+    { id: "5 Wood", color: "#FF2F7A", launch: 15, land: 41, smash: 1.47, kind: "wood", short: "5Wd" },
+    { id: "7 Wood", color: "#FFCF00", launch: 16, land: 42, smash: 1.46, kind: "wood", short: "7Wd" },
+    { id: "9 Wood", color: "#1B8CFF", launch: 17, land: 42, smash: 1.45, kind: "wood", short: "9Wd" },
     { id: "2 Hybrid", color: "#FF3B1A", launch: 16, land: 41, smash: 1.46, kind: "hybrid", short: "H2" },
     { id: "3 Hybrid", color: "#67E8F9", launch: 16.5, land: 42, smash: 1.45, kind: "hybrid", short: "H3" },
     { id: "4 Hybrid", color: "#FF9F14", launch: 17, land: 42, smash: 1.45, kind: "hybrid", short: "H4" },
@@ -1469,6 +1472,7 @@ function fmtThresh(yd) {
     excludeMishits: true,
     units: "yd",
     selectedClubs: null, // null = all
+    sessClubFilter: null, // null = all clubs in the Sessions table
     viewMode: "range",
     distMode: "carry",
     dispMode: "roll",
@@ -1518,7 +1522,7 @@ function fmtThresh(yd) {
       if (raw) {
         const data = JSON.parse(raw);
         if (data && Array.isArray(data.sessions)) {
-          state.sessions = data.sessions;
+          state.sessions = data.sessions.map(normalizeSession);
           state.currentId = data.currentId || (data.sessions[0] && data.sessions[0].id) || null;
         }
       }
@@ -5009,7 +5013,7 @@ function fmtThresh(yd) {
     if (id !== "__all__" && id && !state.sessions.some((s) => s.id === id)) return;
     const changed = state.currentId !== id;
     state.currentId = id || null;
-    if (changed) resetSessEdit();
+    if (changed) { resetSessEdit(); state.sessClubFilter = null; }
     if (changed && !opts.keepClubs) state.selectedClubs = null;
     saveStore();
     if (opts.silent) {
@@ -5046,9 +5050,12 @@ function fmtThresh(yd) {
     sessionsSorted().forEach((s) => {
       opts.push('<option value="' + escapeHtml(s.id) + '">' + escapeHtml(s.name || niceDate(s.date)) + " · " + (s.shots || []).length + " shots</option>");
     });
+    const prevOnChange = sel.onchange;
+    sel.onchange = null;
     sel.innerHTML = opts.join("") || '<option value="">No sessions</option>';
     sel.value = cur && (cur === "__all__" || state.sessions.some((s) => s.id === cur)) ? cur : (state.sessions[0] ? state.sessions[0].id : "");
     if (sel.value && sel.value !== state.currentId) state.currentId = sel.value;
+    sel.onchange = prevOnChange;
     syncSessionNavButtons();
   }
 
@@ -5066,8 +5073,8 @@ function fmtThresh(yd) {
     const fb = $("#filterBar");
     if (fb) fb.classList.toggle("is-perf", name === "performance");
     if (name === "sessions") renderSessionsView();
-    if (name === "performance") renderPerformance();
-    renderCounts();
+    if (name === "range" || name === "performance") renderAll();
+    else renderCounts();
   }
 
   function sessionTally(sess) {
@@ -5241,10 +5248,46 @@ function fmtThresh(yd) {
       (t.s ? '<div class="s">' + t.s + "</div>" : "") + "</div>"
     ).join("");
     const rows = clubStats(used);
-    avgEl.innerHTML = rows.map((r) =>
-      '<span><i class="club-dot" style="background:' + clubColor(r.club) + '"></i>' + escapeHtml(clubDef(r.club).short || r.club) +
-      " <b>" + fmtDist(r.avgCarry) + uSuf() + "</b></span>"
-    ).join("");
+    const filter = sessClubFilterSet();
+    const allOn = !filter;
+    let chips = '<button type="button" class="scatter-chip' + (allOn ? " active" : "") + '" data-sess-club="__all__" aria-pressed="' + (allOn ? "true" : "false") + '">All</button>';
+    chips += rows.map((r) => {
+      const on = !allOn && filter.has(r.club);
+      return '<button type="button" class="scatter-chip' + (on ? " active" : "") + '" data-sess-club="' + escapeHtml(r.club) + '" aria-pressed="' + (on ? "true" : "false") + '">' +
+        '<i class="club-dot" style="background:' + clubColor(r.club) + '"></i>' + escapeHtml(clubDef(r.club).short || r.club) +
+        " <b>" + fmtDist(r.avgCarry) + uSuf() + "</b></button>";
+    }).join("");
+    avgEl.innerHTML = chips;
+  }
+
+  function sessClubFilterSet() {
+    return state.sessClubFilter && state.sessClubFilter.size ? state.sessClubFilter : null;
+  }
+  function shotInSessClubFilter(sh) {
+    const f = sessClubFilterSet();
+    return !f || !sh || f.has(sh.club);
+  }
+  function sessClubFilterLabel() {
+    const f = sessClubFilterSet();
+    if (!f) return "";
+    return Array.from(f).sort(sortClubs).map((c) => clubDef(c).short || c).join(", ");
+  }
+  function toggleSessClubFilter(club) {
+    if (sessEdit.all) {
+      document.querySelectorAll("#sessEditTable tbody tr").forEach((tr) => {
+        const i = Number(tr.getAttribute("data-i"));
+        if (sessEdit.rows[i]) readDraftFromRow(tr, sessEdit.rows[i]);
+      });
+    }
+    if (!club || club === "__all__") state.sessClubFilter = null;
+    else {
+      if (!state.sessClubFilter) state.sessClubFilter = new Set();
+      if (state.sessClubFilter.has(club)) state.sessClubFilter.delete(club);
+      else state.sessClubFilter.add(club);
+      if (!state.sessClubFilter.size) state.sessClubFilter = null;
+    }
+    renderSessTiles();
+    renderSessTable();
   }
 
   function clubSelectHtml(selected) {
@@ -5295,6 +5338,7 @@ function fmtThresh(yd) {
     if (!sess) return;
     sessEdit.all = true;
     (sess.shots || []).forEach((sh, i) => {
+      if (!shotInSessClubFilter(sh)) return;
       if (!sessEdit.rows[i]) sessEdit.rows[i] = cloneDraft(sh);
     });
     renderSessTable();
@@ -5312,7 +5356,7 @@ function fmtThresh(yd) {
     draft.shotNo = val("shotNo") === "" ? null : parseNum(val("shotNo"));
     const clubEl = tr.querySelector('[data-f="club"]');
     if (clubEl) {
-      draft.club = clubEl.value;
+      draft.club = normalizeClub(clubEl.value);
       draft.clubRaw = clubEl.value;
     }
     draft.clubSpeed = num("clubSpeed");
@@ -5333,8 +5377,8 @@ function fmtThresh(yd) {
   }
   function applyDraftToShot(sh, draft) {
     sh.shotNo = draft.shotNo;
-    sh.club = draft.club;
-    sh.clubRaw = draft.clubRaw || draft.club;
+    sh.club = normalizeClub(draft.club || draft.clubRaw || "");
+    sh.clubRaw = draft.clubRaw || draft.club || sh.club;
     sh.clubSpeed = draft.clubSpeed;
     sh.ballSpeed = draft.ballSpeed;
     if (draft.smashManual) {
@@ -5363,7 +5407,7 @@ function fmtThresh(yd) {
     delete sessEdit.rows[i];
     if (!Object.keys(sessEdit.rows).length) sessEdit.all = false;
     saveStore();
-    afterShotChange(true);
+    afterShotChange(true, { rowIndex: i });
     toast("Shot saved");
   }
   function cancelRowEdit(i) {
@@ -5379,7 +5423,12 @@ function fmtThresh(yd) {
     document.querySelectorAll("#sessEditTable tbody tr").forEach((tr) => {
       const i = Number(tr.getAttribute("data-i"));
       if (!sessEdit.rows[i] || !sess.shots[i]) return;
-      const draft = readDraftFromRow(tr, sessEdit.rows[i]);
+      readDraftFromRow(tr, sessEdit.rows[i]);
+    });
+    Object.keys(sessEdit.rows).forEach((k) => {
+      const i = Number(k);
+      if (!sess.shots[i] || !sessEdit.rows[i]) return;
+      const draft = sessEdit.rows[i];
       const sh = sess.shots[i];
       if (!shotFieldsEqual(sh, draft)) {
         applyDraftToShot(sh, draft);
@@ -5408,7 +5457,7 @@ function fmtThresh(yd) {
       sessEdit.all = false;
       sessEdit.rows = Object.create(null);
     }
-    const rows = [];
+    let rows = [];
     if (sess) {
       (sess.shots || []).forEach((sh, i) => rows.push({ sess, sh, i }));
     } else {
@@ -5421,23 +5470,38 @@ function fmtThresh(yd) {
       hideEditBar();
       return;
     }
+    const allCount = rows.length;
+    rows = rows.filter((r) => shotInSessClubFilter(r.sh));
+    const visCount = rows.length;
+    const filteredOn = !!sessClubFilterSet() && visCount !== allCount;
     const flagged = flagShots(rows.map((r, n) => Object.assign({ _sessionId: r.sess.id, _i: r.i, _n: n }, r.sh)));
     let toolbar = "";
+    const filterNote = filteredOn ? ("Showing " + visCount + " of " + allCount + " shots · " + sessClubFilterLabel()) : "";
     if (editable) {
       if (sessEdit.all) {
-        toolbar = '<div class="sess-edit-bar" id="sessEditBar" role="region" aria-label="Edit all shots">' +
-          '<span class="msg">Editing all ' + rows.length + " shots — changes apply when you save</span>" +
+        const scope = filteredOn
+          ? ("Editing " + visCount + " of " + allCount + " shots (" + sessClubFilterLabel() + ")")
+          : ("Editing all " + visCount + " shots");
+        toolbar = '<div class="sess-edit-bar" id="sessEditBar" role="region" aria-label="Edit shots">' +
+          '<span class="msg">' + scope + " — changes apply when you save</span>" +
           '<div class="sess-edit-actions">' +
           '<button type="button" class="btn primary" data-act="save-all" id="btnSaveAll">' + iconSvg("check") + " Save all</button>" +
           '<button type="button" class="btn" data-act="cancel-all" id="btnCancelAll">' + iconSvg("x") + " Cancel</button>" +
           "</div></div>";
       } else {
         toolbar = '<div class="sess-table-toolbar">' +
-          '<button type="button" class="btn" id="btnEditAll" data-act="edit-all">' + iconSvg("pencil") + " Edit all</button>" +
+          '<button type="button" class="btn" id="btnEditAll" data-act="edit-all">' + iconSvg("pencil") + (filteredOn ? " Edit visible" : " Edit all") + "</button>" +
+          (filterNote ? '<span class="sub" style="margin:0">' + filterNote + "</span>" : "") +
           "</div>";
       }
     } else {
-      toolbar = '<p class="sub" style="margin:0">Read-only combined table. Select a session to edit shots.</p>';
+      toolbar = '<p class="sub" style="margin:0">Read-only combined table. Select a session to edit shots.' +
+        (filterNote ? " " + filterNote + "." : "") + "</p>";
+    }
+    if (!visCount) {
+      el.innerHTML = toolbar + '<p class="sess-empty">No shots for the selected club' + (sessClubFilterSet() && sessClubFilterSet().size > 1 ? "s" : "") + ". Click All to show every shot.</p>";
+      hideEditBar();
+      return;
     }
     let html = '<table class="stats" id="sessEditTable"><thead><tr>';
     const heads = ["Shot", "Club", "Club spd", "Ball spd", "Smash", "Carry (" + unitShort() + ")", "Total (" + unitShort() + ")", "Status", "Include"];
@@ -5616,7 +5680,7 @@ function fmtThresh(yd) {
         if (mode === "auto") delete sess.shots[i].includeOverride;
         else sess.shots[i].includeOverride = mode;
         saveStore();
-        afterShotChange(true);
+        afterShotChange(true, { rowIndex: i });
       } else if (act === "revert-row") {
         delete sessEdit.rows[i];
         if (!Object.keys(sessEdit.rows).length) sessEdit.all = false;
@@ -5634,7 +5698,7 @@ function fmtThresh(yd) {
     const field = input.getAttribute("data-f");
     let val = input.value;
     if (field === "club") {
-      draft.club = val;
+      draft.club = normalizeClub(val);
       draft.clubRaw = val;
     } else if (field === "shotNo") {
       draft.shotNo = val === "" ? null : parseNum(val);
@@ -5665,18 +5729,43 @@ function fmtThresh(yd) {
     if (n == null) return null;
     return fromDisp(n);
   }
-  function afterShotChange(rebuildTable) {
+  function afterShotChange(rebuildTable, opts) {
+    opts = opts || {};
+    const winY = window.scrollY;
+    const wrap = document.querySelector("#sessShotTable .table-wrap");
+    const wrapY = wrap ? wrap.scrollTop : 0;
+    const list = $("#sessList");
+    const listY = list ? list.scrollTop : 0;
     saveStore();
+    renderAll();
     if (rebuildTable) renderSessionsView();
     else {
-      fillSessionSelect();
       renderSessList();
       renderSessTiles();
       renderSessMeta();
     }
-    const stay = state.view;
-    renderAll();
-    if (stay === "sessions" && rebuildTable) renderSessionsView();
+    window.scrollTo(0, winY);
+    const wrap2 = document.querySelector("#sessShotTable .table-wrap");
+    if (wrap2) wrap2.scrollTop = wrapY;
+    const list2 = $("#sessList");
+    if (list2) list2.scrollTop = listY;
+    const focusI = opts.rowIndex;
+    if (focusI != null && !Number.isNaN(Number(focusI))) {
+      const tr = document.querySelector('#sessEditTable tr[data-i="' + focusI + '"]');
+      if (tr) {
+        tr.classList.add("just-saved");
+        const wr = tr.closest(".table-wrap");
+        if (wr) {
+          const top = tr.offsetTop, bot = top + tr.offsetHeight;
+          if (top < wr.scrollTop) wr.scrollTop = Math.max(0, top - 16);
+          else if (bot > wr.scrollTop + wr.clientHeight) wr.scrollTop = bot - wr.clientHeight + 16;
+        }
+        const focusEl = tr.querySelector('[data-act="edit-row"]') || tr;
+        try { focusEl.focus({ preventScroll: true }); } catch (e) {}
+        window.setTimeout(() => { tr.classList.remove("just-saved"); }, 1400);
+      }
+    }
+    window.scrollTo(0, winY);
   }
   function revertRow(sess, i) {
     ensureOriginal(sess);
@@ -5906,6 +5995,12 @@ function renderSessionGrid() {
   function bind() {
     $$("nav.tabs button").forEach((b) => b.onclick = () => showView(b.getAttribute("data-view")));
     $("#sessionSelect").onchange = () => setCurrentSession($("#sessionSelect").value);
+    const clubAvgs = $("#sessClubAvgs");
+    if (clubAvgs) clubAvgs.onclick = (e) => {
+      const btn = e.target.closest("[data-sess-club]");
+      if (!btn) return;
+      toggleSessClubFilter(btn.getAttribute("data-sess-club"));
+    };
     $("#btnSessPrev").onclick = () => stepSession(-1);
     $("#btnSessNext").onclick = () => stepSession(1);
     const sessList = $("#sessList");
