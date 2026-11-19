@@ -531,41 +531,12 @@ nav.tabs{flex-shrink:1}
 .perf-db-delta.flat{color:var(--muted);font-size:13px;font-family:var(--font);font-weight:650}
 .perf-db-delta small{display:block;font-family:var(--font);font-size:10px;font-weight:650;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
 
-.spd-table{display:flex;flex-direction:column;min-width:0}
-.spd-head,.spd-row{display:grid;grid-template-columns:minmax(150px,.65fr) repeat(3,minmax(0,1.2fr));gap:8px 20px;align-items:center}
-.spd-head{padding:0 0 8px;border-bottom:1px solid var(--line)}
-.spd-row{padding:8px 0;border-bottom:1px solid var(--line)}
-.spd-row:last-child{border-bottom:0}
-.spd-row.is-faint{opacity:.55}
-.spd-club{display:flex;align-items:center;gap:6px;min-width:0;font-family:var(--cond);font-weight:700;font-size:15px;letter-spacing:.04em;line-height:1.2}
-.spd-club-text{min-width:min-content;flex-shrink:0}
-.spd-club-name{display:block}
-.spd-club-note{display:block;margin-top:2px;font-family:var(--cond);font-size:11px;font-weight:650;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
-.spd-phone-dates{display:none}
-.spd-hcell{min-width:0}
-.spd-h-title{font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
-.spd-h-spark{display:flex;justify-content:space-between;margin-left:calc(5.6em + 8px);margin-right:0;padding:0 2.5%;font-family:var(--cond);font-size:9px;font-weight:600;color:var(--dim);letter-spacing:.02em}
-.spd-cell{display:grid;grid-template-columns:5.6em minmax(0,1fr);grid-template-areas:"val spark" "delta spark";column-gap:8px;row-gap:1px;align-items:center;min-width:0}
-.spd-val{grid-area:val;align-self:end;font-family:var(--cond);font-weight:700;font-size:20px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1;color:var(--text)}
-.spd-delta{grid-area:delta;align-self:start;font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.02em;font-variant-numeric:tabular-nums;text-align:left;line-height:1.15;color:var(--muted);white-space:nowrap}
-.spd-delta.up{color:var(--green)}
-.spd-delta.down{color:var(--red)}
-.spd-spark-wrap{min-width:0;height:36px}
-.spd-spark-wrap svg{width:100%;height:36px;display:block}
-.spd-mlabel{display:none}
-@media (max-width:700px){
-  .spd-head{display:none}
-  .spd-row{display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:10px 0}
-  .spd-club{margin:0 0 2px}
-  .spd-phone-dates{display:flex;justify-content:space-between;padding:0 2px 4px;font-family:var(--cond);font-size:9px;font-weight:600;color:var(--dim);letter-spacing:.02em}
-  .spd-cell{grid-template-columns:1fr auto;grid-template-areas:"label delta" "val val" "spark spark";gap:2px 8px;padding:7px 0 4px;border-top:1px solid var(--line)}
-  .spd-mlabel{display:block;grid-area:label;font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-  .spd-val{grid-area:val;font-size:22px;align-self:start}
-  .spd-delta{grid-area:delta;align-self:start;text-align:right}
-  .spd-spark-wrap{grid-area:spark;height:40px;margin-top:2px}
-  .spd-spark-wrap svg{height:40px}
-  .spd-h-spark{margin:0}
-}
+.spd-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 10px;font-size:11px;color:var(--muted);align-items:center;line-height:1.3}
+.spd-legend span{display:inline-flex;align-items:center;gap:6px}
+.spd-leg-line,.spd-leg-gap{display:inline-block;flex:0 0 auto;border-radius:2px}
+.spd-leg-line{width:16px;height:2px;background:var(--muted)}
+.spd-leg-line.is-ball{background:var(--text)}
+.spd-leg-gap{width:14px;height:8px;background:rgba(238,246,240,.2);box-shadow:inset 0 2px 0 var(--text), inset 0 -2px 0 var(--muted)}
 
 .perf-bag-stage{position:relative;width:100%;min-height:280px}
 .perf-bag-stage svg{width:100%;height:auto;display:block}
@@ -612,7 +583,7 @@ nav.tabs{flex-shrink:1}
   .work-illu{max-width:220px}
 }
 @media (prefers-reduced-motion: reduce){
-  .perf-db svg *,.perf-bag-stage svg *,.work-illu svg *,.spd-spark-wrap svg *{transition:none !important;animation:none !important}
+  .perf-db svg *,.perf-bag-stage svg *,.work-illu svg *,#perfTimeline svg *{transition:none !important;animation:none !important}
 }
 
 @keyframes perf-pulse {
@@ -819,7 +790,7 @@ nav.tabs{flex-shrink:1}
       </section>
       <section class="card" id="perf-timeline-card">
         <h3>Speed &amp; strike trends <button type="button" class="help-btn" data-help="perf-timeline" aria-label="About speed and strike trends">?</button></h3>
-        <p class="sub" id="perfTimelineSub">How your swing speed, ball speed and strike are trending, per club. Higher is better.</p>
+        <p class="sub" id="perfTimelineSub">Club and ball speed on the same scale. The shaded gap between them is smash — how well you struck it.</p>
         <div id="perfTimeline"></div>
       </section>
 
@@ -1208,7 +1179,7 @@ function fmtThresh(yd) {
     set("perfBagSub", "Average " + kind + " for each club on a distance ladder, for the session on the play bar. Play or scrub to walk through your visits.");
     set("perfTvnSub", "How this club’s " + kind + ", speed, smash and estimated height changed from one visit to another. Green is an improvement, red is a drop. Height and the flight path are estimated.");
     set("perfHeatSub", "Thinner band = more repeatable distance. Shows where 8 of 10 shots landed each session.");
-    set("perfTimelineSub", "How your swing speed, ball speed and strike are trending, per club. Higher is better.");
+    set("perfTimelineSub", "Club and ball speed on the same scale. The shaded gap between them is smash — how well you struck it.");
     const ex = document.getElementById("excludeMishits");
     if (ex && ex.closest("label")) ex.closest("label").title = "Hide likely poor contact (mishits) and impossible-looking readings (misreads) from the averages.";
     const best = document.getElementById("bestN");
@@ -2582,7 +2553,7 @@ function fmtThresh(yd) {
       "tvn-flight": { title: "Ball flight · side view (estimated)", body: "A side-on sketch of a typical shot in each session. Height is estimated — the LM1 does not measure launch, spin or how high the ball went. The solid path is Now; the fainter path is Then. The dashed line on the ground is roll from carry to total. Replay plays the later flight again." },
       "tvn-spread": { title: "Carry spread · from above", body: "A bird’s-eye view of how far the shots flew. The ellipse runs along the target line and shows the middle 80% of carries. Width left-to-right is only for readability — the LM1 does not record side or face data, so this is not shot shape." },
       "perf-bag": { title: "Bag evolution", body: "Average " + kind + " for each club, lined up as a bag ladder for the session on the play bar. Solid dots are this visit; the dashed ring is your first session; hollow rings are earlier visits; a faded dot is a club you didn’t hit this time, shown at its last known distance. The line between clubs is the gap — red means they overlap or sit tight, amber means a wide hole. Play or scrub to walk through your visits. Units follow the Yards / Metres toggle." },
-      "perf-timeline": { title: "Speed & strike trends", body: "Each row is one club. Club speed is how fast you swung, in mph; ball speed is what that swing transferred to the ball, also in mph; smash is ball speed ÷ club speed — a simple read of how well you struck it. The sparkline is those averages across your sessions, left to right; a break means that club wasn’t hit that day, not a guess. The big number is the latest session; the green or red figure is the change since the first session you have. A faint line on the smash spark is the good-strike mark for that club type — for example 1.33 for irons. Speeds stay in mph, whatever distance unit you have chosen. A faded row means you only have one session for that club so far." },
+      "perf-timeline": { title: "Speed & strike trends", body: "Each panel is one club. The grey line is how fast you swung, the coloured line is ball speed, and the shaded gap between them is smash — how well you struck it (ball speed ÷ club speed), so a wider gap means a better strike. A green smash number is at or above a typical good strike for that club (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges); a break in the line means you didn’t hit that club that day. Speeds stay in mph, whatever distance unit you have chosen." },
       "perf-heat": { title: "Consistency over time", body: "Each panel is one club. The soft band is where the middle 8 of 10 shots landed in each session (P10–P90 carry), in " + unitWord() + ". A thinner band means more repeatable distance; a wider band means the number jumped around. The thin line is the median carry. If a visit is missing, the band breaks — that club wasn’t hit, not a guess. The headline is half the latest band’s width, compared with the first session you have. Units follow the Yards / Metres toggle." },
       "perf-strike": { title: "Strike quality over time", body: "Stacked bars show the share of poor, OK and good strikes in each session, using the same smash-factor thresholds as the smash gauges — a simple read of how well you found the face. A larger good share is a better day of contact; more poor strikes usually means weaker contact. This uses smash only: the LM1 does not measure path, face or strike location." },
       "perf-work": { title: "What to work on", body: "Pattern-based suggestions from the stats the LM1 does measure — distance, speed, smash and how tightly shots grouped. They are inferred, not a launch-monitor diagnosis: the LM1 does not measure path, face, spin, launch or loft. Treat each card as something to look at with a coach or a fuller monitor, not as a confirmed fault." },
@@ -3853,134 +3824,271 @@ function fmtThresh(yd) {
   function renderPerfTimeline(data, clubs) {
     const el = $("#perfTimeline");
     if (!el) return;
-    const nS = data.sessions.length;
+    const sessions = data.sessions || [];
+    const nS = sessions.length;
     if (nS < 1) { el.innerHTML = '<p class="empty">No sessions to plot.</p>'; return; }
-    const metrics = [
-      { id: "clubSpeed", title: "Club speed (mph)", label: "Club speed", short: "Club speed" },
-      { id: "ballSpeed", title: "Ball speed (mph)", label: "Ball speed", short: "Ball speed" },
-      { id: "smash", title: "Smash", label: "Smash", short: "Smash" }
-    ].map((m) => Object.assign(m, perfStatMeta(m.id)));
-    const hasVal = (c, meta) => {
-      if (!c) return false;
-      const v = meta.raw(c);
-      return v != null && Number.isFinite(v);
-    };
+    const ordered = (clubs && clubs.length ? clubs : data.clubs).slice();
+    const finite = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
+
     const rows = [];
-    clubs.forEach((club) => {
+    ordered.forEach((club) => {
       const cells = data.cells.get(club) || [];
-      const hit = cells.filter(Boolean).length;
-      const any = metrics.some((meta) => cells.some((c) => hasVal(c, meta)));
-      if (!any) return;
-      rows.push({ club, cells, faint: hit < 2 });
+      const pts = [];
+      cells.forEach((c, i) => {
+        if (!c) return;
+        const clubSp = finite(c.avgChs);
+        const ball = finite(c.avgBall);
+        let smash = finite(c.avgSmash);
+        if (smash == null && clubSp && ball && clubSp > 0) smash = ball / clubSp;
+        if (clubSp == null && ball == null && smash == null) return;
+        pts.push({ i, n: c.n || 0, date: sessions[i] && sessions[i].date, club: clubSp, ball: ball, smash: smash });
+      });
+      if (!pts.length) return;
+      rows.push({ club, pts, faint: pts.length < 2 });
     });
     if (!rows.length) {
       el.innerHTML = '<p class="empty">No club or ball speed to plot for this selection.</p>';
       return;
     }
-    const dateLabel = (s) => escapeHtml(niceDate(s.date).replace(/ 20\d\d/, ""));
-    const firstDate = dateLabel(data.sessions[0]);
-    const lastDate = dateLabel(data.sessions[nS - 1]);
-    const datesHtml = '<span>' + firstDate + "</span><span>" + lastDate + "</span>";
 
-    function sparkSvg(club, color, meta, cells) {
-      const W = 160, H = 36, padL = 4, padR = 4, padT = 6, padB = 6;
-      const points = cells.map((c, i) => {
-        if (!hasVal(c, meta)) return null;
-        return { v: meta.raw(c), n: c.n, date: data.sessions[i].date, i };
+    function shortDate(iso) { return niceDate(iso).replace(/ 20\d\d/, ""); }
+    function signedMph(d) {
+      if (d == null || !Number.isFinite(d)) return "";
+      const abs = Math.abs(d);
+      const body = abs >= 9.95 || Math.abs(abs - Math.round(abs)) < 0.05 ? String(Math.round(abs)) : fmt(abs, 1);
+      return (d > 0 ? "+" : d < 0 ? "−" : "") + body + " mph";
+    }
+    function firstLastOf(pts, key) {
+      let first = null, last = null;
+      pts.forEach((p) => { if (p[key] != null) { if (!first) first = p; last = p; } });
+      return { first, last };
+    }
+    function runsOf(pts, key) {
+      const runs = [];
+      pts.forEach((p) => {
+        if (p[key] == null) return;
+        const last = runs[runs.length - 1];
+        if (last && p.i === last[last.length - 1].i + 1) last.push(p);
+        else runs.push([p]);
       });
-      const vals = points.filter(Boolean).map((p) => p.v);
-      if (!vals.length) {
-        return '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(club + " " + meta.label) + '"></svg>';
-      }
+      return runs;
+    }
+    function niceScale(vals) {
       let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
-      const thresh = meta.id === "smash" ? smashGoodFor(club).good : null;
-      if (thresh != null && Number.isFinite(thresh)) {
-        lo = Math.min(lo, thresh);
-        hi = Math.max(hi, thresh);
+      if (!Number.isFinite(lo) || !Number.isFinite(hi)) return { lo: 0, hi: 10, ticks: [0, 5, 10] };
+      if (!(hi > lo)) { lo -= 5; hi += 5; }
+      const pad = Math.max((hi - lo) * 0.2, 4);
+      lo -= pad;
+      hi += pad * 1.35;
+      const minSpan = 18;
+      if (hi - lo < minSpan) {
+        const mid = (lo + hi) / 2;
+        lo = mid - minSpan / 2;
+        hi = mid + minSpan / 2;
       }
-      if (!(hi > lo)) {
-        const padEq = meta.id === "smash" ? 0.04 : 2;
-        lo -= padEq;
-        hi += padEq;
+      const span = hi - lo;
+      function innerTicks(step) {
+        const ticks = [];
+        let v = Math.ceil(lo / step - 1e-9) * step;
+        for (; v <= hi + 1e-9; v += step) ticks.push(Math.round(v * 1000) / 1000);
+        return ticks;
+      }
+      const raw = span / 3;
+      const pow = Math.pow(10, Math.floor(Math.log10(raw || 1)));
+      const n = raw / pow;
+      let step = n < 1.5 ? pow : n < 3.5 ? 2 * pow : n < 7.5 ? 5 * pow : 10 * pow;
+      let ticks = innerTicks(step);
+      if (ticks.length > 4) {
+        step *= 2;
+        ticks = innerTicks(step);
+      } else if (ticks.length < 3 && step / 2 >= 1) {
+        const half = step / 2;
+        const more = innerTicks(half);
+        if (more.length >= 3 && more.length <= 4) { step = half; ticks = more; }
+      }
+      if (!ticks.length) ticks = [Math.round(lo), Math.round(hi)];
+      return { lo, hi, ticks, step };
+    }
+    function bandPath(top, bot) {
+      if (top.length < 2 || bot.length < 2 || top.length !== bot.length) return "";
+      const topD = consSmoothPath(top);
+      const botRev = bot.slice().reverse();
+      let d = topD + " L " + botRev[0].x.toFixed(1) + " " + botRev[0].y.toFixed(1);
+      if (botRev.length === 2) {
+        d += " L " + botRev[1].x.toFixed(1) + " " + botRev[1].y.toFixed(1);
       } else {
-        const pad = (hi - lo) * 0.18;
-        lo -= pad;
-        hi += pad;
-      }
-      const xOf = (i) => padL + (nS <= 1 ? (W - padL - padR) / 2 : (i / (nS - 1)) * (W - padL - padR));
-      const yOf = (v) => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
-      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(club + " " + meta.label + " trend") + '">';
-      if (thresh != null && Number.isFinite(thresh)) {
-        const y = yOf(thresh);
-        svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="var(--center)" stroke-opacity=".28" stroke-width="1" stroke-dasharray="2 3"/>';
-      }
-      for (let i = 0; i < nS - 1; i++) {
-        if (!points[i] || !points[i + 1]) continue;
-        svg += '<line x1="' + xOf(i).toFixed(1) + '" y1="' + yOf(points[i].v).toFixed(1) + '" x2="' + xOf(i + 1).toFixed(1) + '" y2="' + yOf(points[i + 1].v).toFixed(1) + '" stroke="' + color + '" stroke-width="1.35" stroke-linecap="round"/>';
-      }
-      let lastIdx = -1;
-      for (let i = nS - 1; i >= 0; i--) if (points[i]) { lastIdx = i; break; }
-      const slotW = nS <= 1 ? 18 : Math.max(8, (W - padL - padR) / Math.max(1, nS - 1));
-      points.forEach((p, i) => {
-        if (!p) return;
-        const x = xOf(i), y = yOf(p.v);
-        const isLast = i === lastIdx;
-        const small = p.n < 3;
-        const tip = escapeHtml([
-          club + " · " + niceDate(p.date),
-          meta.label + "  " + meta.fmt(p.v),
-          p.n + " shot" + (p.n === 1 ? "" : "s")
-        ].join("\n"));
-        svg += '<rect data-tip="' + tip + '" x="' + (x - slotW / 2).toFixed(1) + '" y="0" width="' + slotW.toFixed(1) + '" height="' + H + '" fill="transparent" style="cursor:pointer"/>';
-        if (small) {
-          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (isLast ? 3.2 : 2.4) + '" fill="none" stroke="' + color + '" stroke-width="1.2" opacity="' + (isLast ? "0.7" : "0.4") + '" pointer-events="none"/>';
-        } else if (isLast) {
-          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.2" fill="' + color + '" pointer-events="none"/>';
-        } else {
-          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2" fill="' + color + '" opacity=".45" pointer-events="none"/>';
+        for (let i = 0; i < botRev.length - 1; i++) {
+          const p0 = botRev[i - 1] || botRev[i];
+          const p1 = botRev[i];
+          const p2 = botRev[i + 1];
+          const p3 = botRev[i + 2] || p2;
+          const c1x = p1.x + (p2.x - p0.x) / 6;
+          const c1y = p1.y + (p2.y - p0.y) / 6;
+          const c2x = p2.x - (p3.x - p1.x) / 6;
+          const c2y = p2.y - (p3.y - p1.y) / 6;
+          d += " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " + c2x.toFixed(1) + " " + c2y.toFixed(1) + " " + p2.x.toFixed(1) + " " + p2.y.toFixed(1);
         }
+      }
+      return d + " Z";
+    }
+    function headlineFor(row) {
+      const ball = firstLastOf(row.pts, "ball");
+      const club = firstLastOf(row.pts, "club");
+      const smash = firstLastOf(row.pts, "smash");
+      if (row.faint) {
+        const sm = smash.last && smash.last.smash != null ? "Smash " + fmt(smash.last.smash, 2) : (ball.last && ball.last.ball != null ? fmt(ball.last.ball, 1) + " mph ball" : "");
+        return { main: sm, smash: "", note: "1 session", tone: "flat" };
+      }
+      const dBall = ball.first && ball.last && ball.first !== ball.last ? ball.last.ball - ball.first.ball : null;
+      const dClub = club.first && club.last && club.first !== club.last ? club.last.club - club.first.club : null;
+      const leadClub = dClub != null && (dBall == null || (Math.abs(dClub) >= 1.5 && Math.abs(dClub) > Math.abs(dBall) + 0.8));
+      let main = "", tone = "flat";
+      if (leadClub) {
+        main = "Club " + signedMph(dClub);
+        tone = perfDeltaTone(dClub, "up");
+      } else if (dBall != null) {
+        main = "Ball " + signedMph(dBall);
+        tone = perfDeltaTone(dBall, "up");
+      } else if (dClub != null) {
+        main = "Club " + signedMph(dClub);
+        tone = perfDeltaTone(dClub, "up");
+      }
+      let smashBit = "";
+      if (smash.first && smash.last) {
+        const a = smash.first.smash, b = smash.last.smash;
+        smashBit = (smash.first !== smash.last && Math.abs(b - a) >= 0.005)
+          ? ("smash " + fmt(a, 2) + " → " + fmt(b, 2))
+          : ("smash " + fmt(b, 2));
+      }
+      return { main: main, smash: smashBit, note: "", tone: tone };
+    }
+
+    function panelSvg(row) {
+      const W = 280, H = 128, padL = 30, padR = 10, padT = 16, padB = 18;
+      const color = clubColor(row.club);
+      const grey = "var(--muted)";
+      const vals = [];
+      row.pts.forEach((p) => { if (p.club != null) vals.push(p.club); if (p.ball != null) vals.push(p.ball); });
+      const scale = niceScale(vals);
+      const xOf = (i) => padL + (nS <= 1 ? (W - padL - padR) / 2 : (i / (nS - 1)) * (W - padL - padR));
+      const yOf = (v) => padT + (1 - (v - scale.lo) / (scale.hi - scale.lo)) * (H - padT - padB);
+      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(row.club) + ' speed and smash">';
+      scale.ticks.forEach((v) => {
+        const y = yOf(v);
+        if (!Number.isFinite(y)) return;
+        svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="rgba(255,255,255,.06)"/>';
+        svg += '<text x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(fmt0(v)) + "</text>";
       });
+
+      const bothRuns = runsOf(row.pts.filter((p) => p.club != null && p.ball != null), "club");
+      bothRuns.forEach((run) => {
+        if (run.length < 2) {
+          const p = run[0];
+          const x = xOf(p.i);
+          const y1 = yOf(p.ball), y2 = yOf(p.club);
+          svg += '<path d="M ' + (x - 4).toFixed(1) + " " + y1.toFixed(1) + " H " + (x + 4).toFixed(1) + " V " + y2.toFixed(1) + " H " + (x - 4).toFixed(1) + ' Z" fill="' + color + '" fill-opacity="' + (row.faint ? ".10" : ".20") + '"/>';
+          return;
+        }
+        const top = run.map((p) => ({ x: xOf(p.i), y: yOf(p.ball) }));
+        const bot = run.map((p) => ({ x: xOf(p.i), y: yOf(p.club) }));
+        const d = bandPath(top, bot);
+        if (d) svg += '<path d="' + d + '" fill="' + color + '" fill-opacity="' + (row.faint ? ".10" : ".20") + '"/>';
+      });
+
+      function drawSeries(key, stroke, width, fillDot) {
+        runsOf(row.pts, key).forEach((run) => {
+          const pts = run.map((p) => ({ x: xOf(p.i), y: yOf(p[key]) }));
+          if (pts.length >= 2) {
+            svg += '<path d="' + consSmoothPath(pts) + '" fill="none" stroke="' + stroke + '" stroke-width="' + width + '" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="' + (row.faint ? ".55" : "1") + '"/>';
+          }
+        });
+        row.pts.forEach((p, idx) => {
+          if (p[key] == null) return;
+          const x = xOf(p.i), y = yOf(p[key]);
+          const isLast = !row.pts.slice(idx + 1).some((q) => q[key] != null);
+          const r = isLast ? 2.8 : 2.2;
+          const hollow = p.n < 3;
+          if (hollow) {
+            svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="none" stroke="' + stroke + '" stroke-width="1.15" opacity="' + (isLast ? "0.85" : "0.55") + '" pointer-events="none"/>';
+          } else {
+            svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="' + fillDot + '" opacity="' + (isLast ? "1" : "0.85") + '" pointer-events="none"/>';
+          }
+        });
+      }
+      drawSeries("club", grey, 1.4, grey);
+      drawSeries("ball", color, 1.7, color);
+
+      const smashPts = row.pts.filter((p) => p.smash != null && p.ball != null);
+      let labelIdx = [];
+      if (smashPts.length) {
+        if (smashPts.length > 3) labelIdx = [0, smashPts.length - 1];
+        else labelIdx = smashPts.map((_, i) => i);
+      }
+      const thresh = smashGoodFor(row.club).good;
+      labelIdx.forEach((li) => {
+        const p = smashPts[li];
+        const x = xOf(p.i), y = yOf(p.ball);
+        const good = p.smash >= thresh;
+        const fill = good ? "var(--green)" : "rgba(138,161,150,.9)";
+        let anchor = "middle";
+        if (p.i === 0 && nS > 1) anchor = "start";
+        else if (p.i === nS - 1 && nS > 1) anchor = "end";
+        const ty = Math.max(9, y - 8);
+        svg += '<text x="' + x.toFixed(1) + '" y="' + ty.toFixed(1) + '" text-anchor="' + anchor + '" fill="' + fill + '" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="700" pointer-events="none">' + escapeHtml(fmt(p.smash, 2)) + "</text>";
+      });
+
+      const firstLab = sessions[0] ? shortDate(sessions[0].date) : "";
+      const lastLab = sessions[nS - 1] ? shortDate(sessions[nS - 1].date) : "";
+      if (firstLab) svg += '<text x="' + xOf(0).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="' + (nS > 1 ? "start" : "middle") + '" fill="rgba(255,255,255,.4)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(firstLab) + "</text>";
+      if (lastLab && nS > 1) svg += '<text x="' + xOf(nS - 1).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(lastLab) + "</text>";
+
+      const slot = nS <= 1 ? (W - padL - padR) : ((W - padL - padR) / Math.max(1, nS - 1));
+      for (let i = 0; i < nS; i++) {
+        const cx = xOf(i);
+        const x0 = Math.max(padL - 2, cx - slot / 2);
+        const x1 = Math.min(W - padR + 2, cx + slot / 2);
+        const hit = row.pts.find((p) => p.i === i);
+        const date = shortDate(sessions[i].date);
+        let tip;
+        if (hit) {
+          tip = [
+            date,
+            hit.club != null ? ("Club " + fmt(hit.club, 1) + " mph") : "",
+            hit.ball != null ? ("Ball " + fmt(hit.ball, 1) + " mph") : "",
+            hit.smash != null ? ("Smash " + fmt(hit.smash, 2)) : "",
+            (hit.n || 0) + " shot" + (hit.n === 1 ? "" : "s")
+          ].filter(Boolean).join("\n");
+        } else {
+          tip = date + "\nNot hit this session";
+        }
+        svg += '<rect data-tip="' + escapeHtml(tip) + '" x="' + x0.toFixed(1) + '" y="' + padT + '" width="' + Math.max(2, x1 - x0).toFixed(1) + '" height="' + (H - padT - padB) + '" fill="transparent" cursor="pointer"/>';
+      }
       svg += "</svg>";
       return svg;
     }
 
-    function metricCell(club, color, meta, cells, faint) {
-      const pts = [];
-      cells.forEach((c) => { if (hasVal(c, meta)) pts.push(c); });
-      const last = pts.length ? pts[pts.length - 1] : null;
-      const first = pts.length ? pts[0] : null;
-      const latest = last ? meta.raw(last) : null;
-      const valTxt = latest == null ? "—" : (meta.id === "smash" ? fmt(latest, 2) : fmt(latest, 1));
-      let deltaHtml = "";
-      if (faint || pts.length < 2) {
-        deltaHtml = '<div class="spd-delta"></div>';
-      } else {
-        const delta = meta.raw(last) - meta.raw(first);
-        const tone = perfDeltaTone(delta, meta.better);
-        const cls = tone === "up" || tone === "down" ? " " + tone : "";
-        deltaHtml = '<div class="spd-delta' + cls + '">' + escapeHtml(perfFmtDelta(delta, meta)) + "</div>";
-      }
-      return '<div class="spd-cell"><div class="spd-mlabel">' + escapeHtml(meta.short) + '</div><div class="spd-val">' + escapeHtml(valTxt) + '</div><div class="spd-spark-wrap">' + sparkSvg(club, color, meta, cells) + "</div>" + deltaHtml + "</div>";
+    function panelHtml(row) {
+      const hl = headlineFor(row);
+      const toneCls = hl.tone === "up" || hl.tone === "down" ? (" " + hl.tone) : "";
+      let h = '<article class="cons-panel' + (row.faint ? " is-faint" : "") + '" data-club="' + escapeHtml(row.club) + '">';
+      h += '<div class="cons-head"><h4 class="cons-club"><i class="perf-db-swatch" style="background:' + clubColor(row.club) + '"></i>' + escapeHtml(row.club) + "</h4>";
+      h += '<div class="cons-stat">';
+      if (hl.main) h += '<span><strong class="cons-trend' + toneCls + '">' + escapeHtml(hl.main) + "</strong></span>";
+      if (hl.smash) h += "<span>" + escapeHtml(hl.smash) + "</span>";
+      if (hl.note) h += '<span class="cons-trend">' + escapeHtml(hl.note) + "</span>";
+      h += "</div></div>";
+      h += panelSvg(row);
+      h += "</article>";
+      return h;
     }
 
-    let html = '<div class="spd-table" role="table">';
-    html += '<div class="spd-head" role="row">';
-    html += '<div class="spd-hcell"><div class="spd-h-title">Club</div></div>';
-    metrics.forEach((meta) => {
-      html += '<div class="spd-hcell" role="columnheader"><div class="spd-h-title">' + escapeHtml(meta.title) + '</div><div class="spd-h-spark">' + datesHtml + "</div></div>";
-    });
+    let html = '<div class="spd-legend">';
+    html += '<span><i class="spd-leg-line"></i> Club speed</span>';
+    html += '<span><i class="spd-leg-line is-ball"></i> Ball speed <span style="color:var(--dim)">(club colour)</span></span>';
+    html += '<span><i class="spd-leg-gap"></i> Smash (the gap)</span>';
     html += "</div>";
-    rows.forEach((row) => {
-      const color = clubColor(row.club);
-      const short = (clubDef(row.club) || {}).short || row.club;
-      html += '<div class="spd-row' + (row.faint ? " is-faint" : "") + '" role="row" data-club="' + escapeHtml(row.club) + '">';
-      html += '<div class="spd-club"><i class="perf-db-swatch" style="background:' + color + '"></i><div class="spd-club-text"><span class="spd-club-name">' + escapeHtml(short) + "</span>";
-      if (row.faint) html += '<span class="spd-club-note">needs more sessions</span>';
-      html += "</div></div>";
-      html += '<div class="spd-phone-dates">' + datesHtml + "</div>";
-      metrics.forEach((meta) => { html += metricCell(row.club, color, meta, row.cells, row.faint); });
-      html += "</div>";
-    });
+    html += '<div class="cons-grid">';
+    rows.forEach((row) => { html += panelHtml(row); });
     html += "</div>";
     el.innerHTML = html;
     bindChartTips(el, "[data-tip]");
