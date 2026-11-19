@@ -87,6 +87,7 @@ main{flex:1;padding:16px 18px 48px;max-width:1440px;width:100%;margin:0 auto}
 .hero-toggles{position:absolute;top:12px;left:12px;z-index:5;display:flex;gap:8px;flex-wrap:wrap}
 #rangeCanvas{flex:1 1 auto;min-height:460px;width:100%}
 #rangeCanvas svg{width:100%;height:100%;display:block}
+#rangeCanvas .shot-dot,#rangeCanvas .shot-apex,#rangeCanvas .shot-path-hit,#rangeCanvas .shot-roll{cursor:pointer}
 .hero-note{margin:0;padding:10px 16px 12px;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:rgba(220,240,220,.85);background:#07140c;text-align:center;flex-shrink:0;border-top:1px solid rgba(160,200,180,.12);z-index:3}
 .hero-note em{color:#f5f0c8;font-style:normal;font-weight:650}
 
@@ -835,9 +836,7 @@ function fmtThresh(yd) {
     $$("#unitMode button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-unit") === (state.units === "m" ? "m" : "yd")));
   }
   function updateUnitCopy() {
-    const kind = state.distMode === "total" ? "total" : "carry";
-    const hero = document.getElementById("heroSub");
-    if (hero) hero.textContent = "Each dot is a shot at its measured " + kind + ". Side-to-side spread is only for readability.";
+    updateHeroCopy();
     const der = document.getElementById("derivedSub");
     if (der) der.textContent = "Efficiency and an estimated carry if smash reached a typical benchmark.";
     if (typeof bindHelp.refresh === "function") bindHelp.refresh();
@@ -1347,20 +1346,42 @@ function fmtThresh(yd) {
     });
   }
 
+  function updateHeroCopy() {
+    const kind = state.distMode === "total" ? "total" : "carry";
+    const hero = document.getElementById("heroSub");
+    const title = document.querySelector("#hero .hero-head h3");
+    const help = title && title.querySelector(".help-btn");
+    if (state.viewMode === "flight") {
+      if (hero) hero.textContent = "Estimated side-on flight for each shot, from that shot’s carry, smash and the club. The LM1 does not measure launch or spin.";
+      if (title && title.childNodes[0]) title.childNodes[0].nodeValue = "Flight (estimated) ";
+      if (help) {
+        help.setAttribute("data-help", "flight");
+        help.setAttribute("aria-label", "About estimated flight");
+      }
+    } else {
+      if (hero) hero.textContent = "Each dot is a shot at its measured " + kind + ". Side-to-side spread is only for readability.";
+      if (title && title.childNodes[0]) title.childNodes[0].nodeValue = "Range view ";
+      if (help) {
+        help.setAttribute("data-help", "range");
+        help.setAttribute("aria-label", "About the range view");
+      }
+    }
+  }
   function renderHero() {
     const shots = usedShots();
     renderClubRail();
     const mode = state.viewMode;
     const canvas = $("#rangeCanvas");
     const note = $("#heroNote");
+    updateHeroCopy();
     if (mode === "flight") {
-      note.innerHTML = "<em>Estimated</em> side-on flight from typical launch / landing angles for each club — LM1 does not record launch, spin or apex. Trajectories are scaled to land at measured " + (state.distMode === "total" ? "total" : "carry") + ".";
+      note.innerHTML = "<em>Estimated</em> flight — the LM1 does not record launch, spin or apex. Height is inferred from the club, this shot’s carry and smash, then landed at measured carry. The dashed line on the ground is roll to total.";
       canvas.innerHTML = drawFlightSvg(shots);
     } else {
       note.innerHTML = "<em>Carry spread only — lateral position is for readability, not direction data.</em> This is a flat bird’s-eye view. Each dot is a shot at its measured " + (state.distMode === "total" ? "total" : "carry") + ". The ellipse simply encloses that club’s cluster. Hover or tap a dot for the full numbers.";
       canvas.innerHTML = drawRangeSvg(shots);
     }
-    bindHeroHover(canvas, shots);
+    bindHeroHover(canvas);
   }
 
   function niceMaxYds(shots) {
@@ -1489,27 +1510,156 @@ function fmtThresh(yd) {
     return svg;
   }
 
-  function flightY(t, launchDeg, landDeg, carryYds) {
-    const m0 = Math.tan((launchDeg * Math.PI) / 180);
-    const m1 = -Math.tan((landDeg * Math.PI) / 180);
-    // cubic Hermite, t in [0,1], x = t * carry
-    return (t * Math.pow(1 - t, 2) * m0 + t * t * (t - 1) * m1) * carryYds;
+  function flightProfile(club) {
+    const name = String(club || "");
+    const def = clubDef(club);
+    const kind = (def && def.kind) || "";
+    const table = {
+      "Driver": { launch: 13, land: 38, ratio: 0.17, tPeak: 0.56 },
+      "2 Wood": { launch: 11.5, land: 38, ratio: 0.165, tPeak: 0.56 },
+      "3 Wood": { launch: 11.5, land: 38, ratio: 0.165, tPeak: 0.56 },
+      "4 Wood": { launch: 12, land: 39, ratio: 0.17, tPeak: 0.56 },
+      "5 Wood": { launch: 12, land: 40, ratio: 0.17, tPeak: 0.565 },
+      "7 Wood": { launch: 13, land: 41, ratio: 0.18, tPeak: 0.57 },
+      "9 Wood": { launch: 14, land: 42, ratio: 0.185, tPeak: 0.57 },
+      "2 Hybrid": { launch: 13.5, land: 41, ratio: 0.18, tPeak: 0.57 },
+      "3 Hybrid": { launch: 14, land: 42, ratio: 0.18, tPeak: 0.57 },
+      "4 Hybrid": { launch: 14, land: 42, ratio: 0.18, tPeak: 0.57 },
+      "5 Hybrid": { launch: 14.5, land: 43, ratio: 0.185, tPeak: 0.575 },
+      "6 Hybrid": { launch: 15, land: 43, ratio: 0.19, tPeak: 0.575 },
+      "7 Hybrid": { launch: 15.5, land: 44, ratio: 0.19, tPeak: 0.58 },
+      "2 Iron": { launch: 12, land: 41, ratio: 0.175, tPeak: 0.57 },
+      "3 Iron": { launch: 13, land: 42, ratio: 0.18, tPeak: 0.57 },
+      "4 Iron": { launch: 14.5, land: 43, ratio: 0.185, tPeak: 0.575 },
+      "5 Iron": { launch: 16, land: 44, ratio: 0.19, tPeak: 0.575 },
+      "6 Iron": { launch: 17, land: 45, ratio: 0.19, tPeak: 0.58 },
+      "7 Iron": { launch: 19, land: 46, ratio: 0.20, tPeak: 0.58 },
+      "8 Iron": { launch: 21, land: 47, ratio: 0.21, tPeak: 0.585 },
+      "9 Iron": { launch: 23, land: 48, ratio: 0.23, tPeak: 0.59 },
+      "PW": { launch: 26, land: 50, ratio: 0.25, tPeak: 0.595 },
+      "GW": { launch: 28, land: 51, ratio: 0.26, tPeak: 0.60 },
+      "SW": { launch: 32, land: 52, ratio: 0.27, tPeak: 0.60 },
+      "LW": { launch: 35, land: 53, ratio: 0.28, tPeak: 0.60 }
+    };
+    if (table[name]) return table[name];
+    if (kind === "wood") return { launch: 12, land: 39, ratio: 0.17, tPeak: 0.56 };
+    if (kind === "hybrid") return { launch: 14, land: 42, ratio: 0.18, tPeak: 0.57 };
+    if (kind === "wedge") return { launch: 30, land: 52, ratio: 0.26, tPeak: 0.60 };
+    const num = parseInt(name, 10);
+    if (kind === "iron" && !Number.isNaN(num)) {
+      const t = Math.max(0, Math.min(1, (num - 2) / 7));
+      return {
+        launch: 12 + t * 11,
+        land: 41 + t * 7,
+        ratio: 0.175 + t * 0.055,
+        tPeak: 0.57 + t * 0.02
+      };
+    }
+    return { launch: 18, land: 45, ratio: 0.20, tPeak: 0.58 };
+  }
+  function clubFlightMedians(shots) {
+    const by = new Map();
+    (shots || []).forEach((s) => {
+      if (!s || !s.club) return;
+      if (!by.has(s.club)) by.set(s.club, { smash: [], ball: [], carry: [] });
+      const b = by.get(s.club);
+      if (s.smash != null) b.smash.push(s.smash);
+      if (s.ballSpeed != null) b.ball.push(s.ballSpeed);
+      if (s.carry != null) b.carry.push(s.carry);
+    });
+    const out = new Map();
+    by.forEach((b, club) => {
+      out.set(club, {
+        smash: b.smash.length ? median(b.smash) : null,
+        ball: b.ball.length ? median(b.ball) : null,
+        carry: b.carry.length ? median(b.carry) : null
+      });
+    });
+    return out;
+  }
+  function flightSeedJitter(s, span) {
+    const key = "flight:" + (s && s.id || "") + ":" + (s && s.shotNo || "") + ":" + (s && s.club || "") + ":" + (s && s.carry || "") + ":" + (s && s.clubSpeed || "");
+    const u = (hash32(key) % 2000) / 2000;
+    return 1 + (u - 0.5) * 2 * (span || 0.08);
+  }
+  function estimateFlight(s, medians) {
+    const carry = s && s.carry;
+    const prof = flightProfile(s && s.club);
+    const med = (medians && s && medians.get(s.club)) || {};
+    if (carry == null || carry <= 0) {
+      return { carry: 0, apex: 0, tPeak: prof.tPeak, launch: prof.launch, land: prof.land, m0: 0, m1: 0 };
+    }
+    let apex = prof.ratio * carry;
+    let mod = 1;
+    if (med.smash && s.smash != null) {
+      const rel = (s.smash - med.smash) / med.smash;
+      mod *= 1 - clamp(rel, -0.2, 0.2) * 0.6;
+    }
+    if (med.ball && s.ballSpeed != null) {
+      const rel = (s.ballSpeed / med.ball) - 1;
+      mod *= 1 + clamp(rel, -0.2, 0.2) * 0.5;
+    }
+    apex *= clamp(mod, 0.85, 1.15);
+    apex *= flightSeedJitter(s, 0.08);
+    const shortMishit = (med.carry && carry < med.carry * 0.45) || carry < 30;
+    if (shortMishit) apex = Math.min(apex, Math.max(1.2, carry * 0.10));
+    apex = Math.max(0.6, apex);
+    const tPeak = prof.tPeak;
+    let m0 = Math.tan((prof.launch * Math.PI) / 180) * carry * tPeak;
+    let m1 = -Math.tan((prof.land * Math.PI) / 180) * carry * (1 - tPeak);
+    m0 = Math.min(m0, 2.2 * apex);
+    m1 = Math.max(m1, -2.2 * apex);
+    const launch = Math.atan(m0 / (tPeak * carry)) * 180 / Math.PI;
+    const land = Math.atan((-m1) / ((1 - tPeak) * carry)) * 180 / Math.PI;
+    return { carry, apex, tPeak, launch, land, m0, m1 };
+  }
+  function flightHeight(t, est) {
+    if (!est || !est.apex) return 0;
+    const tPeak = est.tPeak;
+    t = clamp(t, 0, 1);
+    if (t <= tPeak) {
+      const u = tPeak <= 0 ? 1 : t / tPeak;
+      return Math.max(0, (u * u * u - 2 * u * u + u) * est.m0 + (-2 * u * u * u + 3 * u * u) * est.apex);
+    }
+    const span = 1 - tPeak;
+    const v = span <= 0 ? 1 : (t - tPeak) / span;
+    return Math.max(0, (2 * v * v * v - 3 * v * v + 1) * est.apex + (v * v * v - v * v) * est.m1);
+  }
+  function niceMaxHeight(maxYd) {
+    const m = Math.max(0, toDisp(maxYd) || 0);
+    const pad = Math.max(m * 0.2, toDisp(6) || 6);
+    const target = Math.max(m + pad, toDisp(28) || 28);
+    const step = target > (toDisp(40) || 40) ? (toDisp(10) || 10) : (toDisp(5) || 5);
+    return Math.ceil(target / step) * step;
+  }
+  function flightTip(s, est) {
+    const u = unitShort();
+    const lines = [s.club + " #" + (s.shotNo || "") + " · estimated flight"];
+    if (s.carry != null) lines.push("Carry " + fmtDist(s.carry) + " " + u);
+    if (s.total != null) lines.push("Total " + fmtDist(s.total) + " " + u);
+    if (s.clubSpeed != null) lines.push("Club speed " + fmt(s.clubSpeed, 1) + " mph");
+    if (s.ballSpeed != null) lines.push("Ball speed " + fmt(s.ballSpeed, 1) + " mph");
+    if (s.smash != null) lines.push("Smash " + fmt(s.smash, 2));
+    if (est && est.apex) lines.push("Est. apex " + fmtDist(est.apex) + " " + u);
+    if (est && est.land) lines.push("Est. landing " + Math.round(est.land) + "°");
+    return lines.join("\n");
   }
 
   function drawFlightSvg(shots) {
     const W = 900, H = 600;
     const padL = 52, padR = 24, padT = 28, padB = 52;
-    const maxDist = niceMaxDisp(maxShotYd(shots));
-    // estimate max apex in yards, then convert
-    let maxHYd = 40;
-    shots.forEach((s) => {
-      const d = distOf(s);
-      if (d == null || d <= 0) return;
-      const def = clubDef(s.club);
-      for (let t = 0; t <= 1; t += 0.05) maxHYd = Math.max(maxHYd, flightY(t, def.launch, def.land, d));
+    const medians = clubFlightMedians(shots);
+    const estimates = shots.map((s) => estimateFlight(s, medians));
+    let maxDistYd = 0;
+    let maxApexYd = 0;
+    shots.forEach((s, i) => {
+      if (s.carry != null && s.carry > maxDistYd) maxDistYd = s.carry;
+      if (s.total != null && s.total > maxDistYd) maxDistYd = s.total;
+      if (estimates[i] && estimates[i].apex > maxApexYd) maxApexYd = estimates[i].apex;
     });
-    maxHYd = Math.max(40, Math.ceil((maxHYd + 8) / 10) * 10);
-    const maxH = Math.max(toDisp(40) || 40, Math.ceil((toDisp(maxHYd) + 5) / 10) * 10);
+    const maxDist = niceMaxDisp(Math.max(maxDistYd, 80));
+    const maxH = niceMaxHeight(maxApexYd);
+    const u = unitShort();
 
     const xOf = (disp) => padL + (disp / maxDist) * (W - padL - padR);
     const yOf = (hDisp) => (H - padB) - (Math.max(0, hDisp) / maxH) * (H - padT - padB);
@@ -1518,57 +1668,63 @@ function fmtThresh(yd) {
     svg += '<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0b1520"/><stop offset="70%" stop-color="#102018"/><stop offset="100%" stop-color="#0c2818"/></linearGradient>';
     svg += '<clipPath id="flightFieldClip"><rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (H - padT - padB) + '"/></clipPath></defs>';
     svg += '<rect width="' + W + '" height="' + H + '" fill="url(#sky2)"/>';
-    // ground
     svg += '<rect x="0" y="' + (H - padB) + '" width="' + W + '" height="' + padB + '" fill="#0b3a1c"/>';
     svg += '<rect x="0" y="' + (H - padB) + '" width="' + W + '" height="6" fill="#14733a"/>';
 
-    // grid
-    const tick = 25;
-    for (let d = 0; d <= maxDist; d += tick) {
+    const xTick = maxDist > 200 ? 50 : 25;
+    for (let d = 0; d <= maxDist; d += xTick) {
       const x = xOf(d);
-      const major = d % 50 === 0;
+      const major = d % (xTick * 2) === 0;
       svg += '<line x1="' + x + '" y1="' + padT + '" x2="' + x + '" y2="' + (H - padB) + '" stroke="' + (major ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.06)") + '" stroke-width="1"/>';
-      if (d > 0) svg += '<text x="' + x + '" y="' + (H - padB + 18) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + '</text>';
+      if (d > 0) svg += '<text x="' + x + '" y="' + (H - padB + 18) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + "</text>";
     }
-    const hStep = 10;
-    for (let h = hStep; h <= maxH; h += hStep) {
+    const hStep = maxH > (toDisp(40) || 40) ? (toDisp(10) || 10) : (toDisp(5) || 5);
+    for (let h = hStep; h <= maxH + 0.01; h += hStep) {
       svg += '<line x1="' + padL + '" y1="' + yOf(h) + '" x2="' + (W - padR) + '" y2="' + yOf(h) + '" stroke="rgba(255,255,255,.06)"/>';
-      svg += '<text x="' + (padL - 8) + '" y="' + (yOf(h) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="11" font-family="Barlow Condensed, sans-serif">' + h + " " + unitShort() + '</text>';
+      svg += '<text x="' + (padL - 8) + '" y="' + (yOf(h) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="11" font-family="Barlow Condensed, sans-serif">' + Math.round(h) + " " + u + "</text>";
     }
-    svg += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="11" font-family="DM Sans, sans-serif">Distance (' + unitShort() + ') · estimated apex from typical launch</text>';
+    svg += '<text x="' + (padL - 8) + '" y="' + (H - padB + 18) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="11" font-family="Barlow Condensed, sans-serif">0</text>';
+    svg += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="11" font-family="DM Sans, sans-serif">Distance (' + u + ") · estimated flight</text>";
+    svg += '<text x="' + (W - padR) + '" y="' + (padT + 14) + '" text-anchor="end" fill="rgba(245,240,200,.7)" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="0.08em">ESTIMATED — NOT MEASURED</text>';
 
     svg += '<g clip-path="url(#flightFieldClip)">';
     shots.forEach((s, i) => {
-      const dYd = distOf(s);
-      if (dYd == null || dYd <= 0) return;
-      const d = toDisp(dYd);
-      const def = clubDef(s.club);
+      const est = estimates[i];
+      if (!est || est.carry <= 0) return;
+      const d = toDisp(est.carry);
       const color = clubColor(s.club);
+      const tip = escapeHtml(flightTip(s, est));
       const pts = [];
-      const steps = 32;
+      const steps = 40;
+      let apexPt = { x: xOf(d * est.tPeak), y: yOf(toDisp(est.apex)) };
       for (let k = 0; k <= steps; k++) {
         const t = k / steps;
-        const h = Math.max(0, toDisp(flightY(t, def.launch, def.land, dYd)));
-        pts.push(xOf(t * d).toFixed(1) + "," + yOf(h).toFixed(1));
+        const h = toDisp(flightHeight(t, est));
+        const x = xOf(t * d);
+        const y = yOf(h);
+        pts.push(x.toFixed(1) + "," + y.toFixed(1));
       }
-      svg += '<polyline class="shot-path" data-i="' + i + '" data-club="' + escapeHtml(s.club) + '" fill="none" stroke="' + color + '" stroke-width="1.6" stroke-opacity=".55" points="' + pts.join(" ") + '"/>';
-      if (state.distMode === "carry" && s.total != null && s.total > dYd) {
-        svg += '<line x1="' + xOf(d) + '" y1="' + yOf(0) + '" x2="' + xOf(toDisp(s.total)) + '" y2="' + yOf(0) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="3 3" stroke-opacity=".7"/>';
+      svg += '<polyline class="shot-path-hit" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" data-club="' + escapeHtml(s.club) + '" fill="none" stroke="transparent" stroke-width="12" points="' + pts.join(" ") + '" style="cursor:pointer"/>';
+      svg += '<polyline class="shot-path" data-tip="' + tip + '" fill="none" stroke="' + color + '" stroke-width="1.7" stroke-opacity=".62" points="' + pts.join(" ") + '" style="pointer-events:none"/>';
+      if (s.total != null && s.total > est.carry) {
+        svg += '<line class="shot-roll" data-tip="' + tip + '" x1="' + xOf(d) + '" y1="' + yOf(0) + '" x2="' + xOf(toDisp(s.total)) + '" y2="' + yOf(0) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="4 4" stroke-opacity=".75" style="cursor:pointer"/>';
       }
+      svg += '<circle class="shot-apex" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" cx="' + apexPt.x.toFixed(1) + '" cy="' + apexPt.y.toFixed(1) + '" r="3.2" fill="' + color + '" fill-opacity=".9" stroke="#041208" stroke-width=".6" style="cursor:pointer"/>';
     });
-    svg += '</g>';
+    svg += "</g>";
     shots.forEach((s, i) => {
-      const dYd = distOf(s);
-      if (dYd == null || dYd <= 0) return;
-      const d = toDisp(dYd);
+      const est = estimates[i];
+      if (!est || est.carry <= 0) return;
+      const d = toDisp(est.carry);
       const color = clubColor(s.club);
+      const tip = escapeHtml(flightTip(s, est));
       const land = { x: xOf(d), y: Math.min(yOf(0), (H - padB) - 3.4) };
-      svg += '<circle class="shot-dot" data-i="' + i + '" data-club="' + escapeHtml(s.club) + '" cx="' + land.x.toFixed(1) + '" cy="' + land.y.toFixed(1) + '" r="3.4" fill="' + color + '" stroke="#041208" stroke-width=".7"><title>' + escapeHtml(s.club) + " #" + (s.shotNo || "") + " " + fmtDist(dYd) + uSuf() + '</title></circle>';
+      svg += '<circle class="shot-dot" tabindex="0" role="button" data-tip="' + tip + '" data-apex="' + est.apex.toFixed(2) + '" data-club="' + escapeHtml(s.club) + '" cx="' + land.x.toFixed(1) + '" cy="' + land.y.toFixed(1) + '" r="4.2" fill="' + color + '" stroke="#041208" stroke-width=".7" style="cursor:pointer"><title>' + tip + "</title></circle>";
     });
     if (!shots.length) {
       svg += '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="16">No shots to show with the current filters</text>';
     }
-    svg += '</svg>';
+    svg += "</svg>";
     return svg;
   }
 
@@ -1641,7 +1797,7 @@ function fmtThresh(yd) {
   }
 
   function bindHeroHover(canvas) {
-    bindChartTips(canvas, ".shot-dot");
+    bindChartTips(canvas, "[data-tip]");
   }
 
 
@@ -1806,6 +1962,7 @@ function fmtThresh(yd) {
     const ideal = fmtThreshRange(10, 15);
     const all = {
       range: { title: "Range view", body: "This is a flat bird’s-eye view of the selected session (or all sessions). Height on the page is your measured carry or total, depending on the toggle. Left–right position is not real shot shape — the LM1 does not record start line or spin — it is only spaced so clusters are easy to read. The ellipse is a simple envelope of that club’s shots, not a statistical accuracy model." },
+      flight: { title: "Flight (estimated)", body: "The LM1 does not measure launch angle, spin or apex, so these trajectories are estimates, not a launch-monitor trace. For each shot we start from a typical amateur apex-to-carry ratio for that club — a driver is a flatter flight, a pitching wedge a higher one — then scale that by this shot’s carry and nudge the height using smash and ball speed relative to your other shots with the same club. A little stable jitter is added so similar shots don’t stack on one line. On a full shot the estimated peak is often a little over " + fmtThresh(20) + " " + unitShort() + ", and landing is steeper on shorter clubs. The dashed line on the ground is roll from carry to total. Treat the shape as a sketch." },
       "tile-shots": { title: "Shots", body: "This is how many shots are feeding the averages after your session, mishit and Best-N filters. Flagged shots stay in the Flagged table even when they are excluded here. The club chips beside the range do not change this number — they only change the tee view." },
       "tile-peak": { title: "Peak distance", body: "This is the single longest used shot in the current filters, using carry or total depending on the toggle. It is a high-water mark, not a typical result. One jumper can set this tile, so read it with the club summary and dispersion, not on its own." },
       "tile-smash": { title: "Average smash", body: "Smash factor is ball speed divided by club speed — a simple read of how well the ball was struck. A well-struck driver is often around 1.48–1.50; mid-irons typically sit lower, around 1.33–1.38. A sudden drop usually means a weaker strike or a misread." },
