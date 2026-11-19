@@ -601,20 +601,24 @@ nav.tabs{flex-shrink:1}
 #perf-bag-card.card-hero{padding:16px 18px 18px}
 .bag-play{display:flex;flex-direction:column;gap:10px;margin:12px 0 14px;padding:12px 14px;background:var(--elev-2);border:1px solid var(--line-strong);border-radius:14px}
 .bag-play-now{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 14px}
-.bag-play-date{font-family:var(--cond);font-weight:700;font-size:30px;letter-spacing:.03em;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
-.bag-play-idx{font-family:var(--cond);font-weight:650;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.bag-play-date{font-family:var(--cond);font-weight:650;font-size:26px;letter-spacing:.03em;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
+.bag-play-idx{font-family:var(--cond);font-weight:500;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
 .bag-play-row{display:flex;align-items:center;gap:8px 10px;flex-wrap:nowrap}
 .bag-play-row .btn{flex:0 0 auto}
 .bag-play-btn{min-width:88px;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:8px 16px}
 .bag-play-btn.playing{color:var(--cyan);border-color:rgba(62,224,255,.5)}
 .bag-step[disabled]{opacity:.4;cursor:default}
-.bag-scrub-col{flex:1 1 160px;min-width:0;display:flex;flex-direction:column;gap:2px}
-.bag-scrub-col input[type="range"]{width:100%;margin:0;accent-color:var(--cyan);height:22px;cursor:pointer}
-.bag-scrub-ticks{display:flex;justify-content:space-between;padding:0 8px;gap:2px}
-.bag-tick{flex:1 1 0;min-width:0;background:none;border:0;padding:4px 0 0;color:var(--dim);font-family:var(--cond);font-size:11px;font-weight:650;letter-spacing:.02em;cursor:pointer;text-align:center;line-height:1.2;white-space:nowrap}
-.bag-tick.is-on{color:var(--text);font-weight:800}
+.bag-scrub-col{flex:1 1 160px;min-width:0}
+.bag-scrub{position:relative;width:100%;min-width:0;padding:0 24px;box-sizing:border-box}
+.bag-scrub-rail{position:relative;height:22px;cursor:pointer;touch-action:none}
+.bag-scrub-rail::before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;transform:translateY(-50%);background:rgba(255,255,255,.12);border-radius:99px}
+.bag-scrub-fill{position:absolute;left:0;top:50%;height:4px;transform:translateY(-50%);background:var(--cyan);border-radius:99px;width:0;pointer-events:none}
+.bag-scrub-thumb{position:absolute;top:50%;left:0;width:16px;height:16px;transform:translate(-50%,-50%);background:var(--cyan);border-radius:50%;box-shadow:0 0 0 3px rgba(62,224,255,.22);pointer-events:none;z-index:2}
+.bag-scrub-ticks{position:relative;height:20px;margin-top:6px}
+.bag-tick{position:absolute;top:0;left:0;transform:translateX(-50%);background:none;border:0;padding:2px 0 0;color:var(--dim);font-family:var(--cond);font-size:11px;font-weight:500;letter-spacing:.02em;cursor:pointer;text-align:center;line-height:1.2;white-space:nowrap}
+.bag-tick.is-on{color:var(--text);font-weight:700}
 .bag-tick:hover{color:var(--cyan)}
-.bag-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 8px;font-size:11px;color:var(--muted);align-items:center}
+.bag-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 8px;font-size:10px;color:var(--dim);align-items:center}
 .bag-legend i{display:inline-block;vertical-align:middle}
 .bag-leg-dot{width:9px;height:9px;border-radius:99px;background:#3ee0ff;margin-right:5px}
 .bag-leg-ghost{width:9px;height:9px;border-radius:99px;border:1.5px dashed rgba(255,255,255,.45);background:transparent;margin-right:5px}
@@ -747,8 +751,13 @@ nav.tabs{flex-shrink:1}
             <button type="button" class="btn primary bag-play-btn" id="perfPlayBtn">Play</button>
             <button type="button" class="btn bag-step" id="perfNextBtn">Next</button>
             <div class="bag-scrub-col">
-              <input type="range" id="perfScrub" min="0" max="0" step="1" value="0" aria-label="Session date">
-              <div class="bag-scrub-ticks" id="perfScrubTicks"></div>
+              <div class="bag-scrub" id="perfScrub" role="slider" aria-label="Session date" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0" tabindex="0">
+                <div class="bag-scrub-rail" id="perfScrubRail">
+                  <div class="bag-scrub-fill" id="perfScrubFill"></div>
+                  <div class="bag-scrub-thumb" id="perfScrubThumb"></div>
+                </div>
+                <div class="bag-scrub-ticks" id="perfScrubTicks"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -3363,9 +3372,18 @@ function fmtThresh(yd) {
     const scrub = $("#perfScrub");
     const lab = $("#perfScrubLabel");
     const idxLab = $("#perfScrubIdx");
-    if (scrub) scrub.value = String(idx);
     if (lab) lab.textContent = niceDate(n[idx].date);
     if (idxLab) idxLab.textContent = "session " + (idx + 1) + " of " + n.length;
+    const nS = n.length;
+    const pct = bagScrubPct(idx, nS);
+    const thumb = $("#perfScrubThumb");
+    const fill = $("#perfScrubFill");
+    if (thumb) thumb.style.left = pct + "%";
+    if (fill) fill.style.width = pct + "%";
+    if (scrub) {
+      scrub.setAttribute("aria-valuenow", String(idx));
+      scrub.setAttribute("aria-valuemax", String(Math.max(0, nS - 1)));
+    }
     $$("#perfScrubTicks .bag-tick").forEach((t) => t.classList.toggle("is-on", Number(t.getAttribute("data-si")) === idx));
     const prev = $("#perfPrevBtn"), next = $("#perfNextBtn");
     if (prev) prev.disabled = idx <= 0;
@@ -3404,20 +3422,26 @@ function fmtThresh(yd) {
       perfSetIndex(i, data);
     }, 1200);
   }
+  function bagScrubPct(idx, n) {
+    if (!n || n <= 1) return 0;
+    return (idx / (n - 1)) * 100;
+  }
   function renderBagPlaybar(data) {
     const bar = $("#perfPlaybar");
     const scrub = $("#perfScrub");
     const ticks = $("#perfScrubTicks");
-    if (bar) bar.hidden = !data || !data.sessions.length;
+    const sessions = (data && data.sessions) || [];
+    const n = sessions.length;
+    if (bar) bar.hidden = !n;
     if (scrub) {
-      scrub.min = 0;
-      scrub.max = Math.max(0, (data.sessions || []).length - 1);
-      scrub.step = 1;
+      scrub.setAttribute("aria-valuemin", "0");
+      scrub.setAttribute("aria-valuemax", String(Math.max(0, n - 1)));
     }
     if (ticks) {
-      ticks.innerHTML = (data.sessions || []).map((s, i) => {
+      ticks.innerHTML = sessions.map((s, i) => {
         const lab = niceDate(s.date).replace(/ 20\d\d/, "");
-        return '<button type="button" class="bag-tick" data-si="' + i + '">' + escapeHtml(lab) + "</button>";
+        const pct = bagScrubPct(i, n);
+        return '<button type="button" class="bag-tick" data-si="' + i + '" style="left:' + pct + '%">' + escapeHtml(lab) + "</button>";
       }).join("");
     }
   }
@@ -3672,39 +3696,40 @@ function fmtThresh(yd) {
       if (clubs.indexOf(club) < 0) return;
       const vals = cells.map((c) => c && (useTotal ? c.avgTotal : c.avgCarry));
       if (vals.every((v) => v == null)) return;
-      rows.push({ club, vals, short: clubDef(club).short || club, color: clubColor(club) });
+      rows.push({ club, vals, short: clubDef(club).short || club, color: clubColor(club), full: String(club).toUpperCase() });
     });
     if (!rows.length) { el.innerHTML = '<p class="empty">No distance numbers to build a bag ladder.</p>'; return; }
     let maxV = 0;
     rows.forEach((r) => r.vals.forEach((v) => { if (v != null && v > maxV) maxV = v; }));
     const maxDist = niceMaxDisp(Math.max(maxV, 80));
-    const W = 1100, H = 520, padL = 74, padR = 96, padT = 22, padB = 28;
+    const W = 1100, H = 520, padL = 68, padR = 52, padT = 22, padB = 28;
     const yOf = (v) => padT + (1 - (Math.max(0, toDisp(v) || 0) / maxDist)) * (H - padT - padB);
     let svg = '<div class="perf-bag-stage"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Bag evolution ladder">';
     const tick = maxDist > 200 ? 50 : 25;
     for (let d = 0; d <= maxDist; d += tick) {
       const yb = padT + (1 - d / maxDist) * (H - padT - padB);
       const major = d % (tick * 2) === 0;
-      svg += '<line x1="' + padL + '" y1="' + yb + '" x2="' + (W - padR) + '" y2="' + yb + '" stroke="' + (major ? "rgba(255,255,255,.12)" : "rgba(255,255,255,.06)") + '"/>';
-      svg += '<text x="' + (padL - 10) + '" y="' + (yb + 4) + '" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="13" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + "</text>";
+      svg += '<line x1="' + padL + '" y1="' + yb + '" x2="' + (W - padR) + '" y2="' + yb + '" stroke="' + (major ? "rgba(255,255,255,.10)" : "rgba(255,255,255,.05)") + '"/>';
+      svg += '<text x="' + (padL - 8) + '" y="' + (yb + 3) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="500">' + d + "</text>";
     }
-    svg += '<text x="16" y="' + ((padT + H - padB) / 2) + '" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="12" font-family="DM Sans, sans-serif" transform="rotate(-90 16 ' + ((padT + H - padB) / 2) + ')">' + kindName + " (" + u + ")</text>";
+    svg += '<text x="14" y="' + ((padT + H - padB) / 2) + '" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="11" font-family="DM Sans, sans-serif" font-weight="400" transform="rotate(-90 14 ' + ((padT + H - padB) / 2) + ')">' + kindName + " (" + u + ")</text>";
     const colW = (W - padL - padR);
     const xs = [];
     rows.forEach((r, i) => {
-      const x = padL + 36 + (rows.length <= 1 ? colW / 2 : (i / (rows.length - 1)) * (colW - 72));
+      const x = padL + 28 + (rows.length <= 1 ? colW / 2 : (i / (rows.length - 1)) * (colW - 56));
       xs.push(x);
       const ghost = r.vals[0];
       if (ghost != null) {
         const gy = yOf(ghost);
-        svg += '<circle class="perf-bag-ghost" data-club="' + escapeHtml(r.club) + '" cx="' + x.toFixed(1) + '" cy="' + gy.toFixed(1) + '" r="10" fill="none" stroke="' + r.color + '" stroke-opacity=".4" stroke-width="1.6" stroke-dasharray="3 2.5"/>';
+        svg += '<circle class="perf-bag-ghost" data-club="' + escapeHtml(r.club) + '" cx="' + x.toFixed(1) + '" cy="' + gy.toFixed(1) + '" r="8" fill="none" stroke="' + r.color + '" stroke-opacity=".32" stroke-width="1.2" stroke-dasharray="2.5 2.5"/>';
       }
+      const y0 = H - padB;
       svg += '<g class="perf-bag-club" data-club="' + escapeHtml(r.club) + '" opacity="0">';
-      svg += '<line class="perf-bag-stem" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + (H - padB) + '" y2="' + (H - padB) + '" stroke="' + r.color + '" stroke-opacity=".35" stroke-width="2.4"/>';
-      svg += '<circle class="perf-bag-dot" cx="' + x.toFixed(1) + '" cy="' + (H - padB) + '" r="11" fill="' + r.color + '" stroke="#071018" stroke-width="1.4"/>';
-      svg += '<text class="perf-bag-name" x="' + x.toFixed(1) + '" y="' + (H - padB - 22) + '" text-anchor="middle" fill="#eef6f0" font-size="14" font-family="Barlow Condensed, sans-serif" font-weight="700" paint-order="stroke" stroke="#0c1319" stroke-width="3.5">' + escapeHtml(r.short) + "</text>";
-      svg += '<text class="perf-bag-lab" x="' + x.toFixed(1) + '" y="' + (H - padB - 8) + '" text-anchor="middle" fill="#eef6f0" font-size="13" font-family="Barlow Condensed, sans-serif" font-weight="700" paint-order="stroke" stroke="#0c1319" stroke-width="3.5"></text>';
-      svg += '<text class="perf-bag-note" x="' + x.toFixed(1) + '" y="' + (H - padB + 22) + '" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="9" font-family="DM Sans, sans-serif"></text>';
+      svg += '<line class="perf-bag-stem" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="' + r.color + '" stroke-opacity=".28" stroke-width="1.6"/>';
+      svg += '<text class="perf-bag-stem-lab" x="' + x.toFixed(1) + '" y="' + y0 + '" text-anchor="middle" dominant-baseline="middle" fill="' + r.color + '" fill-opacity=".55" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="600" letter-spacing="0.1em" style="letter-spacing:0.1em" pointer-events="none">' + escapeHtml(r.full) + "</text>";
+      svg += '<circle class="perf-bag-dot" cx="' + x.toFixed(1) + '" cy="' + y0 + '" r="8" fill="' + r.color + '" stroke="#071018" stroke-width="1.1"/>';
+      svg += '<text class="perf-bag-lab" x="' + (x + 12).toFixed(1) + '" y="' + y0 + '" text-anchor="start" fill="rgba(238,246,240,.7)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="500" paint-order="stroke" stroke="#0c1319" stroke-width="2.2"></text>';
+      svg += '<text class="perf-bag-note" x="' + (x + 12).toFixed(1) + '" y="' + (y0 + 11) + '" text-anchor="start" fill="rgba(255,255,255,.38)" font-size="8" font-family="DM Sans, sans-serif" font-weight="400"></text>';
       svg += "</g>";
     });
     svg += '<g class="perf-bag-gaps"></g>';
@@ -3712,7 +3737,6 @@ function fmtThresh(yd) {
     el.innerHTML = svg;
     el._bag = { rows, xs, yOf, H, padB, padT, W, padL, padR, useTotal, u, maxDist };
   }
-
 
   function perfSyncPlayhead(idx, data) {
     if (!data) return;
@@ -3741,30 +3765,30 @@ function fmtThresh(yd) {
       if (perfPlay.bagAnim) cancelAnimationFrame(perfPlay.bagAnim);
       const dur = reduceMotion() ? 0 : 550;
       const u = bag.u || unitShort();
+      const y0 = bag.H - bag.padB;
       const targets = bag.rows.map((r, ri) => {
         const g = bagEl.querySelector('.perf-bag-club[data-club="' + cssAttr(r.club) + '"]');
         if (!g) return null;
         const dot = g.querySelector(".perf-bag-dot");
         const lab = g.querySelector(".perf-bag-lab");
-        const nam = g.querySelector(".perf-bag-name");
         const note = g.querySelector(".perf-bag-note");
         const stem = g.querySelector(".perf-bag-stem");
+        const stemLab = g.querySelector(".perf-bag-stem-lab");
         let last = null;
         for (let i = idx; i >= 0; i--) if (r.vals[i] != null) { last = r.vals[i]; break; }
         const present = r.vals[idx] != null;
         const v = present ? r.vals[idx] : last;
-        const toY = v != null ? bag.yOf(v) : (bag.H - bag.padB);
+        const toY = v != null ? bag.yOf(v) : y0;
         const fromY = dot ? parseFloat(dot.getAttribute("cy")) : toY;
         const startOp = parseFloat(g.style.opacity || "0");
         const toOp = present ? 1 : (last != null ? 0.38 : 0);
         const appear = present && (isNaN(startOp) || startOp < 0.45);
-        if (nam) nam.textContent = r.short;
         if (lab) lab.textContent = v != null ? (fmtDist(v) + " " + u) : "";
         if (note) note.textContent = present || v == null ? "" : "not hit";
         const ghost = bagEl.querySelector('.perf-bag-ghost[data-club="' + cssAttr(r.club) + '"]');
         if (ghost) ghost.setAttribute("opacity", (idx === 0 || r.vals[0] == null) ? "0" : "1");
         return {
-          g, dot, lab, nam, note, stem, ri, present, hasVal: v != null, v,
+          g, dot, lab, note, stem, stemLab, ri, present, hasVal: v != null, v,
           fromY: appear ? toY : (isNaN(fromY) ? toY : fromY),
           toY, fromOp: isNaN(startOp) ? 0 : startOp, toOp
         };
@@ -3787,28 +3811,48 @@ function fmtThresh(yd) {
           const midX = (a.x + b.x) / 2;
           const y1 = Math.min(a.y, b.y), y2 = Math.max(a.y, b.y);
           const midY = (y1 + y2) / 2;
-          const wide = Math.abs(a.x - b.x) > 110;
-          const tight = (y2 - y1) < 28;
+          const wide = Math.abs(a.x - b.x) > 120;
+          const tight = (y2 - y1) < 26;
           const absLab = fmtDist(Math.abs(Math.round(gapYd))) + " " + (bag.u || unitShort());
-          const glab = kind === "overlap" ? ("overlap " + absLab) : absLab;
+          const glab = absLab;
           if (!wide) {
-            html += '<line x1="' + midX.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + midX.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="1.5" stroke-linecap="round" stroke-opacity="' + (tight ? ".55" : ".9") + '"/>';
-            html += '<line x1="' + (midX - 4).toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + (midX + 4).toFixed(1) + '" y2="' + y1.toFixed(1) + '" stroke="' + col + '" stroke-width="1.5"/>';
-            html += '<line x1="' + (midX - 4).toFixed(1) + '" y1="' + y2.toFixed(1) + '" x2="' + (midX + 4).toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="1.5"/>';
+            html += '<line x1="' + midX.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + midX.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="1" stroke-linecap="round" stroke-opacity="' + (tight ? ".4" : ".65") + '"/>';
           }
-          const lx = tight || wide ? midX : midX;
-          const ly = tight ? (y1 - 8) : midY + 3;
-          html += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle" fill="' + col + '" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="700" paint-order="stroke" stroke="#0c1319" stroke-width="3.5">' + escapeHtml(glab) + "</text>";
+          const ly = tight ? (y1 - 7) : (midY + 3);
+          html += '<text x="' + midX.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="middle" fill="' + col + '" fill-opacity=".8" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="500" paint-order="stroke" stroke="#0c1319" stroke-width="2.2">' + escapeHtml(glab) + "</text>";
         }
         gapG.innerHTML = html;
       };
-      // nudge labels that would overlap
-      const placeLabs = (t) => {
-        targets.forEach((o) => {
-          const y = o._y;
-          if (o.nam) o.nam.setAttribute("y", (y - 22).toFixed(1));
-          if (o.lab) o.lab.setAttribute("y", (y - 8).toFixed(1));
-          if (o.note) o.note.setAttribute("y", (y + 22).toFixed(1));
+      const placeLabs = () => {
+        const items = targets.filter((o) => o.hasVal).map((o) => {
+          const x = bag.xs[o.ri];
+          const text = (o.lab && o.lab.textContent) || "";
+          const w = Math.max(28, text.length * 5.6);
+          return { o, x, y: o._y, labX: x + 12, labY: o._y + 3.5, w };
+        });
+        items.sort((a, b) => a.x - b.x);
+        for (let i = 1; i < items.length; i++) {
+          const a = items[i - 1], b = items[i];
+          if (Math.abs(a.labY - b.labY) < 11 && (a.labX + a.w) > b.x - 4) {
+            if (a.y <= b.y) { a.labY = a.y - 8; b.labY = b.y + 4; }
+            else { b.labY = b.y - 8; a.labY = a.y + 4; }
+          }
+        }
+        items.forEach(({ o, x, labX, labY }) => {
+          if (o.lab) {
+            o.lab.setAttribute("x", labX.toFixed(1));
+            o.lab.setAttribute("y", labY.toFixed(1));
+          }
+          if (o.note) {
+            o.note.setAttribute("x", labX.toFixed(1));
+            o.note.setAttribute("y", (labY + 10).toFixed(1));
+          }
+          const mid = (y0 + o._y) / 2;
+          if (o.stemLab) {
+            o.stemLab.setAttribute("x", x.toFixed(1));
+            o.stemLab.setAttribute("y", mid.toFixed(1));
+            o.stemLab.setAttribute("transform", "rotate(-90 " + x.toFixed(1) + " " + mid.toFixed(1) + ")");
+          }
         });
       };
       const apply = (t) => {
@@ -3822,7 +3866,7 @@ function fmtThresh(yd) {
           o.g.style.opacity = String(op);
           o.g.style.visibility = o.hasVal || op > 0.05 ? "visible" : "hidden";
         });
-        placeLabs(t);
+        placeLabs();
         paintGaps((o) => o._y, (o) => o.present && o.hasVal);
       };
       if (!dur) { apply(1); return; }
@@ -4651,6 +4695,48 @@ function fmtThresh(yd) {
         perfSetIndex(Number(e.target.value), perfPlay.data);
       }
     });
+    const scrubCol = root.querySelector(".bag-scrub-col");
+    if (scrubCol && !scrubCol._bagScrubBound) {
+      scrubCol._bagScrubBound = true;
+      let dragging = false;
+      const evToIdx = (e) => {
+        const rail = $("#perfScrubRail");
+        if (!rail || !perfPlay.data) return null;
+        const r = rail.getBoundingClientRect();
+        const n = (perfPlay.data.sessions || []).length;
+        if (n <= 1) return 0;
+        const cx = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+        const x = Math.max(0, Math.min(1, (cx - r.left) / (r.width || 1)));
+        return Math.round(x * (n - 1));
+      };
+      const go = (e) => {
+        const i = evToIdx(e);
+        if (i == null) return;
+        perfStopPlay();
+        perfSetIndex(i, perfPlay.data);
+      };
+      const onRail = (t) => t && (t.closest("#perfScrubRail") || t.closest("#perfScrubThumb") || t.closest("#perfScrubFill"));
+      scrubCol.addEventListener("pointerdown", (e) => {
+        if (e.target.closest(".bag-tick")) return;
+        if (!onRail(e.target) && !e.target.closest("#perfScrub")) return;
+        dragging = true;
+        try { scrubCol.setPointerCapture(e.pointerId); } catch (err) {}
+        go(e);
+        e.preventDefault();
+      });
+      scrubCol.addEventListener("pointermove", (e) => { if (dragging) go(e); });
+      const endDrag = () => { dragging = false; };
+      scrubCol.addEventListener("pointerup", endDrag);
+      scrubCol.addEventListener("pointercancel", endDrag);
+      const scrub = $("#perfScrub");
+      if (scrub) scrub.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); perfStepSession(-1); }
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); perfStepSession(1); }
+        if (e.key === "Home") { e.preventDefault(); perfStopPlay(); perfSetIndex(0, perfPlay.data); }
+        if (e.key === "End") { e.preventDefault(); const n = (perfPlay.data && perfPlay.data.sessions) || []; perfStopPlay(); perfSetIndex(n.length - 1, perfPlay.data); }
+      });
+    }
+
     root.addEventListener("change", (e) => {
       if (!e.target) return;
       if (e.target.id === "tvnThen" || e.target.id === "tvnNow") {
