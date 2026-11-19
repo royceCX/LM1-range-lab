@@ -531,12 +531,41 @@ nav.tabs{flex-shrink:1}
 .perf-db-delta.flat{color:var(--muted);font-size:13px;font-family:var(--font);font-weight:650}
 .perf-db-delta small{display:block;font-family:var(--font);font-size:10px;font-weight:650;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
 
-.perf-multi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media (min-width:980px){ .perf-multi{grid-template-columns:repeat(3,minmax(0,1fr))} }
-.perf-mini{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:8px 8px 10px;min-width:0}
-.perf-mini h4{margin:0 0 4px;font-family:var(--cond);font-size:15px;letter-spacing:.05em;font-weight:700;display:flex;align-items:center;gap:6px}
-.perf-mini svg{width:100%;height:auto;display:block}
-.perf-mini.is-missing{opacity:.45}
+.spd-table{display:flex;flex-direction:column;min-width:0}
+.spd-head,.spd-row{display:grid;grid-template-columns:minmax(150px,.65fr) repeat(3,minmax(0,1.2fr));gap:8px 20px;align-items:center}
+.spd-head{padding:0 0 8px;border-bottom:1px solid var(--line)}
+.spd-row{padding:8px 0;border-bottom:1px solid var(--line)}
+.spd-row:last-child{border-bottom:0}
+.spd-row.is-faint{opacity:.55}
+.spd-club{display:flex;align-items:center;gap:6px;min-width:0;font-family:var(--cond);font-weight:700;font-size:15px;letter-spacing:.04em;line-height:1.2}
+.spd-club-text{min-width:min-content;flex-shrink:0}
+.spd-club-name{display:block}
+.spd-club-note{display:block;margin-top:2px;font-family:var(--cond);font-size:11px;font-weight:650;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
+.spd-phone-dates{display:none}
+.spd-hcell{min-width:0}
+.spd-h-title{font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.spd-h-spark{display:flex;justify-content:space-between;margin-left:calc(5.6em + 8px);margin-right:0;padding:0 2.5%;font-family:var(--cond);font-size:9px;font-weight:600;color:var(--dim);letter-spacing:.02em}
+.spd-cell{display:grid;grid-template-columns:5.6em minmax(0,1fr);grid-template-areas:"val spark" "delta spark";column-gap:8px;row-gap:1px;align-items:center;min-width:0}
+.spd-val{grid-area:val;align-self:end;font-family:var(--cond);font-weight:700;font-size:20px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1;color:var(--text)}
+.spd-delta{grid-area:delta;align-self:start;font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.02em;font-variant-numeric:tabular-nums;text-align:left;line-height:1.15;color:var(--muted);white-space:nowrap}
+.spd-delta.up{color:var(--green)}
+.spd-delta.down{color:var(--red)}
+.spd-spark-wrap{min-width:0;height:36px}
+.spd-spark-wrap svg{width:100%;height:36px;display:block}
+.spd-mlabel{display:none}
+@media (max-width:700px){
+  .spd-head{display:none}
+  .spd-row{display:flex;flex-direction:column;align-items:stretch;gap:2px;padding:10px 0}
+  .spd-club{margin:0 0 2px}
+  .spd-phone-dates{display:flex;justify-content:space-between;padding:0 2px 4px;font-family:var(--cond);font-size:9px;font-weight:600;color:var(--dim);letter-spacing:.02em}
+  .spd-cell{grid-template-columns:1fr auto;grid-template-areas:"label delta" "val val" "spark spark";gap:2px 8px;padding:7px 0 4px;border-top:1px solid var(--line)}
+  .spd-mlabel{display:block;grid-area:label;font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .spd-val{grid-area:val;font-size:22px;align-self:start}
+  .spd-delta{grid-area:delta;align-self:start;text-align:right}
+  .spd-spark-wrap{grid-area:spark;height:40px;margin-top:2px}
+  .spd-spark-wrap svg{height:40px}
+  .spd-h-spark{margin:0}
+}
 
 .perf-bag-stage{position:relative;width:100%;min-height:280px}
 .perf-bag-stage svg{width:100%;height:auto;display:block}
@@ -579,14 +608,11 @@ nav.tabs{flex-shrink:1}
   .perf-db-name{grid-area:name}
   .perf-db-delta{grid-area:delta;font-size:20px}
   .perf-db svg{grid-area:svg;height:52px}
-  .perf-multi{grid-template-columns:1fr}
   .work-item{grid-template-columns:1fr;padding:10px}
   .work-illu{max-width:220px}
-  #perfStat{width:100%}
-  #perfStat button{flex:1 1 auto;padding:6px 7px;font-size:11px}
 }
 @media (prefers-reduced-motion: reduce){
-  .perf-db svg *,.perf-mini svg *,.perf-bag-stage svg *,.work-illu svg *{transition:none !important;animation:none !important}
+  .perf-db svg *,.perf-bag-stage svg *,.work-illu svg *,.spd-spark-wrap svg *{transition:none !important;animation:none !important}
 }
 
 @keyframes perf-pulse {
@@ -753,14 +779,6 @@ nav.tabs{flex-shrink:1}
     <section id="view-performance" class="view">
       <div class="perf-toolbar">
         <div class="perf-clubs" id="perfClubs" aria-label="Performance clubs"></div>
-        <div class="seg" id="perfStat" role="group" aria-label="Performance stat">
-          <button type="button" data-ps="carry" class="active">Carry</button>
-          <button type="button" data-ps="total">Total</button>
-          <button type="button" data-ps="clubSpeed">Club speed</button>
-          <button type="button" data-ps="ballSpeed">Ball speed</button>
-          <button type="button" data-ps="smash">Smash</button>
-          <button type="button" data-ps="spread">Spread</button>
-        </div>
       </div>
       <section class="card card-hero" id="perf-bag-card">
         <h3>Bag evolution <button type="button" class="help-btn" data-help="perf-bag" aria-label="About bag evolution">?</button></h3>
@@ -800,8 +818,8 @@ nav.tabs{flex-shrink:1}
         <div id="perfTvn"></div>
       </section>
       <section class="card" id="perf-timeline-card">
-        <h3>Session timeline <button type="button" class="help-btn" data-help="perf-timeline" aria-label="About the session timeline">?</button></h3>
-        <p class="sub" id="perfTimelineSub">One panel per club. Each visit is a dot at the average, with a whisker for the middle 80% of shots (P10–P90).</p>
+        <h3>Speed &amp; strike trends <button type="button" class="help-btn" data-help="perf-timeline" aria-label="About speed and strike trends">?</button></h3>
+        <p class="sub" id="perfTimelineSub">How your swing speed, ball speed and strike are trending, per club. Higher is better.</p>
         <div id="perfTimeline"></div>
       </section>
 
@@ -1190,6 +1208,7 @@ function fmtThresh(yd) {
     set("perfBagSub", "Average " + kind + " for each club on a distance ladder, for the session on the play bar. Play or scrub to walk through your visits.");
     set("perfTvnSub", "How this club’s " + kind + ", speed, smash and estimated height changed from one visit to another. Green is an improvement, red is a drop. Height and the flight path are estimated.");
     set("perfHeatSub", "Thinner band = more repeatable distance. Shows where 8 of 10 shots landed each session.");
+    set("perfTimelineSub", "How your swing speed, ball speed and strike are trending, per club. Higher is better.");
     const ex = document.getElementById("excludeMishits");
     if (ex && ex.closest("label")) ex.closest("label").title = "Hide likely poor contact (mishits) and impossible-looking readings (misreads) from the averages.";
     const best = document.getElementById("bestN");
@@ -2563,7 +2582,7 @@ function fmtThresh(yd) {
       "tvn-flight": { title: "Ball flight · side view (estimated)", body: "A side-on sketch of a typical shot in each session. Height is estimated — the LM1 does not measure launch, spin or how high the ball went. The solid path is Now; the fainter path is Then. The dashed line on the ground is roll from carry to total. Replay plays the later flight again." },
       "tvn-spread": { title: "Carry spread · from above", body: "A bird’s-eye view of how far the shots flew. The ellipse runs along the target line and shows the middle 80% of carries. Width left-to-right is only for readability — the LM1 does not record side or face data, so this is not shot shape." },
       "perf-bag": { title: "Bag evolution", body: "Average " + kind + " for each club, lined up as a bag ladder for the session on the play bar. Solid dots are this visit; the dashed ring is your first session; hollow rings are earlier visits; a faded dot is a club you didn’t hit this time, shown at its last known distance. The line between clubs is the gap — red means they overlap or sit tight, amber means a wide hole. Play or scrub to walk through your visits. Units follow the Yards / Metres toggle." },
-      "perf-timeline": { title: "Session timeline", body: "One panel per club, across every imported session. Each visit is a dot at that session’s average — " + kind + ", speed, smash or spread, depending on the toolbar — with a whisker for the middle 80% of shots (P10–P90). A short whisker is a tight group; a long one means the number jumped around. The play bar’s date is the same session shown in Bag evolution. Distance units follow the Yards / Metres toggle." },
+      "perf-timeline": { title: "Speed & strike trends", body: "Each row is one club. Club speed is how fast you swung, in mph; ball speed is what that swing transferred to the ball, also in mph; smash is ball speed ÷ club speed — a simple read of how well you struck it. The sparkline is those averages across your sessions, left to right; a break means that club wasn’t hit that day, not a guess. The big number is the latest session; the green or red figure is the change since the first session you have. A faint line on the smash spark is the good-strike mark for that club type — for example 1.33 for irons. Speeds stay in mph, whatever distance unit you have chosen. A faded row means you only have one session for that club so far." },
       "perf-heat": { title: "Consistency over time", body: "Each panel is one club. The soft band is where the middle 8 of 10 shots landed in each session (P10–P90 carry), in " + unitWord() + ". A thinner band means more repeatable distance; a wider band means the number jumped around. The thin line is the median carry. If a visit is missing, the band breaks — that club wasn’t hit, not a guess. The headline is half the latest band’s width, compared with the first session you have. Units follow the Yards / Metres toggle." },
       "perf-strike": { title: "Strike quality over time", body: "Stacked bars show the share of poor, OK and good strikes in each session, using the same smash-factor thresholds as the smash gauges — a simple read of how well you found the face. A larger good share is a better day of contact; more poor strikes usually means weaker contact. This uses smash only: the LM1 does not measure path, face or strike location." },
       "perf-work": { title: "What to work on", body: "Pattern-based suggestions from the stats the LM1 does measure — distance, speed, smash and how tightly shots grouped. They are inferred, not a launch-monitor diagnosis: the LM1 does not measure path, face, spin, launch or loft. Treat each card as something to look at with a coach or a fuller monitor, not as a confirmed fault." },
@@ -3512,8 +3531,8 @@ function fmtThresh(yd) {
     clubs.forEach((club) => { cells.set(club, sessRows.map((sr) => sr.by.get(club) || null)); });
     return { sessions, sessRows, clubs, cells };
   }
-  function perfStatMeta() {
-    const id = state.perfStat || "carry";
+  function perfStatMeta(which) {
+    const id = which || state.perfStat || "carry";
     const all = {
       carry: { id: "carry", label: "Carry", unit: unitShort(), better: "up",
         fmt: (v) => fmtDist(v) + " " + unitShort(), raw: (c) => c && c.avgCarry, lo: (c) => c && c.p10c, hi: (c) => c && c.p90c },
@@ -3684,7 +3703,6 @@ function fmtThresh(yd) {
     const data = buildPerfData();
     perfPlay.data = data;
     const clubs = perfSelectedClubs(data.clubs);
-    const meta = perfStatMeta();
     renderPerfToolbar(data.clubs, clubs);
     renderBagPlaybar(data);
     if (!data.sessions.length || !data.clubs.length) {
@@ -3697,7 +3715,7 @@ function fmtThresh(yd) {
     const startIdx = state.perfSessionIndex != null && state.perfSessionIndex < data.sessions.length ? state.perfSessionIndex : data.sessions.length - 1;
     renderPerfBag(data, clubs);
     renderPerfTvn(data, clubs);
-    renderPerfTimeline(data, clubs, meta);
+    renderPerfTimeline(data, clubs);
     renderPerfHeat(data, clubs);
     renderPerfStrike(data, clubs);
     renderPerfWork(data, clubs);
@@ -3717,7 +3735,6 @@ function fmtThresh(yd) {
       });
       el.innerHTML = html;
     }
-    $$("#perfStat button").forEach((b) => b.classList.toggle("active", b.getAttribute("data-ps") === (state.perfStat || "carry")));
   }
   function togglePerfClub(club) {
     if (club === "__all__") state.perfClubs = null;
@@ -3833,79 +3850,140 @@ function fmtThresh(yd) {
     }
   }
 
-  function renderPerfTimeline(data, clubs, meta) {
+  function renderPerfTimeline(data, clubs) {
     const el = $("#perfTimeline");
     if (!el) return;
     const nS = data.sessions.length;
     if (nS < 1) { el.innerHTML = '<p class="empty">No sessions to plot.</p>'; return; }
-    const W = 320, H = 132, padL = 28, padR = 28, padT = 10, padB = 22;
-    let html = '<div class="perf-multi">';
+    const metrics = [
+      { id: "clubSpeed", title: "Club speed (mph)", label: "Club speed", short: "Club speed" },
+      { id: "ballSpeed", title: "Ball speed (mph)", label: "Ball speed", short: "Ball speed" },
+      { id: "smash", title: "Smash", label: "Smash", short: "Smash" }
+    ].map((m) => Object.assign(m, perfStatMeta(m.id)));
+    const hasVal = (c, meta) => {
+      if (!c) return false;
+      const v = meta.raw(c);
+      return v != null && Number.isFinite(v);
+    };
+    const rows = [];
     clubs.forEach((club) => {
       const cells = data.cells.get(club) || [];
-      const vals = [];
-      cells.forEach((c) => {
-        if (!c) return;
-        const a = meta.raw(c), lo = meta.lo(c), hi = meta.hi(c);
-        if (a != null) vals.push(a);
-        if (lo != null) vals.push(lo);
-        if (hi != null) vals.push(hi);
+      const hit = cells.filter(Boolean).length;
+      const any = metrics.some((meta) => cells.some((c) => hasVal(c, meta)));
+      if (!any) return;
+      rows.push({ club, cells, faint: hit < 2 });
+    });
+    if (!rows.length) {
+      el.innerHTML = '<p class="empty">No club or ball speed to plot for this selection.</p>';
+      return;
+    }
+    const dateLabel = (s) => escapeHtml(niceDate(s.date).replace(/ 20\d\d/, ""));
+    const firstDate = dateLabel(data.sessions[0]);
+    const lastDate = dateLabel(data.sessions[nS - 1]);
+    const datesHtml = '<span>' + firstDate + "</span><span>" + lastDate + "</span>";
+
+    function sparkSvg(club, color, meta, cells) {
+      const W = 160, H = 36, padL = 4, padR = 4, padT = 6, padB = 6;
+      const points = cells.map((c, i) => {
+        if (!hasVal(c, meta)) return null;
+        return { v: meta.raw(c), n: c.n, date: data.sessions[i].date, i };
       });
-      const color = clubColor(club);
-      const short = clubDef(club).short || club;
-      html += '<article class="perf-mini" data-club="' + escapeHtml(club) + '"><h4><i class="perf-db-swatch" style="background:' + color + '"></i>' + escapeHtml(short) + "</h4>";
-      if (vals.length < 1) {
-        html += '<p class="empty" style="padding:16px 8px">No ' + meta.label.toLowerCase() + " yet.</p></article>";
-        return;
+      const vals = points.filter(Boolean).map((p) => p.v);
+      if (!vals.length) {
+        return '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(club + " " + meta.label) + '"></svg>';
       }
       let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
-      if (lo === hi) { lo -= 1; hi += 1; }
-      const pad = (hi - lo) * 0.14 || 1;
-      lo -= pad; hi += pad;
-      const xOf = (i) => padL + (nS <= 1 ? 0.5 : i / (nS - 1)) * (W - padL - padR);
-      const yOf = (v) => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
-      let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + escapeHtml(club) + ' timeline">';
-      const step = (hi - lo) > 40 ? niceStep(hi - lo) : (hi - lo) > 8 ? 5 : (hi - lo) > 2 ? 1 : 0.2;
-      for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-6; v += step) {
-        svg += '<line x1="' + padL + '" y1="' + yOf(v) + '" x2="' + (W - padR) + '" y2="' + yOf(v) + '" stroke="rgba(255,255,255,.06)"/>';
+      const thresh = meta.id === "smash" ? smashGoodFor(club).good : null;
+      if (thresh != null && Number.isFinite(thresh)) {
+        lo = Math.min(lo, thresh);
+        hi = Math.max(hi, thresh);
       }
-      svg += '<text x="' + (padL - 4) + '" y="' + (yOf(hi) + 4) + '" text-anchor="end" fill="rgba(255,255,255,.45)" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="700">' + (meta.id === "smash" ? fmt(hi, 2) : Math.round(meta.id === "clubSpeed" || meta.id === "ballSpeed" ? hi : toDisp(hi) || hi)) + "</text>";
-      const pts = [];
-      cells.forEach((c, i) => {
-        const a = meta.raw(c);
-        if (a == null) return;
-        pts.push(xOf(i).toFixed(1) + "," + yOf(a).toFixed(1));
-        const yLo = yOf(meta.lo(c) != null ? meta.lo(c) : a);
-        const yHi = yOf(meta.hi(c) != null ? meta.hi(c) : a);
+      if (!(hi > lo)) {
+        const padEq = meta.id === "smash" ? 0.04 : 2;
+        lo -= padEq;
+        hi += padEq;
+      } else {
+        const pad = (hi - lo) * 0.18;
+        lo -= pad;
+        hi += pad;
+      }
+      const xOf = (i) => padL + (nS <= 1 ? (W - padL - padR) / 2 : (i / (nS - 1)) * (W - padL - padR));
+      const yOf = (v) => padT + (1 - (v - lo) / (hi - lo)) * (H - padT - padB);
+      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(club + " " + meta.label + " trend") + '">';
+      if (thresh != null && Number.isFinite(thresh)) {
+        const y = yOf(thresh);
+        svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="var(--center)" stroke-opacity=".28" stroke-width="1" stroke-dasharray="2 3"/>';
+      }
+      for (let i = 0; i < nS - 1; i++) {
+        if (!points[i] || !points[i + 1]) continue;
+        svg += '<line x1="' + xOf(i).toFixed(1) + '" y1="' + yOf(points[i].v).toFixed(1) + '" x2="' + xOf(i + 1).toFixed(1) + '" y2="' + yOf(points[i + 1].v).toFixed(1) + '" stroke="' + color + '" stroke-width="1.35" stroke-linecap="round"/>';
+      }
+      let lastIdx = -1;
+      for (let i = nS - 1; i >= 0; i--) if (points[i]) { lastIdx = i; break; }
+      const slotW = nS <= 1 ? 18 : Math.max(8, (W - padL - padR) / Math.max(1, nS - 1));
+      points.forEach((p, i) => {
+        if (!p) return;
+        const x = xOf(i), y = yOf(p.v);
+        const isLast = i === lastIdx;
+        const small = p.n < 3;
         const tip = escapeHtml([
-          club + " · " + niceDate(data.sessions[i].date),
-          "Avg " + meta.fmt(a),
-          meta.lo(c) != null ? "Middle 80% " + meta.fmt(meta.lo(c)).replace(/ [a-z]+$/i, "") + "–" + meta.fmt(meta.hi(c)) : "",
-          c.n + " shot" + (c.n === 1 ? "" : "s")
-        ].filter(Boolean).join("\n"));
-        svg += '<line class="perf-whisker" data-si="' + i + '" x1="' + xOf(i) + '" x2="' + xOf(i) + '" y1="' + yLo.toFixed(1) + '" y2="' + yHi.toFixed(1) + '" stroke="' + color + '" stroke-opacity=".4" stroke-width="4" stroke-linecap="round"/>';
-        svg += '<circle class="perf-avg" data-si="' + i + '" data-tip="' + tip + '" cx="' + xOf(i).toFixed(1) + '" cy="' + yOf(a).toFixed(1) + '" r="5" fill="' + color + '" stroke="#071018" stroke-width=".8" style="cursor:pointer"/>';
+          club + " · " + niceDate(p.date),
+          meta.label + "  " + meta.fmt(p.v),
+          p.n + " shot" + (p.n === 1 ? "" : "s")
+        ].join("\n"));
+        svg += '<rect data-tip="' + tip + '" x="' + (x - slotW / 2).toFixed(1) + '" y="0" width="' + slotW.toFixed(1) + '" height="' + H + '" fill="transparent" style="cursor:pointer"/>';
+        if (small) {
+          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (isLast ? 3.2 : 2.4) + '" fill="none" stroke="' + color + '" stroke-width="1.2" opacity="' + (isLast ? "0.7" : "0.4") + '" pointer-events="none"/>';
+        } else if (isLast) {
+          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="3.2" fill="' + color + '" pointer-events="none"/>';
+        } else {
+          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2" fill="' + color + '" opacity=".45" pointer-events="none"/>';
+        }
       });
-      if (pts.length > 1) svg += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + color + '" stroke-opacity=".35" stroke-width="1.4"/>';
-      data.sessions.forEach((s, i) => {
-        if (i % Math.ceil(nS / 4) !== 0 && i !== nS - 1) return;
-        svg += '<text x="' + xOf(i) + '" y="' + (H - 6) + '" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">' + escapeHtml(niceDate(s.date).replace(/ 20\d\d/, "")) + "</text>";
-      });
-      svg += '<rect class="perf-playhead" data-role="head" x="0" y="' + padT + '" width="2" height="' + (H - padT - padB) + '" fill="rgba(62,224,255,.7)" opacity=".0"/>';
-      svg += "</svg></article>";
-      html += svg;
+      svg += "</svg>";
+      return svg;
+    }
+
+    function metricCell(club, color, meta, cells, faint) {
+      const pts = [];
+      cells.forEach((c) => { if (hasVal(c, meta)) pts.push(c); });
+      const last = pts.length ? pts[pts.length - 1] : null;
+      const first = pts.length ? pts[0] : null;
+      const latest = last ? meta.raw(last) : null;
+      const valTxt = latest == null ? "—" : (meta.id === "smash" ? fmt(latest, 2) : fmt(latest, 1));
+      let deltaHtml = "";
+      if (faint || pts.length < 2) {
+        deltaHtml = '<div class="spd-delta"></div>';
+      } else {
+        const delta = meta.raw(last) - meta.raw(first);
+        const tone = perfDeltaTone(delta, meta.better);
+        const cls = tone === "up" || tone === "down" ? " " + tone : "";
+        deltaHtml = '<div class="spd-delta' + cls + '">' + escapeHtml(perfFmtDelta(delta, meta)) + "</div>";
+      }
+      return '<div class="spd-cell"><div class="spd-mlabel">' + escapeHtml(meta.short) + '</div><div class="spd-val">' + escapeHtml(valTxt) + '</div><div class="spd-spark-wrap">' + sparkSvg(club, color, meta, cells) + "</div>" + deltaHtml + "</div>";
+    }
+
+    let html = '<div class="spd-table" role="table">';
+    html += '<div class="spd-head" role="row">';
+    html += '<div class="spd-hcell"><div class="spd-h-title">Club</div></div>';
+    metrics.forEach((meta) => {
+      html += '<div class="spd-hcell" role="columnheader"><div class="spd-h-title">' + escapeHtml(meta.title) + '</div><div class="spd-h-spark">' + datesHtml + "</div></div>";
+    });
+    html += "</div>";
+    rows.forEach((row) => {
+      const color = clubColor(row.club);
+      const short = (clubDef(row.club) || {}).short || row.club;
+      html += '<div class="spd-row' + (row.faint ? " is-faint" : "") + '" role="row" data-club="' + escapeHtml(row.club) + '">';
+      html += '<div class="spd-club"><i class="perf-db-swatch" style="background:' + color + '"></i><div class="spd-club-text"><span class="spd-club-name">' + escapeHtml(short) + "</span>";
+      if (row.faint) html += '<span class="spd-club-note">needs more sessions</span>';
+      html += "</div></div>";
+      html += '<div class="spd-phone-dates">' + datesHtml + "</div>";
+      metrics.forEach((meta) => { html += metricCell(row.club, color, meta, row.cells, row.faint); });
+      html += "</div>";
     });
     html += "</div>";
     el.innerHTML = html;
     bindChartTips(el, "[data-tip]");
-  }
-  function niceStep(span) {
-    const raw = span / 3;
-    const pow = Math.pow(10, Math.floor(Math.log10(raw || 1)));
-    const n = raw / pow;
-    if (n < 1.5) return pow;
-    if (n < 3.5) return 2 * pow;
-    if (n < 7.5) return 5 * pow;
-    return 10 * pow;
   }
 
   function renderPerfBag(data, clubs) {
@@ -3965,24 +4043,6 @@ function fmtThresh(yd) {
 
   function perfSyncPlayhead(idx, data) {
     if (!data) return;
-    // timeline playhead line
-    $$("#perfTimeline .perf-mini").forEach((panel) => {
-      const svg = panel.querySelector("svg");
-      if (!svg) return;
-      const nS = data.sessions.length;
-      const W = 320, padL = 28, padR = 28;
-      const x = padL + (nS <= 1 ? 0.5 : idx / (nS - 1)) * (W - padL - padR);
-      const head = panel.querySelector(".perf-playhead");
-      if (head) {
-        head.setAttribute("x", (x - 1).toFixed(1));
-        head.setAttribute("opacity", "0.85");
-      }
-      panel.querySelectorAll(".perf-avg").forEach((c) => {
-        const on = Number(c.getAttribute("data-si")) === idx;
-        c.setAttribute("r", on ? 6.5 : 5);
-        c.setAttribute("stroke-width", on ? 1.6 : 0.8);
-      });
-    });
     // bag ladder positions
     const bagEl = $("#perfBag");
     const bag = bagEl && bagEl._bag;
@@ -5185,13 +5245,6 @@ function fmtThresh(yd) {
       const clubChip = e.target.closest("[data-pc]");
       if (clubChip && clubChip.closest("#perfClubs")) {
         togglePerfClub(clubChip.getAttribute("data-pc"));
-        return;
-      }
-      const stat = e.target.closest("[data-ps]");
-      if (stat && stat.closest("#perfStat")) {
-        state.perfStat = stat.getAttribute("data-ps");
-        savePerfPrefs();
-        renderPerformance();
         return;
       }
       if (e.target.closest("#perfPlayBtn")) { perfTogglePlay(); return; }
