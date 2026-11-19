@@ -3706,7 +3706,7 @@ function fmtThresh(yd) {
     let maxV = 0;
     rows.forEach((r) => r.vals.forEach((v) => { if (v != null && v > maxV) maxV = v; }));
     const maxDist = niceMaxDisp(Math.max(maxV, 80));
-    const W = 1100, H = 520, padL = 68, padR = 52, padT = 22, padB = 28;
+    const W = 1100, H = 520, padL = 68, padR = 52, padT = 64, padB = 28;
     const yOf = (v) => padT + (1 - (Math.max(0, toDisp(v) || 0) / maxDist)) * (H - padT - padB);
     let svg = '<div class="perf-bag-stage"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Bag evolution ladder">';
     const tick = maxDist > 200 ? 50 : 25;
@@ -3733,8 +3733,8 @@ function fmtThresh(yd) {
       svg += '<line class="perf-bag-stem-hi" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="' + r.color + '" stroke-opacity=".26" stroke-width="1.35"/>';
       svg += '<text class="perf-bag-stem-lab" x="' + x.toFixed(1) + '" y="' + y0 + '" text-anchor="middle" dominant-baseline="middle" fill="' + r.color + '" fill-opacity=".5" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="500" letter-spacing="0.16em" style="letter-spacing:0.16em" pointer-events="none">' + escapeHtml(r.full) + "</text>";
       svg += '<circle class="perf-bag-dot" cx="' + x.toFixed(1) + '" cy="' + y0 + '" r="8" fill="' + r.color + '" stroke="#071018" stroke-width="1.1"/>';
-      svg += '<text class="perf-bag-lab" x="' + (x + 12).toFixed(1) + '" y="' + y0 + '" text-anchor="start" fill="rgba(238,246,240,.7)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="500" paint-order="stroke" stroke="#0c1319" stroke-width="2.2"></text>';
-      svg += '<text class="perf-bag-note" x="' + (x + 12).toFixed(1) + '" y="' + (y0 + 11) + '" text-anchor="start" fill="rgba(255,255,255,.38)" font-size="8" font-family="DM Sans, sans-serif" font-weight="400"></text>';
+      svg += '<text class="perf-bag-lab" x="' + x.toFixed(1) + '" y="' + y0 + '" text-anchor="start" dominant-baseline="middle" fill="rgba(238,246,240,.72)" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="500" letter-spacing="0.04em" paint-order="stroke" stroke="#0c1319" stroke-width="2.2"></text>';
+      svg += '<text class="perf-bag-note" x="' + x.toFixed(1) + '" y="' + y0 + '" text-anchor="start" dominant-baseline="middle" fill="rgba(255,255,255,.4)" font-size="7.5" font-family="DM Sans, sans-serif" font-weight="400" paint-order="stroke" stroke="#0c1319" stroke-width="2"></text>';
       svg += "</g>";
     });
     svg += '<g class="perf-bag-trails"></g>';
@@ -3829,8 +3829,23 @@ function fmtThresh(yd) {
           const follow = absA <= 36 || absA >= 144;
           let offX = -uy * 9, offY = ux * 9;
           if (offY > 0) { offX = -offX; offY = -offY; }
-          const lx = midX + offX;
-          const ly = midY + offY;
+          let lx = midX + offX;
+          let ly = midY + offY;
+          const boxes = targets.filter((o) => o.labBox).map((o) => o.labBox);
+          const clear = (px, py) => boxes.every((b) => px < b.x0 - 5 || px > b.x1 + 5 || py < b.y0 - 5 || py > b.y1 + 5);
+          if (!clear(lx, ly)) {
+            const plen = Math.hypot(offX, offY) || 1;
+            const nx = offX / plen, ny = offY / plen;
+            let found = false;
+            for (let d = 0; d < 2 && !found; d++) {
+              const dir = d === 0 ? 1 : -1;
+              for (let s = 1; s <= 7 && !found; s++) {
+                const tx = midX + offX + nx * dir * s * 7;
+                const ty = midY + offY + ny * dir * s * 7;
+                if (clear(tx, ty)) { lx = tx; ly = ty; found = true; }
+              }
+            }
+          }
           let fill = "rgba(232,238,236,.62)", fillOp = faded ? ".42" : ".7";
           if (rounded < 5) { fill = "#ff6b75"; fillOp = faded ? ".55" : ".92"; }
           else if (rounded > 20) { fill = "#e0b056"; fillOp = faded ? ".55" : ".9"; }
@@ -3846,28 +3861,35 @@ function fmtThresh(yd) {
       };
       const placeLabs = () => {
         const items = targets.filter((o) => o.hasVal).map((o) => {
-          const x = bag.xs[o.ri];
-          const text = (o.lab && o.lab.textContent) || "";
-          const w = Math.max(28, text.length * 5.6);
-          return { o, x, y: o._y, labX: x + 12, labY: o._y + 3.5, w };
+          return { o, x: bag.xs[o.ri] };
         });
-        items.sort((a, b) => a.x - b.x);
-        for (let i = 1; i < items.length; i++) {
-          const a = items[i - 1], b = items[i];
-          if (Math.abs(a.labY - b.labY) < 11 && (a.labX + a.w) > b.x - 4) {
-            if (a.y <= b.y) { a.labY = a.y - 8; b.labY = b.y + 4; }
-            else { b.labY = b.y - 8; a.labY = a.y + 4; }
-          }
-        }
-        items.forEach(({ o, x, labX, labY }) => {
+        items.forEach(({ o, x }) => {
+          const labText = (o.lab && o.lab.textContent) || "";
+          const noteText = (o.note && o.note.textContent) || "";
+          const labLen = Math.max(0, labText.length) * 10 * 0.54;
+          const noteLen = noteText ? Math.max(0, noteText.length) * 7.5 * 0.52 : 0;
+          const labY = o._y - 8 - 6;
           if (o.lab) {
-            o.lab.setAttribute("x", labX.toFixed(1));
+            o.lab.setAttribute("x", x.toFixed(1));
             o.lab.setAttribute("y", labY.toFixed(1));
+            o.lab.setAttribute("text-anchor", "start");
+            o.lab.setAttribute("dominant-baseline", "middle");
+            o.lab.setAttribute("transform", "rotate(-90 " + x.toFixed(1) + " " + labY.toFixed(1) + ")");
           }
+          const noteY = labY - labLen - (noteText ? 5 : 0);
           if (o.note) {
-            o.note.setAttribute("x", labX.toFixed(1));
-            o.note.setAttribute("y", (labY + 10).toFixed(1));
+            if (noteText) {
+              o.note.setAttribute("x", x.toFixed(1));
+              o.note.setAttribute("y", noteY.toFixed(1));
+              o.note.setAttribute("text-anchor", "start");
+              o.note.setAttribute("dominant-baseline", "middle");
+              o.note.setAttribute("transform", "rotate(-90 " + x.toFixed(1) + " " + noteY.toFixed(1) + ")");
+            } else {
+              o.note.removeAttribute("transform");
+            }
           }
+          const labTop = (noteText ? noteY - noteLen : labY - labLen);
+          o.labBox = { x0: x - 8, x1: x + 8, y0: labTop - 2, y1: labY + 2 };
           const mid = (y0 + o._y) / 2;
           if (o.stemLab) {
             o.stemLab.setAttribute("x", x.toFixed(1));
