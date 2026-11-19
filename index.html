@@ -638,8 +638,8 @@ nav.tabs{flex-shrink:1}
 .tvn-compare label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:650}
 .tvn-compare select{background:var(--bg-2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:5px 8px;font-size:13px}
 .tvn-compare #tvnAuto.active{border-color:rgba(62,224,255,.55);color:var(--cyan)}
-.tvn-grid{display:grid;grid-template-columns:minmax(220px,.9fr) minmax(300px,1.2fr);grid-template-areas:"dist gauges" "flight flight";gap:12px 14px;align-items:start}
-.tvn-left{grid-area:dist;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;min-width:0}
+.tvn-grid{display:grid;grid-template-columns:minmax(220px,.9fr) minmax(300px,1.2fr);grid-template-areas:"dist gauges" "flight flight";gap:12px 14px;align-items:stretch}
+.tvn-left{grid-area:dist;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;min-width:0;height:100%;box-sizing:border-box}
 .tvn-card-title{margin:0 0 8px;font-family:var(--cond);font-size:15px;letter-spacing:.05em;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text);line-height:1.2}
 .tvn-club-name{font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;line-height:1;margin:0 0 2px}
 .tvn-dates{font-size:12px;color:var(--muted);margin:0 0 8px}
@@ -656,15 +656,15 @@ nav.tabs{flex-shrink:1}
 .tvn-bar-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--green);min-width:4px}
 .tvn-bar-then-mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,.55);border-radius:2px;transform:translateX(-1px)}
 .tvn-bar-then{font-size:11px;color:var(--dim);margin:0}
-.tvn-gauges{grid-area:gauges;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;min-width:0}
-.tvn-gauges-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 2px}
+.tvn-gauges{grid-area:gauges;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;min-width:0;height:100%;box-sizing:border-box;min-height:0}
+.tvn-gauges-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 2px;flex:0 0 auto}
 .tvn-gauges-head .tvn-card-title{margin:0}
 .tvn-legend{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);font-weight:650;flex:0 0 auto}
 .tvn-legend i{display:inline-block;width:22px;height:12px;border-radius:2px;vertical-align:middle;margin-right:5px;box-sizing:border-box}
 .tvn-leg-then i{background:#0c1319;border:1px solid rgba(255,255,255,.55)}
 .tvn-leg-now i{background:var(--green);border:1px solid var(--green)}
-.tvn-gauges-row{display:flex;gap:2px;justify-content:space-between;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tvn-gauges-row svg{flex:1 1 0;min-width:68px;height:188px;display:block}
+.tvn-gauges-row{display:flex;gap:2px;justify-content:space-between;align-items:stretch;min-width:0;flex:1 1 auto;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tvn-gauges-row svg{flex:1 1 0;min-width:68px;min-height:0;height:100%;width:100%;display:block}
 .tvn-flight{grid-area:flight;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:12px;min-width:0;align-items:stretch}
 .tvn-flight-pane{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:8px 8px 10px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .tvn-flight-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px}
@@ -681,7 +681,10 @@ nav.tabs{flex-shrink:1}
   .tvn-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media (max-width:720px){
-  .tvn-grid{grid-template-columns:1fr;grid-template-areas:"dist" "gauges" "flight"}
+  .tvn-grid{grid-template-columns:1fr;grid-template-areas:"dist" "gauges" "flight";align-items:start}
+  .tvn-left,.tvn-gauges{height:auto}
+  .tvn-gauges-row{flex:0 0 auto}
+  .tvn-gauges-row svg{height:188px;width:auto}
   .tvn-flight{grid-template-columns:1fr}
 }
 @media (max-width:640px){
