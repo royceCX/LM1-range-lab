@@ -889,7 +889,7 @@ nav.tabs{flex-shrink:1}
     <section id="view-import" class="view">
       <div class="card">
         <h3>Import a range session</h3>
-        <p class="sub">Copy a shot table from the Shot Scope dashboard, or upload one or more .tsv / .csv files. Filenames like <em>YYYY-MM-DD.tsv</em> set the session date automatically. Preview before saving. Nothing leaves this browser.</p>
+        <p class="sub">Copy a shot table from the Shot Scope dashboard, or upload one or more .tsv / .csv files. A direct paste from the Shot Scope table works, even when each value is on its own line. Filenames like <em>YYYY-MM-DD.tsv</em> set the session date automatically. Preview before saving. Nothing leaves this browser.</p>
         <div class="import-grid">
           <div>
             <textarea class="paste" id="pasteArea" placeholder="Paste shots here…&#10;Shot No.	Club	Club Speed (mph)	Ball Speed (mph)	Smash Factor	Carry Distance (yds)	Total Distance (yds)&#10;1	7i	81.2	110.4	1.36	152	162"></textarea>
@@ -1068,6 +1068,7 @@ nav.tabs{flex-shrink:1}
   }
   function fmt0(n) { return n == null || Number.isNaN(n) ? "—" : String(Math.round(n)); }
   const YD_TO_M = 0.9144;
+  const KMH_TO_MPH = 1.609344;
   const UNITS_KEY = "lm1-range-lab-units";
   const DISP_MODE_KEY = "lm1-range-lab-disp-mode";
   const SCATTER_CLUBS_KEY = "lm1-range-lab-scatter-clubs";
@@ -1272,13 +1273,65 @@ function fmtThresh(yd) {
     out.push(cur.trim());
     return out;
   }
-  function rowFromCells(cells, map) {
+  function unitFromHeader(h) {
+    const s = String(h || "").toLowerCase();
+    const paren = ((s.match(/\(([^)]*)\)/) || [])[1] || "").trim();
+    const blob = (paren ? paren + " " : "") + s;
+    if (/(km\s*\/\s*h|\bkmh\b|\bkph\b|\bkmph\b)/.test(blob)) return "kph";
+    if (/\bmph\b|miles?\s*per\s*hour/.test(blob)) return "mph";
+    if (/\b(yds?|yards?)\b/.test(blob)) return "yd";
+    if (/\b(metres?|meters?)\b/.test(blob) || /\(\s*m\s*\)/.test(s)) return "m";
+    return null;
+  }
+  function unitsFromHeaders(cells) {
+    const units = {};
+    (cells || []).forEach((c) => {
+      const n = normHead(c);
+      const u = unitFromHeader(c);
+      if (!u) return;
+      Object.keys(COL_ALIASES).forEach((k) => {
+        if (COL_ALIASES[k].some((rx) => rx.test(n))) units[k] = u;
+      });
+    });
+    return units;
+  }
+  function looksLikeNumberToken(v) {
+    const s = String(v ?? "").trim();
+    if (!s) return false;
+    return /^-?\d+(?:\.\d+)?(?:\s*(?:mph|km\s*\/\s*h|kph|kmh|kmph|yds?|yards?|metres?|meters?|m))?$/i.test(s);
+  }
+  function unitFromCell(raw, fallback) {
+    const s = String(raw ?? "").trim().toLowerCase();
+    if (/(km\s*\/\s*h|\bkmh\b|\bkph\b|\bkmph\b)/.test(s)) return "kph";
+    if (/\bmph\b/.test(s)) return "mph";
+    if (/\b(yds?|yards?)\b/.test(s)) return "yd";
+    if (/\b(metres?|meters?)\b/.test(s) || /(?:^|[\s])m(?:\s|$)/.test(s)) return "m";
+    return fallback || null;
+  }
+  function convertSpeed(v, unit) {
+    if (v == null) return null;
+    if (unit === "kph" || unit === "kmh" || unit === "kmph") return v / KMH_TO_MPH;
+    return v;
+  }
+  function convertDist(v, unit) {
+    if (v == null) return null;
+    if (unit === "m" || unit === "metre" || unit === "meter") return v / YD_TO_M;
+    return v;
+  }
+  function parseSpeedCell(raw, unit) {
+    return convertSpeed(parseNum(raw), unitFromCell(raw, unit));
+  }
+  function parseDistCell(raw, unit) {
+    return convertDist(parseNum(raw), unitFromCell(raw, unit));
+  }
+  function rowFromCells(cells, map, units) {
+    const u = units || {};
     const get = (k) => (map[k] != null ? cells[map[k]] : null);
     const clubRaw = (get("club") || "").trim();
     let smash = parseNum(get("smash"));
-    const clubSpeed = parseNum(get("clubSpeed"));
-    const ballSpeed = parseNum(get("ballSpeed"));
-    if (smash == null && clubSpeed && ballSpeed && clubSpeed !== 0) smash = Math.round((ballSpeed / clubSpeed) * 100) / 100;
+    const clubSpeed = parseSpeedCell(get("clubSpeed"), u.clubSpeed);
+    const ballSpeed = parseSpeedCell(get("ballSpeed"), u.ballSpeed);
+    if (smash == null && !String(get("smash") || "").trim() && clubSpeed && ballSpeed && clubSpeed !== 0) smash = Math.round((ballSpeed / clubSpeed) * 100) / 100;
     const shotNo = parseNum(get("shotNo"));
     return {
       shotNo: shotNo == null ? null : shotNo,
@@ -1287,15 +1340,144 @@ function fmtThresh(yd) {
       clubSpeed,
       ballSpeed,
       smash,
-      carry: parseNum(get("carry")),
-      total: parseNum(get("total"))
+      carry: parseDistCell(get("carry"), u.carry),
+      total: parseDistCell(get("total"), u.total)
     };
   }
-  function parseTable(text) {
+  function numericFieldError(raw, parsed, field, shotLabel) {
+    const s = String(raw ?? "").trim();
+    if (!s) return null;
+    if (parsed == null) return "Shot " + shotLabel + ": " + field + " is not a number (" + s + ") — not imported.";
+    return null;
+  }
+  function validateParsedShot(shot, cells, map, shotLabel) {
+    if (!shot.clubRaw) return "Shot " + shotLabel + ": missing club — not imported.";
+    const fields = [
+      ["club speed", "clubSpeed", shot.clubSpeed],
+      ["ball speed", "ballSpeed", shot.ballSpeed],
+      ["smash", "smash", shot.smash],
+      ["carry", "carry", shot.carry],
+      ["total", "total", shot.total]
+    ];
+    for (let i = 0; i < fields.length; i++) {
+      const raw = map[fields[i][1]] != null ? cells[map[fields[i][1]]] : null;
+      const err = numericFieldError(raw, fields[i][2], fields[i][0], shotLabel);
+      if (err) return err;
+    }
+    if (shot.clubSpeed == null && shot.ballSpeed == null && shot.smash == null && shot.carry == null && shot.total == null) {
+      return "Shot " + shotLabel + ": no readable numbers — not imported.";
+    }
+    return null;
+  }
+  function shotSig(s) {
+    const speed = s && s.ballSpeed != null && Number.isFinite(Number(s.ballSpeed)) ? Number(s.ballSpeed).toFixed(1) : "";
+    const carry = s && s.carry != null && Number.isFinite(Number(s.carry)) ? Number(s.carry).toFixed(1) : "";
+    return (s && s.club ? s.club : "") + "|" + speed + "|" + carry;
+  }
+  function sessionSig(shots) {
+    return (shots || []).map(shotSig).join(";");
+  }
+  function findDuplicateSession(shots) {
+    if (!shots || shots.length < 3 || !state.sessions || !state.sessions.length) return null;
+    const incoming = sessionSig(shots);
+    if (!incoming) return null;
+    let hit = null;
+    state.sessions.forEach((sess) => {
+      if (hit || !sess || !sess.shots || !sess.shots.length) return;
+      const existing = sessionSig(sess.shots);
+      if (!existing) return;
+      if (existing === incoming || existing.startsWith(incoming + ";") || incoming.startsWith(existing + ";")) {
+        hit = sess;
+      }
+    });
+    return hit;
+  }
+  function attachDuplicateWarning(parsed) {
+    if (!parsed) return parsed;
+    const hit = findDuplicateSession(parsed.shots);
+    if (!hit) return parsed;
+    const label = hit.date ? niceDate(hit.date) : (hit.name || "an existing session");
+    const msg = "Looks like a duplicate of " + label;
+    parsed.warnings = parsed.warnings || [];
+    if (parsed.warnings.indexOf(msg) < 0) parsed.warnings.unshift(msg);
+    return parsed;
+  }
+  function verticalLines(text) {
+    const out = [];
+    String(text || "").replace(/^\uFEFF/, "").split(/\r?\n/).forEach((ln, idx) => {
+      const line = ln.replace(/\t/g, " ").trim();
+      if (!line) return;
+      if (/^shot\s*scope/i.test(line) || /^units?:/i.test(line)) return;
+      out.push({ idx: idx + 1, value: line });
+    });
+    return out;
+  }
+  function looksLikeVerticalHeader(cells) {
+    const map = mapHeader(cells);
+    const keys = Object.keys(map);
+    if (!keys.includes("club") || !(keys.includes("carry") || keys.includes("total"))) return false;
+    if (keys.length < 5) return false;
+    const idxs = Object.values(map);
+    if (new Set(idxs).size !== idxs.length) return false;
+    if (looksLikeNumberToken(cells[0])) return false;
+    return true;
+  }
+  function looksLikeVertical(text) {
+    const lines = verticalLines(text);
+    if (lines.length < 7) return false;
+    const values = lines.map((l) => l.value);
+    const wide = values.filter((v) => splitLine(v).length >= 4).length;
+    if (wide >= 2) return false;
+    if (looksLikeVerticalHeader(values.slice(0, 7))) return true;
+    const secondIsClub = values[1] && CLUB_DEFS[normalizeClub(values[1])];
+    if (looksLikeNumberToken(values[0]) && lines.length >= 7 && (lines.length % 7 === 0 || secondIsClub)) return true;
+    return false;
+  }
+  const DEFAULT_COL_MAP = { shotNo: 0, club: 1, clubSpeed: 2, ballSpeed: 3, smash: 4, carry: 5, total: 6 };
+  function parseVertical(text) {
     const warnings = [];
-    const lines = String(text || "").replace(/^\uFEFF/, "").split(/\r?\n/);
+    const lines = verticalLines(text);
+    if (lines.length < 7) return { shots: [], warnings: ["No rows found."], skippedHeaders: 0 };
+    const first7 = lines.slice(0, 7).map((l) => l.value);
+    let map = DEFAULT_COL_MAP;
+    let units = {};
+    let start = 0;
+    if (looksLikeVerticalHeader(first7)) {
+      map = mapHeader(first7);
+      units = unitsFromHeaders(first7);
+      start = 7;
+    } else if (looksLikeNumberToken(lines[0].value)) {
+      warnings.push("No header detected — assumed Shot No, Club, Club Speed, Ball Speed, Smash, Carry, Total.");
+    } else {
+      return { shots: [], warnings: ["Could not read this as a Shot Scope table paste."], skippedHeaders: 0 };
+    }
+    const data = lines.slice(start);
+    const shots = [];
+    for (let i = 0; i < data.length; i += 7) {
+      const chunk = data.slice(i, i + 7);
+      const cells = chunk.map((c) => c.value);
+      const shotNoGuess = map.shotNo != null && cells[map.shotNo] != null ? parseNum(cells[map.shotNo]) : null;
+      const label = shotNoGuess != null ? String(Math.round(shotNoGuess)) : String(shots.length + 1);
+      if (chunk.length !== 7) {
+        warnings.push("Shot " + label + ": expected 7 values, found " + chunk.length + " — not imported.");
+        continue;
+      }
+      const shot = rowFromCells(cells, map, units);
+      const err = validateParsedShot(shot, cells, map, label);
+      if (err) {
+        warnings.push(err);
+        continue;
+      }
+      shots.push(shot);
+    }
+    if (!shots.length) warnings.push("Parsed no shots.");
+    return { shots, warnings, skippedHeaders: start === 7 ? 1 : 0 };
+  }
+  function parseTable(text) {
+    if (looksLikeVertical(text)) return attachDuplicateWarning(parseVertical(text));
+    const warnings = [];
     const rawRows = [];
-    lines.forEach((ln, idx) => {
+    String(text || "").replace(/^\uFEFF/, "").split(/\r?\n/).forEach((ln, idx) => {
       const line = ln.trim();
       if (!line) return;
       if (/^shot\s*scope/i.test(line) || /^units?:/i.test(line)) {
@@ -1307,18 +1489,20 @@ function fmtThresh(yd) {
     if (!rawRows.length) return { shots: [], warnings: ["No rows found."], skippedHeaders: 0 };
 
     let map = null;
+    let units = {};
     let skippedHeaders = 0;
     const shots = [];
     rawRows.forEach((r) => {
       if (looksLikeHeader(r.cells)) {
         map = mapHeader(r.cells);
+        units = unitsFromHeaders(r.cells);
         skippedHeaders++;
         return;
       }
       if (!map) {
         // assume default LM1 column order
         if (r.cells.length >= 6) {
-          map = { shotNo: 0, club: 1, clubSpeed: 2, ballSpeed: 3, smash: 4, carry: 5, total: 6 };
+          map = Object.assign({}, DEFAULT_COL_MAP);
           warnings.push("No header detected — assumed Shot No, Club, Club Speed, Ball Speed, Smash, Carry, Total.");
         } else {
           warnings.push("Line " + r.idx + ": could not parse (" + r.cells.length + " fields).");
@@ -1329,16 +1513,17 @@ function fmtThresh(yd) {
         warnings.push("Line " + r.idx + ": too few fields, skipped.");
         return;
       }
-      const shot = rowFromCells(r.cells, map);
-      if (!shot.clubRaw && shot.clubSpeed == null && shot.carry == null) {
-        warnings.push("Line " + r.idx + ": empty or unreadable, skipped.");
+      const shot = rowFromCells(r.cells, map, units);
+      const shotNoGuess = shot.shotNo != null ? String(Math.round(shot.shotNo)) : ("line " + r.idx);
+      const err = validateParsedShot(shot, r.cells, map, shotNoGuess);
+      if (err) {
+        warnings.push(err);
         return;
       }
-      if (!shot.clubRaw) warnings.push("Line " + r.idx + ": missing club.");
       shots.push(shot);
     });
     if (!shots.length) warnings.push("Parsed no shots.");
-    return { shots, warnings, skippedHeaders };
+    return attachDuplicateWarning({ shots, warnings, skippedHeaders });
   }
   function dateFromFilename(name) {
     const m = String(name || "").match(/(\d{4}-\d{2}-\d{2})/);
