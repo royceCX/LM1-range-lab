@@ -633,44 +633,56 @@ nav.tabs{flex-shrink:1}
 .perf-bag-stage svg{width:100%;min-width:560px;height:auto;display:block}
 
 /* Then vs now — Trackman-style */
-.tvn-clubs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-.tvn-compare{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px}
+.tvn-clubs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.tvn-compare{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 12px}
 .tvn-compare label{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:650}
 .tvn-compare select{background:var(--bg-2);border:1px solid var(--line);border-radius:8px;color:var(--text);padding:5px 8px;font-size:13px}
 .tvn-compare #tvnAuto.active{border-color:rgba(62,224,255,.55);color:var(--cyan)}
-.tvn-grid{display:grid;grid-template-columns:minmax(210px,.9fr) minmax(280px,1.15fr) minmax(240px,1.1fr);gap:16px 18px;align-items:stretch}
-.tvn-left{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
-.tvn-club-name{font-family:var(--cond);font-weight:700;font-size:34px;letter-spacing:.06em;text-transform:uppercase;line-height:1;margin:0 0 4px}
-.tvn-dates{font-size:12px;color:var(--muted);margin:0 0 16px}
-.tvn-bar-block{margin:0 0 16px}
-.tvn-bar-k{font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
-.tvn-bar-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 4px}
-.tvn-bar-now{font-family:var(--cond);font-weight:700;font-size:28px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
-.tvn-bar-delta{font-family:var(--cond);font-weight:700;font-size:18px;font-variant-numeric:tabular-nums}
+.tvn-grid{display:grid;grid-template-columns:minmax(220px,.9fr) minmax(300px,1.2fr);grid-template-areas:"dist gauges" "flight flight";gap:12px 14px;align-items:start}
+.tvn-left{grid-area:dist;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 12px 12px;min-width:0}
+.tvn-card-title{margin:0 0 8px;font-family:var(--cond);font-size:15px;letter-spacing:.05em;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--text);line-height:1.2}
+.tvn-club-name{font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;line-height:1;margin:0 0 2px}
+.tvn-dates{font-size:12px;color:var(--muted);margin:0 0 8px}
+.tvn-bar-block{margin:0 0 8px}
+.tvn-bar-block:last-child{margin-bottom:0}
+.tvn-bar-k{font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 2px}
+.tvn-bar-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 0 2px}
+.tvn-bar-now{font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
+.tvn-bar-delta{font-family:var(--cond);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
 .tvn-bar-delta.up{color:var(--green)}
 .tvn-bar-delta.down{color:var(--red)}
 .tvn-bar-delta.flat{color:var(--muted)}
-.tvn-bar-track{position:relative;height:16px;background:rgba(255,255,255,.06);border-radius:99px;overflow:visible;margin:6px 0 4px}
+.tvn-bar-track{position:relative;height:12px;background:rgba(255,255,255,.06);border-radius:99px;overflow:visible;margin:4px 0 3px}
 .tvn-bar-fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--green);min-width:4px}
 .tvn-bar-then-mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,.55);border-radius:2px;transform:translateX(-1px)}
-.tvn-bar-then{font-size:12px;color:var(--dim);margin:0}
-.tvn-gauges{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 8px 8px;display:flex;gap:2px;justify-content:space-between;min-width:0;overflow-x:auto}
-.tvn-gauges svg{flex:1 1 0;min-width:56px;height:230px;display:block}
-.tvn-flight{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:8px 8px 10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tvn-bar-then{font-size:11px;color:var(--dim);margin:0}
+.tvn-gauges{grid-area:gauges;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.tvn-gauges-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 2px}
+.tvn-gauges-head .tvn-card-title{margin:0}
+.tvn-legend{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);font-weight:650;flex:0 0 auto}
+.tvn-legend i{display:inline-block;width:22px;height:12px;border-radius:2px;vertical-align:middle;margin-right:5px;box-sizing:border-box}
+.tvn-leg-then i{background:#0c1319;border:1px solid rgba(255,255,255,.55)}
+.tvn-leg-now i{background:var(--green);border:1px solid var(--green)}
+.tvn-gauges-row{display:flex;gap:2px;justify-content:space-between;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tvn-gauges-row svg{flex:1 1 0;min-width:68px;height:188px;display:block}
+.tvn-flight{grid-area:flight;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:12px;min-width:0;align-items:stretch}
+.tvn-flight-pane{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:8px 8px 10px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .tvn-flight-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 4px}
-.tvn-flight-k{font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.tvn-flight svg{width:100%;height:auto;display:block}
+.tvn-flight-head .tvn-card-title{margin:0;flex:1 1 auto;min-width:0}
+.tvn-flight-pane svg{width:100%;height:auto;display:block}
 .tvn-tiles{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:14px 0 0}
 .tvn-tile{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
 .tvn-tile-k{font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 2px}
-.tvn-tile-now{font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.tvn-tile-now{font-family:var(--cond);font-weight:700;font-size:20px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1.1}
 .tvn-tile-sub{display:flex;justify-content:space-between;gap:6px;margin-top:3px;font-size:11px;color:var(--dim)}
 .tvn-tile-sub .up{color:var(--green);font-weight:700}
 .tvn-tile-sub .down{color:var(--red);font-weight:700}
 @media (max-width:980px){
-  .tvn-grid{grid-template-columns:1fr 1fr}
-  .tvn-flight{grid-column:1 / -1}
   .tvn-tiles{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:720px){
+  .tvn-grid{grid-template-columns:1fr;grid-template-areas:"dist" "gauges" "flight"}
+  .tvn-flight{grid-template-columns:1fr}
 }
 @media (max-width:640px){
   .bag-play-date{font-size:24px}
@@ -678,9 +690,9 @@ nav.tabs{flex-shrink:1}
   .bag-scrub-col{flex:1 1 100%}
   .bag-tick{font-size:10px}
   .bag-play-btn{min-width:76px}
-  .tvn-grid{grid-template-columns:1fr}
-  .tvn-club-name{font-size:28px}
+  .tvn-club-name{font-size:20px}
   .tvn-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tvn-gauges-row svg{min-width:72px;height:180px}
   .perf-bag-stage svg{min-width:520px}
 }
 
@@ -2537,7 +2549,12 @@ function fmtThresh(yd) {
       trends: { title: "First shots vs last shots", body: "For the selected session only, we compare the first shots with the last shots of each club — first 10 versus last 10 when you have enough, otherwise first half versus last half. A drop in distance or smash late can be fatigue or losing the strike; a rise can be a slow warm-up. This is not combined across days." },
       progress: { title: "Progress across sessions", body: "Each card is one club across every imported session, using your mishit, Best-N and units filters — not the range-view club chips. Green and red badges are the change versus the previous session. The takeaway and footer compare your latest visit with the first time we have that club on file." },
       derived: { title: "Derived stats", body: "Carry efficiency is carry per mph of club speed — a compact way to see how well speed became distance. Potential carry only scales your existing carry by (benchmark smash ÷ actual smash). It is not a launch-monitor max: the LM1 has no launch angle or spin, so this is a smash-only sketch of what better contact might have been worth." },
-      flags: { title: "Flagged shots", body: "Misreads are values that do not make physical sense for an LM1 — for example smash well outside a normal range, zero carry, or total shorter than carry. Mishits are poor but plausible contact. The exclude toggle hides both from averages and charts; they stay in this list so you can review them. This table follows the selected session, not the club chips or Best-N." }
+      flags: { title: "Flagged shots", body: "Misreads are values that do not make physical sense for an LM1 — for example smash well outside a normal range, zero carry, or total shorter than carry. Mishits are poor but plausible contact. The exclude toggle hides both from averages and charts; they stay in this list so you can review them. This table follows the selected session, not the club chips or Best-N." },
+      "perf-tvn": { title: "Then vs now", body: "Pick a club and two sessions. Distance is how far the ball went, swing numbers are speed, smash, estimated height and how tightly shots grouped, and the views below sketch the flight and the carry group from above. Green is an improvement, red is a drop. Height and the flight path are estimated — the LM1 does not measure launch, spin or height." },
+      "tvn-dist": { title: "Distance: then vs now", body: "Average carry and total for this club in the earlier session (Then) versus the later one (Now). The bar is the later distance; the tick marks the earlier session. Units follow the Yards / Metres toggle." },
+      "tvn-gauges": { title: "Swing numbers: then vs now", body: "Club speed, ball speed and smash are measured. Peak height is estimated from carry and a typical flight for this club. Shot spread is the width of the middle 80% of shots — a smaller number means a tighter group. Flags on the left are Then; flags on the right are Now." },
+      "tvn-flight": { title: "Ball flight · side view (estimated)", body: "A side-on sketch of a typical shot in each session. Height is estimated — the LM1 does not measure launch, spin or how high the ball went. The solid path is Now; the fainter path is Then. The dashed line on the ground is roll from carry to total. Replay plays the later flight again." },
+      "tvn-spread": { title: "Carry spread · from above", body: "A bird’s-eye view of how far the shots flew. The ellipse runs along the target line and shows the middle 80% of carries. Width left-to-right is only for readability — the LM1 does not record side or face data, so this is not shot shape." }
     };
     return all[key] || null;
   }
@@ -4333,7 +4350,11 @@ function fmtThresh(yd) {
       return h;
     }
 
+    function tvnHelp(key, label) {
+      return ' <button type="button" class="help-btn" data-help="' + key + '" aria-label="' + escapeHtml(label) + '">?</button>';
+    }
     let left = '<div class="tvn-left">';
+    left += '<h4 class="tvn-card-title">Distance: then vs now' + tvnHelp("tvn-dist", "About distance then vs now") + "</h4>";
     left += '<div class="tvn-club-name" style="color:' + color + '">' + escapeHtml(def.short || club) + "</div>";
     left += '<p class="tvn-dates">' + escapeHtml(thenS && !same ? niceDate(thenS.date) + "  →  " + niceDate(nowS.date) : niceDate(nowS.date)) + (same ? " · one session" : "") + "</p>";
     left += barBlock("Carry", thenCarry, nowCarry, dCarry);
@@ -4345,15 +4366,19 @@ function fmtThresh(yd) {
     const thenH = thenC && thenC.avgCarry != null ? estimateAvgFlight(club, thenC.avgCarry, thenC.avgSmash, thenC.avgBall) : null;
     const nowH = nowC.avgCarry != null ? estimateAvgFlight(club, nowC.avgCarry, nowC.avgSmash, nowC.avgBall) : null;
     const gauges = [
-      { key: "chs", label: "Club speed", unit: "mph", thenV: thenC && thenC.avgChs, nowV: nowC.avgChs, better: "up", kind: "speed", loHint: 40, hiHint: 100 },
-      { key: "ball", label: "Ball speed", unit: "mph", thenV: thenC && thenC.avgBall, nowV: nowC.avgBall, better: "up", kind: "speed", loHint: 50, hiHint: 140 },
-      { key: "smash", label: "Smash", unit: "", thenV: thenC && thenC.avgSmash, nowV: nowC.avgSmash, better: "up", kind: "smash", loHint: 1.05, hiHint: 1.52 },
-      { key: "height", label: "Est. height", unit: u, thenV: thenH && thenH.apex, nowV: nowH && nowH.apex, better: null, kind: "height", loHint: 0, hiHint: 40, est: true },
-      { key: "spread", label: "Spread", unit: u, thenV: thenSpread, nowV: nowSpread, better: "down", kind: "dist", loHint: 0, hiHint: 40 }
+      { key: "chs", label: "Club speed", lines: ["Club", "speed"], unit: "mph", thenV: thenC && thenC.avgChs, nowV: nowC.avgChs, better: "up", kind: "speed", loHint: 40, hiHint: 100 },
+      { key: "ball", label: "Ball speed", lines: ["Ball", "speed"], unit: "mph", thenV: thenC && thenC.avgBall, nowV: nowC.avgBall, better: "up", kind: "speed", loHint: 50, hiHint: 140 },
+      { key: "smash", label: "Smash", lines: ["Smash"], unit: "", thenV: thenC && thenC.avgSmash, nowV: nowC.avgSmash, better: "up", kind: "smash", loHint: 1.05, hiHint: 1.52 },
+      { key: "height", label: "Peak height (estimated)", lines: ["Height (est.)"], unit: u, thenV: thenH && thenH.apex, nowV: nowH && nowH.apex, better: null, kind: "height", loHint: 0, hiHint: 40 },
+      { key: "spread", label: "Shot spread", lines: ["Shot", "spread"], unit: u, thenV: thenSpread, nowV: nowSpread, better: "down", kind: "dist", loHint: 0, hiHint: 40 }
     ];
-    let ghtml = '<div class="tvn-gauges" aria-label="Then versus now gauges">';
+    let ghtml = '<div class="tvn-gauges">';
+    ghtml += '<div class="tvn-gauges-head"><h4 class="tvn-card-title">Swing numbers: then vs now' + tvnHelp("tvn-gauges", "About swing numbers then vs now") + "</h4>";
+    ghtml += '<div class="tvn-legend" aria-label="Then is the earlier session, Now is the later one">';
+    ghtml += '<span class="tvn-leg-then"><i></i>Then</span><span class="tvn-leg-now"><i></i>Now</span></div></div>';
+    ghtml += '<div class="tvn-gauges-row" role="img" aria-label="Then versus now gauges">';
     gauges.forEach((g) => { ghtml += tvnGaugeSvg(g, same, color); });
-    ghtml += "</div>";
+    ghtml += "</div></div>";
 
     const flight = tvnFlightSvg(club, color, thenC, nowC, thenH, nowH, thenS, nowS, same);
     const tiles = tvnTilesHtml(thenC, nowC, thenH, nowH, same);
@@ -4361,12 +4386,10 @@ function fmtThresh(yd) {
     root.innerHTML = chips + compare + '<div class="tvn-grid">' + left + ghtml + flight + "</div>" + tiles +
       '<p class="smash-foot">Estimated height and the flight path are modelled from carry and a typical trajectory for this club — the LM1 does not measure launch, spin or height. The top-view ellipses show carry spread along the line; the lateral width is illustrative, because there is no side or face data.</p>';
 
-    if (!reduceMotion() && nowH) {
-      requestAnimationFrame(() => tvnPlayFlight(root, false));
-    }
+    /* Flight is drawn complete; Replay still animates the later shot. */
   }
   function tvnGaugeSvg(g, same, color) {
-    const W = 72, H = 230, tx = 30, y0 = 16, y1 = 172, th = y1 - y0;
+    const W = 96, H = 188, tx = 44, y0 = 14, y1 = 132, th = y1 - y0;
     const vals = [g.thenV, g.nowV].filter((v) => v != null);
     let lo = g.loHint, hi = g.hiHint;
     if (vals.length) {
@@ -4397,30 +4420,46 @@ function fmtThresh(yd) {
       const yb = yOf(g.nowV);
       svg += '<rect x="' + (tx - 6) + '" y="' + yb.toFixed(1) + '" width="12" height="' + Math.max(2, y1 - yb).toFixed(1) + '" rx="2" fill="' + fill + '" fill-opacity=".45"/>';
     }
-    function tag(v, now) {
-      if (v == null) return "";
-      const y = yOf(v);
+    let thenY = g.thenV != null ? yOf(g.thenV) : null;
+    let nowY = g.nowV != null ? yOf(g.nowV) : null;
+    if (!same && thenY != null && nowY != null && Math.abs(thenY - nowY) < 18) {
+      const mid = (thenY + nowY) / 2;
+      const gap = 9;
+      if (thenY <= nowY) { thenY = Math.max(y0 + 8, mid - gap); nowY = Math.min(y1 - 8, mid + gap); }
+      else { nowY = Math.max(y0 + 8, mid - gap); thenY = Math.min(y1 - 8, mid + gap); }
+    }
+    function tag(v, yTag, now) {
+      if (v == null || yTag == null) return "";
+      const yTrue = yOf(v);
       const label = g.kind === "smash" ? fmt(v, 2) : (g.kind === "dist" || g.kind === "height" ? fmtDist(v) : fmt(v, 1));
       const fillC = now ? (delta.tone === "down" ? "#ff4d5a" : "#3dff9a") : "#0c1319";
       const strokeC = now ? (delta.tone === "down" ? "#ff4d5a" : "#3dff9a") : "rgba(255,255,255,.55)";
-      const textC = now ? "#071018" : "rgba(255,255,255,.75)";
+      const textC = now ? "#071018" : "rgba(255,255,255,.88)";
       const left = !now;
-      const bx = left ? (tx - 39) : (tx + 7);
+      const bx = left ? (tx - 46) : (tx + 8);
+      const tipX = left ? (tx - 6) : (tx + 6);
       const px = left
-        ? (tx + "," + y.toFixed(1) + " " + (tx - 7) + "," + (y - 6).toFixed(1) + " " + (tx - 7) + "," + (y + 6).toFixed(1))
-        : (tx + "," + y.toFixed(1) + " " + (tx + 7) + "," + (y - 6).toFixed(1) + " " + (tx + 7) + "," + (y + 6).toFixed(1));
-      let s = '<g>';
+        ? (tx + "," + yTrue.toFixed(1) + " " + tipX + "," + (yTag - 6).toFixed(1) + " " + tipX + "," + (yTag + 6).toFixed(1))
+        : (tx + "," + yTrue.toFixed(1) + " " + tipX + "," + (yTag - 6).toFixed(1) + " " + tipX + "," + (yTag + 6).toFixed(1));
+      let s = "<g>";
       s += '<polygon points="' + px + '" fill="' + fillC + '" stroke="' + strokeC + '" stroke-width="1"/>';
-      s += '<rect x="' + bx + '" y="' + (y - 7).toFixed(1) + '" width="32" height="14" rx="2" fill="' + fillC + '" stroke="' + strokeC + '" stroke-width="1"/>';
-      s += '<text x="' + (bx + 16) + '" y="' + (y + 3.2).toFixed(1) + '" text-anchor="middle" fill="' + textC + '" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="700">' + escapeHtml(label) + "</text></g>";
+      s += '<rect x="' + bx + '" y="' + (yTag - 8).toFixed(1) + '" width="38" height="16" rx="2" fill="' + fillC + '" stroke="' + strokeC + '" stroke-width="1"/>';
+      s += '<text x="' + (bx + 19) + '" y="' + (yTag + 4).toFixed(1) + '" text-anchor="middle" fill="' + textC + '" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="700">' + escapeHtml(label) + "</text></g>";
       return s;
     }
-    if (!same) svg += tag(g.thenV, false);
-    svg += tag(g.nowV, true);
-    const title = g.key === "chs" ? "CLUB SPD" : (g.key === "ball" ? "BALL SPD" : (g.key === "height" ? "EST. HEIGHT" : g.label.toUpperCase()));
-    svg += '<text x="' + (W / 2) + '" y="196" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="0.04em">' + escapeHtml(title) + "</text>";
-    if (g.est) svg += '<text x="' + (W / 2) + '" y="207" text-anchor="middle" fill="rgba(245,240,200,.7)" font-size="7.5" font-family="DM Sans, sans-serif">est.</text>';
-    if (!same && delta.text) svg += '<text x="' + (W / 2) + '" y="' + (g.est ? 218 : 210) + '" text-anchor="middle" fill="' + (delta.tone === "up" ? "#3dff9a" : (delta.tone === "down" ? "#ff4d5a" : "rgba(255,255,255,.45)")) + '" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="700">' + escapeHtml(delta.text) + "</text>";
+    if (!same) svg += tag(g.thenV, thenY, false);
+    svg += tag(g.nowV, nowY, true);
+    const lines = g.lines && g.lines.length ? g.lines : [g.label];
+    const labelTop = 148;
+    lines.forEach((ln, i) => {
+      svg += '<text x="' + (W / 2) + '" y="' + (labelTop + i * 12) + '" text-anchor="middle" fill="rgba(255,255,255,.78)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="0.04em">' + escapeHtml(ln) + "</text>";
+    });
+    let subY = labelTop + lines.length * 12 + 2;
+    if (g.est) {
+      svg += '<text x="' + (W / 2) + '" y="' + subY + '" text-anchor="middle" fill="rgba(245,240,200,.7)" font-size="9" font-family="DM Sans, sans-serif">estimated</text>';
+      subY += 11;
+    }
+    if (!same && delta.text) svg += '<text x="' + (W / 2) + '" y="' + Math.min(H - 4, subY + 1) + '" text-anchor="middle" fill="' + (delta.tone === "up" ? "#3dff9a" : (delta.tone === "down" ? "#ff4d5a" : "rgba(255,255,255,.45)")) + '" font-size="12" font-family="Barlow Condensed, sans-serif" font-weight="700">' + escapeHtml(delta.text) + "</text>";
     svg += "</svg>";
     return svg;
   }
@@ -4434,19 +4473,21 @@ function fmtThresh(yd) {
     return pts;
   }
   function tvnFlightSvg(club, color, thenC, nowC, thenH, nowH, thenS, nowS, same) {
-    const W = 420, Hs = 210, Ht = 150, padL = 36, padR = 12, padT = 16, padB = 24;
+    const u = unitShort();
     const maxDistYd = Math.max(thenC && thenC.avgTotal || 0, nowC && nowC.avgTotal || 0, thenC && thenC.avgCarry || 0, nowC && nowC.avgCarry || 0, thenC && thenC.p90c || 0, nowC && nowC.p90c || 0, 80);
     const maxDist = niceMaxDisp(maxDistYd);
     const maxApex = Math.max(thenH && thenH.apex || 0, nowH && nowH.apex || 0, 8);
     const maxH = niceMaxHeight(maxApex);
-    const xOf = (disp) => padL + (disp / maxDist) * (W - padL - padR);
-    const ySide = (hDisp) => (Hs - padB) - (Math.max(0, hDisp) / maxH) * (Hs - padT - padB);
-    const u = unitShort();
+    function tvnHelp(key, label) {
+      return ' <button type="button" class="help-btn" data-help="' + key + '" aria-label="' + escapeHtml(label) + '">?</button>';
+    }
     let html = '<div class="tvn-flight">';
-    html += '<div class="tvn-flight-head"><span class="tvn-flight-k">Side · estimated</span><button type="button" class="btn" id="tvnReplay">Replay</button></div>';
 
     function fieldSide() {
-      let svg = '<svg viewBox="0 0 ' + W + ' ' + Hs + '" role="img" aria-label="Estimated side view">';
+      const W = 720, Hs = 200, padL = 36, padR = 16, padT = 14, padB = 34;
+      const xOf = (disp) => padL + (disp / maxDist) * (W - padL - padR);
+      const ySide = (hDisp) => (Hs - padB) - (Math.max(0, hDisp) / maxH) * (Hs - padT - padB);
+      let svg = '<svg class="tvn-side-svg" viewBox="0 0 ' + W + ' ' + Hs + '" role="img" aria-label="Estimated side view of ball flight">';
       svg += '<defs><linearGradient id="tvnSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0b1520"/><stop offset="70%" stop-color="#102018"/><stop offset="100%" stop-color="#0c2818"/></linearGradient>';
       svg += '<clipPath id="tvnSideClip"><rect x="' + padL + '" y="' + padT + '" width="' + (W - padL - padR) + '" height="' + (Hs - padT - padB) + '"/></clipPath></defs>';
       svg += '<rect width="' + W + '" height="' + Hs + '" fill="url(#tvnSky)"/>';
@@ -4456,9 +4497,9 @@ function fmtThresh(yd) {
       for (let d = 0; d <= maxDist; d += xTick) {
         const x = xOf(d);
         svg += '<line x1="' + x + '" y1="' + padT + '" x2="' + x + '" y2="' + (Hs - padB) + '" stroke="rgba(255,255,255,.08)"/>';
-        if (d > 0) svg += '<text x="' + x + '" y="' + (Hs - padB + 14) + '" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + "</text>";
+        if (d > 0) svg += '<text x="' + x + '" y="' + (Hs - padB + 14) + '" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + "</text>";
       }
-      svg += '<text x="' + (W / 2) + '" y="' + (Hs - 4) + '" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="DM Sans, sans-serif">Distance (' + u + ") · estimated</text>";
+      svg += '<text x="' + padL + '" y="' + (Hs - 5) + '" text-anchor="start" fill="rgba(255,255,255,.45)" font-size="10" font-family="DM Sans, sans-serif">Distance (' + u + ")</text>";
       svg += '<g clip-path="url(#tvnSideClip)">';
       function addFlight(est, total, faint, cls) {
         if (!est || est.carry <= 0) return "";
@@ -4477,24 +4518,24 @@ function fmtThresh(yd) {
       return svg;
     }
     function fieldTop() {
-      const padTT = 18, padTB = 18, midY = (Ht / 2);
-      let svg = '<svg viewBox="0 0 ' + W + ' ' + Ht + '" role="img" aria-label="Estimated top view">';
+      const W = 320, Ht = 196, padL = 28, padR = 12, padTT = 16, padTB = 22, midY = Ht / 2;
+      const xOf = (disp) => padL + (disp / maxDist) * (W - padL - padR);
+      let svg = '<svg class="tvn-top-svg" viewBox="0 0 ' + W + ' ' + Ht + '" role="img" aria-label="Carry spread from above">';
       svg += '<rect width="' + W + '" height="' + Ht + '" fill="#0c1f14"/>';
       const xTick = maxDist > 200 ? 50 : 25;
       for (let d = 0; d <= maxDist; d += xTick) {
         const x = xOf(d);
-        svg += '<path d="M ' + x + ' 8 A ' + (Ht) + ' ' + (Ht) + ' 0 0 1 ' + x + ' ' + (Ht - 8) + '" fill="none" stroke="rgba(255,255,255,.08)"/>';
-        if (d > 0) svg += '<text x="' + x + '" y="' + (Ht - 4) + '" text-anchor="middle" fill="rgba(255,255,255,.4)" font-size="9" font-family="Barlow Condensed, sans-serif">' + d + "</text>";
+        svg += '<path d="M ' + x + ' 10 A ' + (Ht) + ' ' + (Ht) + ' 0 0 1 ' + x + ' ' + (Ht - 10) + '" fill="none" stroke="rgba(255,255,255,.08)"/>';
+        if (d > 0) svg += '<text x="' + x + '" y="' + (Ht - 6) + '" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="11" font-family="Barlow Condensed, sans-serif" font-weight="700">' + d + "</text>";
       }
       svg += '<line x1="' + padL + '" y1="' + midY + '" x2="' + (W - padR) + '" y2="' + midY + '" stroke="rgba(255,255,255,.35)" stroke-width="1" stroke-dasharray="4 3"/>';
-      svg += '<text x="' + (W - padR) + '" y="12" text-anchor="end" fill="rgba(245,240,200,.65)" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="700">TOP · NO SIDE DATA</text>';
       function ellipse(c, faint) {
         if (!c || c.avgCarry == null) return "";
         const cx = xOf(toDisp(c.avgCarry));
         const p10 = c.p10c != null ? c.p10c : c.avgCarry;
         const p90 = c.p90c != null ? c.p90c : c.avgCarry;
         const rx = Math.max(6, Math.abs(xOf(toDisp(p90)) - xOf(toDisp(p10))) / 2);
-        const ry = Math.max(6, Math.min(22, toDisp(c.avgCarry) * 0.04 * (Ht / 80)));
+        const ry = Math.max(8, Math.min(28, toDisp(c.avgCarry) * 0.05 * (Ht / 80)));
         return '<ellipse cx="' + cx.toFixed(1) + '" cy="' + midY + '" rx="' + rx.toFixed(1) + '" ry="' + ry.toFixed(1) + '" fill="' + color + '" fill-opacity="' + (faint ? ".08" : ".16") + '" stroke="' + color + '" stroke-opacity="' + (faint ? ".35" : ".9") + '" stroke-width="' + (faint ? "1" : "1.6") + '"/>'
           + '<circle cx="' + cx.toFixed(1) + '" cy="' + midY + '" r="' + (faint ? 3 : 4) + '" fill="' + (faint ? "none" : color) + '" stroke="' + color + '" stroke-width="1.4"/>'
           + (c.avgTotal != null && c.avgTotal > c.avgCarry ? ('<line x1="' + cx.toFixed(1) + '" y1="' + midY + '" x2="' + xOf(toDisp(c.avgTotal)).toFixed(1) + '" y2="' + midY + '" stroke="' + color + '" stroke-dasharray="4 3" stroke-opacity="' + (faint ? ".25" : ".7") + '"/>') : "");
@@ -4504,10 +4545,15 @@ function fmtThresh(yd) {
       svg += "</svg>";
       return svg;
     }
+
+    html += '<div class="tvn-flight-pane tvn-flight-side">';
+    html += '<div class="tvn-flight-head"><h4 class="tvn-card-title">Ball flight · side view (estimated)' + tvnHelp("tvn-flight", "About the side-view ball flight") + '</h4><button type="button" class="btn" id="tvnReplay">Replay</button></div>';
     html += fieldSide();
-    html += '<div class="tvn-flight-head"><span class="tvn-flight-k">Top · carry spread</span></div>';
-    html += fieldTop();
     html += "</div>";
+    html += '<div class="tvn-flight-pane tvn-flight-top">';
+    html += '<div class="tvn-flight-head"><h4 class="tvn-card-title">Carry spread · from above' + tvnHelp("tvn-spread", "About the carry spread from above") + "</h4></div>";
+    html += fieldTop();
+    html += "</div></div>";
     return html;
   }
   function tvnTilesHtml(thenC, nowC, thenH, nowH, same) {
@@ -4517,7 +4563,7 @@ function fmtThresh(yd) {
       { k: "Smash", thenV: thenC && thenC.avgSmash, nowV: nowC.avgSmash, better: "up", kind: "smash" },
       { k: "Carry", thenV: thenC && thenC.avgCarry, nowV: nowC.avgCarry, better: "up", kind: "dist" },
       { k: "Total", thenV: thenC && thenC.avgTotal, nowV: nowC.avgTotal, better: "up", kind: "dist" },
-      { k: "Est. height", thenV: thenH && thenH.apex, nowV: nowH && nowH.apex, better: null, kind: "height" },
+      { k: "Peak height", thenV: thenH && thenH.apex, nowV: nowH && nowH.apex, better: null, kind: "height" },
       { k: "Shots", thenV: thenC && thenC.n, nowV: nowC.n, better: null, kind: "shots" }
     ];
     let h = '<div class="tvn-tiles">';
@@ -4533,7 +4579,7 @@ function fmtThresh(yd) {
     return h;
   }
   function tvnPlayFlight(root, fromBtn) {
-    const svg = root && root.querySelector(".tvn-flight svg");
+    const svg = root && (root.querySelector("svg.tvn-side-svg") || root.querySelector(".tvn-flight-side svg") || root.querySelector(".tvn-flight svg"));
     if (!svg) return;
     const path = svg.querySelector(".tvn-now-path");
     const ball = svg.querySelector(".tvn-ball");
