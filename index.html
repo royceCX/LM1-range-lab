@@ -342,27 +342,40 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
 .gap-swatch.ideal{background:#3ee07a}
 .gap-swatch.wide{background:var(--amber)}
 .gap-swatch.tight{background:var(--red)}
-.gap-chart{display:flex;flex-direction:column;gap:0;min-width:0}
+.gap-chart{display:flex;flex-direction:column;gap:0;min-width:0;overflow:visible}
 .gap-axis{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);padding:0 0 6px 92px;font-variant-numeric:tabular-nums}
 .gap-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;align-items:center;min-height:28px}
 .gap-name{font-size:13px;font-weight:650;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gap-track{position:relative;height:22px;background:rgba(255,255,255,.03);border-radius:6px;overflow:visible}
 .gap-range{position:absolute;top:3px;height:16px;border-radius:5px;opacity:.35}
 .gap-bar{position:absolute;top:4px;left:0;height:14px;border-radius:5px;min-width:2px}
-.gap-avg{position:absolute;top:50%;transform:translate(6px,-50%);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;color:#eef6f0;text-shadow:0 1px 2px rgba(0,0,0,.65)}
-.gap-step{display:flex;justify-content:flex-start;padding:4px 0 4px 92px}
-.gap-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:650;border:1px solid transparent}
-.gap-badge.ideal{background:rgba(62,224,122,.14);color:#5CFF6B;border-color:rgba(62,224,122,.35)}
-.gap-badge.ok{background:rgba(62,224,255,.1);color:var(--cyan);border-color:rgba(62,224,255,.28)}
-.gap-badge.narrow,.gap-badge.wide{background:rgba(255,176,32,.12);color:var(--amber);border-color:rgba(255,176,32,.35)}
-.gap-badge.tight,.gap-badge.overlap{background:rgba(255,77,90,.14);color:var(--red);border-color:rgba(255,77,90,.35)}
+.gap-avg{position:absolute;top:50%;transform:translate(6px,-50%);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;color:#eef6f0;text-shadow:0 1px 2px rgba(0,0,0,.65);z-index:3}
+.gap-avg-guide{position:absolute;top:-2px;bottom:-2px;width:0;border-left:1px dashed rgba(255,255,255,.2);pointer-events:none;z-index:0}
+.gap-dim-row{min-height:32px;align-items:stretch}
+.gap-dim-track{height:32px;background:transparent;border-radius:0;overflow:visible}
+.gap-dim{position:absolute;top:0;bottom:0;z-index:2;color:#3ee07a}
+.gap-dim.ok{color:var(--cyan)}
+.gap-dim.narrow,.gap-dim.wide{color:var(--amber)}
+.gap-dim.tight{color:var(--red)}
+.gap-dim-line{position:absolute;left:0;right:0;top:50%;border-top:2px solid currentColor}
+.gap-dim-tick{position:absolute;width:0;border-left:2px solid currentColor}
+.gap-dim-tick.hi{right:-1px;bottom:50%;height:22px}
+.gap-dim-tick.lo{left:-1px;top:50%;height:22px}
+.gap-dim-lab{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--elev);padding:0 6px;font-size:11px;font-weight:750;color:currentColor;white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:.01em;z-index:3;line-height:1.3;border-radius:3px}
+.gap-overlap{position:absolute;top:-12px;bottom:-12px;min-width:8px;z-index:2;pointer-events:none;color:var(--red);background:repeating-linear-gradient(-55deg,rgba(255,77,90,.5) 0 3px,rgba(255,77,90,.08) 3px 7px);border-left:1px solid var(--red);border-right:1px solid var(--red)}
+.gap-overlap .gap-dim-lab{background:rgba(16,24,33,.94)}
+
 @media (max-width:640px){
   .filter-bar{padding:4px 10px 8px;gap:6px 8px}
   .filter-bar .badge{margin-left:0;width:100%}
   .gap-axis{padding-left:0}
   .gap-row{grid-template-columns:1fr;gap:2px}
   .gap-name{text-align:left}
-  .gap-step{padding-left:0}
+  .gap-dim-row .gap-name{display:none}
+  .gap-dim-row{min-height:36px}
+  .gap-dim-track{height:36px}
+  .gap-dim-lab{font-size:11px}
+  .gap-dim-tick.hi,.gap-dim-tick.lo{height:20px}
   .help-btn{min-width:26px;min-height:26px}
 }
 
@@ -695,10 +708,23 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const n = Math.round(v);
     return (n > 0 ? "+" : "") + n + uSuf();
   }
+function fmtThresh(yd) {
+    const v = toDisp(yd);
+    if (v == null) return "—";
+    return String(Math.round(v));
+  }
+  function fmtThreshRange(loYd, hiYd) {
+    return fmtThresh(loYd) + "–" + fmtThresh(hiYd) + " " + unitShort();
+  }
   function formatFlagReason(text) {
     if (!isMetres()) return text;
-    return String(text).replace(/(\d+(?:\.\d+)?)\s*yds?\b/gi, (_, n) => Math.round(Number(n) * YD_TO_M) + " m");
+    return String(text)
+      .replace(/(\d+(?:\.\d+)?)\s*yds?\b/gi, (_, n) => Math.round(Number(n) * YD_TO_M) + " m")
+      .replace(/\byardage\b/gi, "distance")
+      .replace(/\byards\b/gi, "metres")
+      .replace(/\byard\b/gi, "metre");
   }
+
   function maxShotYd(shots) {
     let m = 0;
     (shots || []).forEach((s) => {
@@ -733,6 +759,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     if (hero) hero.textContent = "Each dot is a shot at its measured " + kind + ". Side-to-side spread is only for readability.";
     const der = document.getElementById("derivedSub");
     if (der) der.textContent = "Efficiency and an estimated carry if smash reached a typical benchmark.";
+    if (typeof bindHelp.refresh === "function") bindHelp.refresh();
   }
   function clamp(n, a, b) { return Math.max(a, Math.min(b, n)); }
   function uid(prefix) { return (prefix || "id") + "-" + Math.random().toString(36).slice(2, 9); }
@@ -996,7 +1023,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       }
       const medC = medCarry[s.club];
       if (!kind && s.carry != null && medC && s.carry > 0 && s.carry < medC * 0.70) {
-        reasons.push("Short carry outlier (" + fmt0(s.carry) + " vs typical " + fmt0(medC) + " yd)");
+        reasons.push("Short carry outlier (" + fmtDist(s.carry) + " vs typical " + fmtDist(medC) + uSuf() + ")");
         kind = "mishit";
       }
       // de-dupe reasons
@@ -1673,24 +1700,30 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     return '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="' + escapeHtml(label || "Chart") + '">' + inner + "</svg>";
   }
 
-  const HELP_COPY = {
-    range: { title: "Range view", body: "This is a flat bird’s-eye view of the selected session (or all sessions). Height on the page is your measured carry or total, depending on the toggle. Left–right position is not real shot shape — the LM1 does not record start line or spin — it is only spaced so clusters are easy to read. The ellipse is a simple envelope of that club’s shots, not a statistical accuracy model." },
-    "tile-shots": { title: "Shots", body: "This is how many shots are feeding the averages after your session, mishit and Best-N filters. Flagged shots stay in the Flagged table even when they are excluded here. The club chips beside the range do not change this number — they only change the tee view." },
-    "tile-peak": { title: "Peak distance", body: "This is the single longest used shot in the current filters, using carry or total depending on the toggle. It is a high-water mark, not a typical result. One jumper can set this tile, so read it with the club summary and dispersion, not on its own." },
-    "tile-smash": { title: "Average smash", body: "Smash factor is ball speed divided by club speed — a simple read of how well the ball was struck. A well-struck driver is often around 1.48–1.50; mid-irons typically sit lower, around 1.33–1.38. A sudden drop usually means a weaker strike or a misread." },
-    "tile-speed": { title: "Average club speed", body: "Club speed is the engine behind distance. Higher speed can add carry, but only if smash stays solid. Compare this with distance and smash: speed up and smash down often means you swung harder and struck it worse." },
-    "tile-cons": { title: "Consistency", body: "This score tightens as carry standard deviation shrinks, averaged across clubs. A high number means more repeatable distance, which makes club choice on the course easier. A low number means a wide spread — useful to know before you trust a single yardage." },
-    "tile-eff": { title: "Distance per mph", body: "This is distance divided by club speed — how much you get from the speed you produced. A rise usually means better contact or a more useful flight. A fall with similar speed often points to a weaker strike. The figure uses carry or total depending on the toggle." },
-    summary: { title: "Club summary", body: "Each row is one club after your session, mishit and Best-N filters. Average, median and max show typical versus best distance. Carry SD and the P10–P90 window are the spread you should plan for: a tight window is a club you can trust; a wide one means the number on the card can easily come up short or long." },
-    gapping: { title: "Club gapping", body: "Each bar is that club’s average carry or total, depending on the toggle. The lighter band is the P10–P90 range — where most of those shots actually finished. The badge between clubs is the gap between averages. A 10–15 yard step is a healthy gap; a tight or overlapping gap means two clubs can fly the same number; a wide gap is a hole in the bag." },
-    dispersion: { title: "Distance dispersion", body: "For each club, the box is the middle of your shots and the whiskers run from P10 to P90. The white line is the median, and the dots are individual shots. A short box means predictable distance; a long box or lots of outliers means that club can surprise you on the course. This is distance spread only, not left–right accuracy." },
-    scatter: { title: "Club speed vs ball speed", body: "Ball speed is largely what became distance; club speed is how fast you swung. Smash is ball speed ÷ club speed, drawn as the reference lines. Points on a higher line were struck better for that speed. A cluster that moves right (more club speed) without moving up (more ball speed) is swinging harder without better contact." },
-    smash: { title: "Smash factor vs benchmarks", body: "The dots are individual shots, the diamond is your average, and the dashed mark is a typical benchmark for that club — a reference, not a promise. If your diamond sits under the mark, there is usually speed you are not turning into ball speed, often from a strike issue. Driver benchmarks sit near 1.50; irons are lower." },
-    trends: { title: "First shots vs last shots", body: "For the selected session only, we compare the first shots with the last shots of each club — first 10 versus last 10 when you have enough, otherwise first half versus last half. A drop in distance or smash late can be fatigue or losing the strike; a rise can be a slow warm-up. This is not combined across days." },
-    progress: { title: "Progress across sessions", body: "Each card is one club across every imported session, using your mishit, Best-N and units filters — not the range-view club chips. Green and red badges are the change versus the previous session. The takeaway and footer compare your latest visit with the first time we have that club on file." },
-    derived: { title: "Derived stats", body: "Carry efficiency is carry per mph of club speed — a compact way to see how well speed became distance. Potential carry only scales your existing carry by (benchmark smash ÷ actual smash). It is not a launch-monitor max: the LM1 has no launch angle or spin, so this is a smash-only sketch of what better contact might have been worth." },
-    flags: { title: "Flagged shots", body: "Misreads are values that do not make physical sense for an LM1 — for example smash well outside a normal range, zero carry, or total shorter than carry. Mishits are poor but plausible contact. The exclude toggle hides both from averages and charts; they stay in this list so you can review them. This table follows the selected session, not the club chips or Best-N." }
-  };
+  function helpCopy(key) {
+    const u = unitShort();
+    const kind = state.distMode === "total" ? "total" : "carry";
+    const ideal = fmtThreshRange(10, 15);
+    const all = {
+      range: { title: "Range view", body: "This is a flat bird’s-eye view of the selected session (or all sessions). Height on the page is your measured carry or total, depending on the toggle. Left–right position is not real shot shape — the LM1 does not record start line or spin — it is only spaced so clusters are easy to read. The ellipse is a simple envelope of that club’s shots, not a statistical accuracy model." },
+      "tile-shots": { title: "Shots", body: "This is how many shots are feeding the averages after your session, mishit and Best-N filters. Flagged shots stay in the Flagged table even when they are excluded here. The club chips beside the range do not change this number — they only change the tee view." },
+      "tile-peak": { title: "Peak distance", body: "This is the single longest used shot in the current filters, using carry or total depending on the toggle. It is a high-water mark, not a typical result. One jumper can set this tile, so read it with the club summary and dispersion, not on its own." },
+      "tile-smash": { title: "Average smash", body: "Smash factor is ball speed divided by club speed — a simple read of how well the ball was struck. A well-struck driver is often around 1.48–1.50; mid-irons typically sit lower, around 1.33–1.38. A sudden drop usually means a weaker strike or a misread." },
+      "tile-speed": { title: "Average club speed", body: "Club speed is the engine behind distance. Higher speed can add carry, but only if smash stays solid. Compare this with distance and smash: speed up and smash down often means you swung harder and struck it worse." },
+      "tile-cons": { title: "Consistency", body: "This score tightens as carry standard deviation shrinks, averaged across clubs. A high number means more repeatable distance, which makes club choice on the course easier. A low number means a wide spread — useful to know before you trust a single distance." },
+      "tile-eff": { title: "Distance per mph", body: "This is distance divided by club speed — how much you get from the speed you produced. A rise usually means better contact or a more useful flight. A fall with similar speed often points to a weaker strike. The figure uses carry or total depending on the toggle." },
+      summary: { title: "Club summary", body: "Each row is one club after your session, mishit and Best-N filters. Average, median and max show typical versus best distance. Carry SD and the P10–P90 window are the spread you should plan for: a tight window is a club you can trust; a wide one means the number on the card can easily come up short or long." },
+      gapping: { title: "Club gapping", body: "Each bar is that club’s average " + kind + ". The lighter band is the P10–P90 range — where most of those shots actually finished. The coloured dimension line between two bars is the gap between those clubs’ averages, sitting in the space that actually separates them. A " + ideal + " step is a healthy gap; a tight or overlapping gap means two clubs can fly the same number; a wide gap is a hole in the bag." },
+      dispersion: { title: "Distance dispersion", body: "For each club, the box is the middle of your shots and the whiskers run from P10 to P90. The white line is the median, and the dots are individual shots. A short box means predictable distance; a long box or lots of outliers means that club can surprise you on the course. This is distance spread only, not left–right accuracy." },
+      scatter: { title: "Club speed vs ball speed", body: "Ball speed is largely what became distance; club speed is how fast you swung. Smash is ball speed ÷ club speed, drawn as the reference lines. Points on a higher line were struck better for that speed. A cluster that moves right (more club speed) without moving up (more ball speed) is swinging harder without better contact." },
+      smash: { title: "Smash factor vs benchmarks", body: "The dots are individual shots, the diamond is your average, and the dashed mark is a typical benchmark for that club — a reference, not a promise. If your diamond sits under the mark, there is usually speed you are not turning into ball speed, often from a strike issue. Driver benchmarks sit near 1.50; irons are lower." },
+      trends: { title: "First shots vs last shots", body: "For the selected session only, we compare the first shots with the last shots of each club — first 10 versus last 10 when you have enough, otherwise first half versus last half. A drop in distance or smash late can be fatigue or losing the strike; a rise can be a slow warm-up. This is not combined across days." },
+      progress: { title: "Progress across sessions", body: "Each card is one club across every imported session, using your mishit, Best-N and units filters — not the range-view club chips. Green and red badges are the change versus the previous session. The takeaway and footer compare your latest visit with the first time we have that club on file." },
+      derived: { title: "Derived stats", body: "Carry efficiency is carry per mph of club speed — a compact way to see how well speed became distance. Potential carry only scales your existing carry by (benchmark smash ÷ actual smash). It is not a launch-monitor max: the LM1 has no launch angle or spin, so this is a smash-only sketch of what better contact might have been worth." },
+      flags: { title: "Flagged shots", body: "Misreads are values that do not make physical sense for an LM1 — for example smash well outside a normal range, zero carry, or total shorter than carry. Mishits are poor but plausible contact. The exclude toggle hides both from averages and charts; they stay in this list so you can review them. This table follows the selected session, not the club chips or Best-N." }
+    };
+    return all[key] || null;
+  }
 
   function bindHelp() {
     const pop = $("#helpPopover");
@@ -1717,7 +1750,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     }
     function openHelp(btn) {
       const key = btn.getAttribute("data-help");
-      const copy = HELP_COPY[key];
+      const copy = helpCopy(key);
       if (!copy) return;
       pop.querySelector(".help-pop-title").textContent = copy.title;
       pop.querySelector(".help-pop-body").textContent = copy.body;
@@ -1758,6 +1791,9 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     pop.addEventListener("mouseenter", () => clearTimeout(leaveTimer));
     pop.addEventListener("mouseleave", () => { leaveTimer = setTimeout(closeHelp, 180); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeHelp(); });
+    bindHelp.refresh = function () {
+      if (openBtn && !pop.hidden) openHelp(openBtn);
+    };
     window.addEventListener("resize", closeHelp);
     window.addEventListener("scroll", () => {
       if (Date.now() < (bindHelp._ignoreScroll || 0)) return;
@@ -1801,9 +1837,9 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
     const u = unitShort();
     const kindName = state.distMode === "total" ? "total" : "carry";
     let html = '<div class="gap-legend">';
-    html += '<span><i class="gap-swatch ideal"></i>10–15 ' + u + " ideal gap</span>";
-    html += '<span><i class="gap-swatch wide"></i>Wider than ' + fmtDist(18) + " " + u + " (a hole)</span>";
-    html += '<span><i class="gap-swatch tight"></i>Under ' + fmtDist(7) + " " + u + " or overlap (tight)</span>";
+    html += '<span><i class="gap-swatch ideal"></i>' + fmtThreshRange(10, 15) + " ideal gap</span>";
+    html += '<span><i class="gap-swatch wide"></i>Wider than ' + fmtThresh(18) + " " + u + " (a hole)</span>";
+    html += '<span><i class="gap-swatch tight"></i>Under ' + fmtThresh(7) + " " + u + " or overlap (tight)</span>";
     html += "</div>";
     html += '<div class="gap-chart" role="img" aria-label="Club gapping">';
     html += '<div class="gap-axis">' + ticks.map((x, i) => "<span>" + x + (i === 0 ? " " + u : "") + "</span>").join("") + "</div>";
@@ -1816,6 +1852,7 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
       html += '<div class="gap-row">';
       html += '<div class="gap-name" title="' + escapeHtml(r.club) + '">' + escapeHtml(r.club) + "</div>";
       html += '<div class="gap-track">';
+      html += '<div class="gap-avg-guide" style="left:' + avgP + '%"></div>';
       html += '<div class="gap-range" style="left:' + left + "%;width:" + Math.max(1.5, right - left) + "%;background:" + r.color + '"></div>';
       html += '<div class="gap-bar" style="width:' + avgP + "%;background:" + r.color + '"></div>';
       html += '<span class="gap-avg" style="left:' + labelLeft + '%">' + fmtDist(r.avg) + " " + u + "</span>";
@@ -1825,17 +1862,33 @@ footer.appfoot{padding:10px 18px 20px;color:var(--dim);font-size:11px;text-align
         const gapYd = r.avg - nxt.avg;
         const roundedYd = Math.round(gapYd);
         const kind = gapKind(roundedYd);
-        const absLab = fmtDist(Math.abs(roundedYd <= 0 ? 0 : roundedYd)) + " " + u;
-        const text = kind === "overlap"
-          ? (r.short + " → " + nxt.short + ": " + absLab + " overlap")
-          : (r.short + " → " + nxt.short + ": " + absLab + " gap (" + gapKindLabel(kind) + ")");
-        html += '<div class="gap-step"><span class="gap-badge ' + kind + '">' + escapeHtml(text) + "</span></div>";
+        const loP = pct(Math.min(r.avg, nxt.avg));
+        const hiP = pct(Math.max(r.avg, nxt.avg));
+        const widthP = Math.max(0.7, hiP - loP);
+        const midP = loP + widthP / 2;
+        let labStyle = "";
+        if (midP < 12) labStyle = ' style="left:0;transform:translate(0,-50%)"';
+        else if (midP > 88) labStyle = ' style="left:100%;transform:translate(-100%,-50%)"';
+        const absLab = fmtDist(Math.abs(roundedYd)) + " " + u;
+        const lab = kind === "overlap" ? ("overlap " + absLab) : absLab;
+        html += '<div class="gap-row gap-dim-row">';
+        html += '<div class="gap-name" aria-hidden="true"></div>';
+        html += '<div class="gap-track gap-dim-track">';
+        if (kind === "overlap") {
+          html += '<div class="gap-overlap" style="left:' + loP + "%;width:" + widthP + '%"><span class="gap-dim-lab"' + labStyle + ">" + escapeHtml(lab) + "</span></div>";
+        } else {
+          html += '<div class="gap-dim ' + kind + '" style="left:' + loP + "%;width:" + widthP + '%">';
+          html += '<span class="gap-dim-tick hi"></span><span class="gap-dim-line"></span><span class="gap-dim-tick lo"></span>';
+          html += '<span class="gap-dim-lab"' + labStyle + ">" + escapeHtml(lab) + "</span>";
+          html += "</div>";
+        }
+        html += "</div></div>";
       }
     });
     html += "</div>";
     el.innerHTML = html;
     const sub = $("#gapSub");
-    if (sub) sub.textContent = "Average " + kindName + " per club, with a lighter P10–P90 band, and the gap to the next club in the bag.";
+    if (sub) sub.textContent = "Average " + kindName + " per club, with a lighter P10–P90 band. The coloured line between two clubs is the gap between their averages.";
   }
 
   function renderDispersion() {
