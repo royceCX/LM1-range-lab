@@ -600,7 +600,7 @@ nav.tabs{flex-shrink:1}
 
 
 /* ---- Bag evolution hero + Then vs now ---- */
-#perf-bag-card.card-hero{padding:16px 18px 18px}
+#perf-bag-card.card-hero,#perf-strike-card.card-hero{padding:16px 18px 18px}
 .bag-play{display:flex;flex-direction:column;gap:10px;margin:12px 0 14px;padding:12px 14px;background:var(--elev-2);border:1px solid var(--line-strong);border-radius:14px}
 .bag-play-now{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 14px}
 .bag-play-date{font-family:var(--cond);font-weight:650;font-size:26px;letter-spacing:.03em;line-height:1;color:var(--text);font-variant-numeric:tabular-nums}
@@ -630,6 +630,16 @@ nav.tabs{flex-shrink:1}
 .bag-leg-note{color:var(--dim)}
 .perf-bag-stage{position:relative;width:100%;min-height:320px;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .perf-bag-stage svg{width:100%;min-width:560px;height:auto;display:block}
+
+.strike-headline{margin:2px 0 10px;font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1.15;color:var(--text)}
+.strike-headline .up{color:var(--green)}
+.strike-headline .down{color:var(--red)}
+.strike-headline .flat{color:var(--muted)}
+.strike-hero{width:100%}
+.strike-hero svg{width:100%;height:auto;display:block}
+.spd-leg-gap.is-good{background:rgba(61,255,154,.2);box-shadow:inset 0 2px 0 var(--green)}
+.spd-leg-gap.is-ok{background:rgba(138,161,150,.2);box-shadow:inset 0 2px 0 var(--muted)}
+.spd-leg-gap.is-poor{background:rgba(255,77,90,.2);box-shadow:inset 0 2px 0 var(--red)}
 
 /* Then vs now — Trackman-style */
 .tvn-clubs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
@@ -782,6 +792,12 @@ nav.tabs{flex-shrink:1}
         </div>
         <div id="perfBag"></div>
       </section>
+      <section class="card card-hero" id="perf-strike-card">
+        <h3>Strike quality over time <button type="button" class="help-btn" data-help="perf-strike" aria-label="About strike quality over time">?</button></h3>
+        <p class="sub" id="perfStrikeSub">How the share of poor, OK and good strikes changed across sessions. Play or scrub the bar above to walk through your visits.</p>
+        <p class="strike-headline" id="perfStrikeHead"></p>
+        <div id="perfStrike"></div>
+      </section>
       <section class="card" id="perf-tvn-card">
         <h3>Then vs now <button type="button" class="help-btn" data-help="perf-tvn" aria-label="About then vs now">?</button></h3>
         <p class="sub" id="perfTvnSub">How this club’s distance, speed, smash and estimated height changed from one visit to another. Green is an improvement, red is a drop.</p>
@@ -797,11 +813,6 @@ nav.tabs{flex-shrink:1}
         <h3>Consistency over time <button type="button" class="help-btn" data-help="perf-heat" aria-label="About consistency over time">?</button></h3>
         <p class="sub" id="perfHeatSub">Thinner band = more repeatable distance. Shows where 8 of 10 shots landed each session.</p>
         <div id="perfHeat"></div>
-      </section>
-      <section class="card" id="perf-strike-card">
-        <h3>Strike quality over time <button type="button" class="help-btn" data-help="perf-strike" aria-label="About strike quality over time">?</button></h3>
-        <p class="sub" id="perfStrikeSub">Average smash each session, against the good-strike mark for that club. Higher is better.</p>
-        <div id="perfStrike"></div>
       </section>
       <section class="card" id="perf-work-card">
         <h3>What to work on <button type="button" class="help-btn" data-help="perf-work" aria-label="About what to work on">?</button></h3>
@@ -1178,7 +1189,7 @@ function fmtThresh(yd) {
     set("perfBagSub", "Average " + kind + " for each club on a distance ladder, for the session on the play bar. Play or scrub to walk through your visits.");
     set("perfTvnSub", "How this club’s " + kind + ", speed, smash and estimated height changed from one visit to another. Green is an improvement, red is a drop. Height and the flight path are estimated.");
     set("perfHeatSub", "Thinner band = more repeatable distance. Shows where 8 of 10 shots landed each session.");
-    set("perfStrikeSub", "Average smash each session, against the good-strike mark for that club. Higher is better.");
+    set("perfStrikeSub", "How the share of poor, OK and good strikes changed across sessions. Play or scrub the bar above to walk through your visits.");
     set("perfTimelineSub", "Club and ball speed on the same scale. The shaded gap between them is smash — how well you struck it.");
     const ex = document.getElementById("excludeMishits");
     if (ex && ex.closest("label")) ex.closest("label").title = "Hide likely poor contact (mishits) and impossible-looking readings (misreads) from the averages.";
@@ -2555,7 +2566,7 @@ function fmtThresh(yd) {
       "perf-bag": { title: "Bag evolution", body: "Average " + kind + " for each club, lined up as a bag ladder for the session on the play bar. Solid dots are this visit; the dashed ring is your first session; hollow rings are earlier visits; a faded dot is a club you didn’t hit this time, shown at its last known distance. The line between clubs is the gap — red means they overlap or sit tight, amber means a wide hole. Play or scrub to walk through your visits. Units follow the Yards / Metres toggle." },
       "perf-timeline": { title: "Speed & strike trends", body: "Each panel is one club. The grey line is how fast you swung, the coloured line is ball speed, and the shaded gap between them is smash — how well you struck it (ball speed ÷ club speed), so a wider gap means a better strike. A green smash number is at or above a typical good strike for that club (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges); a break in the line means you didn’t hit that club that day. Speeds stay in mph, whatever distance unit you have chosen." },
       "perf-heat": { title: "Consistency over time", body: "Each panel is one club. The soft band is where the middle 8 of 10 shots landed in each session (P10–P90 carry), in " + unitWord() + ". A thinner band means more repeatable distance; a wider band means the number jumped around. The thin line is the median carry. If a visit is missing, the band breaks — that club wasn’t hit, not a guess. The headline is half the latest band’s width, compared with the first session you have. Units follow the Yards / Metres toggle." },
-      "perf-strike": { title: "Strike quality over time", body: "Each panel is one club. Each bar is that session’s average smash — ball speed ÷ club speed, a simple read of how well you struck it. The faint dashed line is the good-strike mark for that club (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges). A hollow bar means fewer than 3 shots that day, so treat it lightly. This uses smash only: the LM1 does not measure path, face or strike location." },
+      "perf-strike": { title: "Strike quality over time", body: "One chart for all selected clubs. The stacked areas are the share of poor, OK and good strikes in each session, using the same smash-factor thresholds as the smash gauges. Good is at or above the mark for that club (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges); OK is just below that — for example 1.35 for driver or 1.25 for irons — and poor is further under. A larger green share is a better day of contact. A hollow dot means fewer than 3 shots with smash that visit. Play or scrub the Bag evolution bar to watch the mix grow session by session. This uses smash only: the LM1 does not measure path, face or strike location." },
       "perf-work": { title: "What to work on", body: "Pattern-based suggestions from the stats the LM1 does measure — distance, speed, smash and how tightly shots grouped. They are inferred, not a launch-monitor diagnosis: the LM1 does not measure path, face, spin, launch or loft. Treat each card as something to look at with a coach or a fuller monitor, not as a confirmed fault." },
       "import": { title: "Import a range session", body: "Paste a shot table from the Shot Scope dashboard, or upload one or more .tsv / .csv files. A direct paste works even when each value is on its own line. Filenames like YYYY-MM-DD.tsv set the session date automatically. Preview the parsed shots before you save. Nothing leaves this browser." }
     };
@@ -3570,7 +3581,7 @@ function fmtThresh(yd) {
     return 1.12;
   }
 
-  const perfPlay = { timer: null, data: null, bagAnim: 0, tvnAnim: 0 };
+  const perfPlay = { timer: null, data: null, bagAnim: 0, tvnAnim: 0, strikeAnim: 0 };
 
   function perfStopPlay() {
     if (perfPlay.timer) { clearInterval(perfPlay.timer); perfPlay.timer = null; }
@@ -4379,6 +4390,7 @@ function fmtThresh(yd) {
       };
       perfPlay.bagAnim = requestAnimationFrame(step);
     }
+    syncStrikePlayhead(idx, true);
   }
 
     function cssAttr(s) {
@@ -5056,173 +5068,223 @@ function fmtThresh(yd) {
 
   function renderPerfStrike(data, clubs) {
     const el = $("#perfStrike");
+    const head = $("#perfStrikeHead");
     if (!el) return;
-    const sessions = data.sessions || [];
-    const nS = sessions.length;
-    if (nS < 1) { el.innerHTML = '<p class="empty">No sessions to plot.</p>'; return; }
-    const ordered = (clubs && clubs.length ? clubs : data.clubs).slice();
-    const finite = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
-
-    const rows = [];
-    ordered.forEach((club) => {
-      const cells = data.cells.get(club) || [];
-      const pts = [];
-      const band = smashGoodFor(club);
-      cells.forEach((c, i) => {
-        if (!c) return;
-        const smash = finite(c.avgSmash);
-        if (smash == null) return;
-        pts.push({
-          i, n: c.n || 0, date: sessions[i] && sessions[i].date, smash,
-          goodN: c.goodN || 0, okN: c.okN || 0, poorN: c.poorN || 0
-        });
+    if (perfPlay.strikeAnim) { cancelAnimationFrame(perfPlay.strikeAnim); perfPlay.strikeAnim = 0; }
+    el._strike = null;
+    const set = new Set(clubs);
+    const cols = (data.sessRows || []).map((sr, i) => {
+      let good = 0, ok = 0, poor = 0;
+      (sr.shots || []).forEach((s) => {
+        if (!set.has(s.club) || s.smash == null) return;
+        const b = smashGoodFor(s.club);
+        if (s.smash >= b.good) good++;
+        else if (s.smash >= b.ok) ok++;
+        else poor++;
       });
-      if (!pts.length) return;
-      rows.push({ club, pts, faint: pts.length < 2, thresh: band.good, threshLab: band.goodLab });
+      const tot = good + ok + poor;
+      return { i, date: sr.sess.date, good, ok, poor, tot };
     });
-    if (!rows.length) {
+    if (!cols.some((c) => c.tot)) {
       el.innerHTML = '<p class="empty">No smash numbers for the selected clubs.</p>';
+      if (head) head.innerHTML = "";
       return;
     }
+    const nS = cols.length;
+    const W = 720, H = 280, padL = 40, padR = 16, padT = 18, padB = 28;
+    const xOf = (i) => padL + (nS <= 1 ? (W - padL - padR) / 2 : (i / (nS - 1)) * (W - padL - padR));
+    const yOf = (p) => padT + (1 - p) * (H - padT - padB);
+    const GREEN = "#3dff9a", MUTED = "#8aa196", RED = "#ff4d5a";
 
-    function shortDate(iso) { return niceDate(iso).replace(/ 20\d\d/, ""); }
-    function niceScale(vals, thresh) {
-      let lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
-      if (thresh != null && Number.isFinite(thresh)) {
-        lo = Math.min(lo, thresh);
-        hi = Math.max(hi, thresh);
+    function shares(c) {
+      if (!c || !c.tot) return null;
+      const poor = c.poor / c.tot, ok = c.ok / c.tot, good = c.good / c.tot;
+      return { poor, ok, good, yPoor: poor, yOk: poor + ok, yGood: 1 };
+    }
+    function runsOf() {
+      const runs = [];
+      cols.forEach((c) => {
+        if (!c.tot) return;
+        const last = runs[runs.length - 1];
+        if (last && c.i === last[last.length - 1].i + 1) last.push(c);
+        else runs.push([c]);
+      });
+      return runs;
+    }
+    function bandPath(bot, top) {
+      if (top.length < 1 || top.length !== bot.length) return "";
+      if (top.length === 1) {
+        const x = top[0].x, y1 = top[0].y, y2 = bot[0].y;
+        return "M " + (x - 6).toFixed(1) + " " + y1.toFixed(1) + " H " + (x + 6).toFixed(1) + " V " + y2.toFixed(1) + " H " + (x - 6).toFixed(1) + " Z";
       }
-      if (!Number.isFinite(lo) || !Number.isFinite(hi)) return { lo: 1, hi: 1.5, ticks: [1, 1.2, 1.4] };
-      lo -= 0.05;
-      hi += 0.06;
-      const minSpan = 0.30;
-      if (hi - lo < minSpan) {
-        const mid = (lo + hi) / 2;
-        lo = mid - minSpan / 2;
-        hi = mid + minSpan / 2;
+      const topD = consSmoothPath(top);
+      const botRev = bot.slice().reverse();
+      let d = topD + " L " + botRev[0].x.toFixed(1) + " " + botRev[0].y.toFixed(1);
+      if (botRev.length === 2) {
+        d += " L " + botRev[1].x.toFixed(1) + " " + botRev[1].y.toFixed(1);
+      } else {
+        for (let i = 0; i < botRev.length - 1; i++) {
+          const p0 = botRev[i - 1] || botRev[i];
+          const p1 = botRev[i];
+          const p2 = botRev[i + 1];
+          const p3 = botRev[i + 2] || p2;
+          const c1x = p1.x + (p2.x - p0.x) / 6;
+          const c1y = p1.y + (p2.y - p0.y) / 6;
+          const c2x = p2.x - (p3.x - p1.x) / 6;
+          const c2y = p2.y - (p3.y - p1.y) / 6;
+          d += " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) + " " + c2x.toFixed(1) + " " + c2y.toFixed(1) + " " + p2.x.toFixed(1) + " " + p2.y.toFixed(1);
+        }
       }
-      if (lo < 0.85) lo = 0.85;
-      const inner = (st) => {
-        const ticks = [];
-        let v = Math.ceil(lo / st - 1e-9) * st;
-        for (; v <= hi + 1e-9; v += st) ticks.push(Math.round(v * 100) / 100);
-        return ticks;
-      };
-      let step = 0.1;
-      let ticks = inner(step);
-      if (ticks.length > 4) { step = 0.2; ticks = inner(step); }
-      if (!ticks.length) ticks = [1, 1.2, 1.4];
-      return { lo, hi, ticks, step };
+      return d + " Z";
+    }
+    function linePts(run, key) {
+      return run.map((c) => {
+        const sh = shares(c);
+        return { x: xOf(c.i), y: yOf(sh[key]) };
+      });
     }
 
-    function panelSvg(row) {
-      const W = 280, H = 128, padL = 30, padR = 10, padT = 16, padB = 18;
-      const color = clubColor(row.club);
-      const vals = row.pts.map((p) => p.smash);
-      const scale = niceScale(vals, row.thresh);
-      const xOf = (i) => padL + (nS <= 1 ? (W - padL - padR) / 2 : (i / (nS - 1)) * (W - padL - padR));
-      const yOf = (v) => padT + (1 - (v - scale.lo) / (scale.hi - scale.lo)) * (H - padT - padB);
-      const slot = nS <= 1 ? (W - padL - padR) : ((W - padL - padR) / Math.max(1, nS - 1));
-      const barW = Math.max(7, Math.min(18, slot * 0.58));
-      const yBase = yOf(scale.lo);
-      let svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(row.club) + ' strike quality">';
-      scale.ticks.forEach((v) => {
-        const y = yOf(v);
-        if (!Number.isFinite(y)) return;
-        svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="rgba(255,255,255,.06)"/>';
-        const lab = (Math.abs(v * 10 - Math.round(v * 10)) < 1e-6) ? v.toFixed(1) : fmt(v, 2);
-        svg += '<text x="' + (padL - 4) + '" y="' + (y + 3).toFixed(1) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(lab) + "</text>";
+    const layers = [
+      { key: "yPoor", bot: "zero", color: RED, cls: "poor" },
+      { key: "yOk", bot: "yPoor", color: MUTED, cls: "ok" },
+      { key: "yGood", bot: "yOk", color: GREEN, cls: "good" }
+    ];
+    const runs = runsOf();
+    let areas = "";
+    let strokes = "";
+    runs.forEach((run) => {
+      layers.forEach((ly) => {
+        const top = linePts(run, ly.key);
+        const bot = ly.bot === "zero" ? run.map((c) => ({ x: xOf(c.i), y: yOf(0) })) : linePts(run, ly.bot);
+        const d = bandPath(bot, top);
+        if (d) areas += '<path d="' + d + '" fill="' + ly.color + '" fill-opacity="0.20"/>';
+        if (ly.key !== "yGood") {
+          if (top.length >= 2) {
+            strokes += '<path d="' + consSmoothPath(top) + '" fill="none" stroke="' + ly.color + '" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>';
+          } else if (top.length === 1) {
+            strokes += '<line x1="' + (top[0].x - 6).toFixed(1) + '" x2="' + (top[0].x + 6).toFixed(1) + '" y1="' + top[0].y.toFixed(1) + '" y2="' + top[0].y.toFixed(1) + '" stroke="' + ly.color + '" stroke-width="1.4" stroke-linecap="round"/>';
+          }
+        }
       });
-      if (row.thresh != null && Number.isFinite(row.thresh)) {
-        const y = yOf(row.thresh);
-        svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="var(--center)" stroke-opacity=".45" stroke-width="1" stroke-dasharray="2.5 3"/>';
-      }
-      row.pts.forEach((p, idx) => {
-        const x = xOf(p.i);
-        const y = yOf(p.smash);
-        const h = Math.max(2, yBase - y);
-        const x0 = x - barW / 2;
-        const hollow = p.n < 3;
-        const isLast = idx === row.pts.length - 1;
-        const op = row.faint ? "0.10" : (hollow ? "0.08" : "0.20");
-        svg += '<rect x="' + x0.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="' + color + '" fill-opacity="' + op + '" stroke="' + color + '" stroke-width="' + (hollow ? "1.15" : "1.35") + '" stroke-opacity="' + (hollow ? "0.65" : (row.faint ? "0.55" : "1")) + '" rx="1"/>';
-        const r = isLast ? 2.8 : 2.2;
+    });
+
+    let dots = "";
+    cols.forEach((c) => {
+      const sh = shares(c);
+      if (!sh) return;
+      const hollow = c.tot < 3;
+      [["yPoor", RED], ["yOk", MUTED]].forEach((pair) => {
+        const x = xOf(c.i), y = yOf(sh[pair[0]]);
         if (hollow) {
-          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="1.15" opacity="' + (isLast ? "0.85" : "0.55") + '" pointer-events="none"/>';
+          dots += '<circle class="strike-dot" data-si="' + c.i + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2.2" fill="none" stroke="' + pair[1] + '" stroke-width="1.15" opacity=".7" pointer-events="none"/>';
         } else {
-          svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="' + color + '" opacity="' + (isLast ? "1" : "0.85") + '" pointer-events="none"/>';
+          dots += '<circle class="strike-dot" data-si="' + c.i + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2.2" fill="' + pair[1] + '" pointer-events="none"/>';
         }
       });
-      const smashPts = row.pts;
-      const labelIdx = smashPts.length > 3 ? [0, smashPts.length - 1] : smashPts.map((_, i) => i);
-      labelIdx.forEach((li) => {
-        const p = smashPts[li];
-        const x = xOf(p.i), y = yOf(p.smash);
-        const good = p.smash >= row.thresh;
-        const fill = good ? "var(--green)" : "rgba(138,161,150,.9)";
-        let anchor = "middle";
-        if (p.i === 0 && nS > 1) anchor = "start";
-        else if (p.i === nS - 1 && nS > 1) anchor = "end";
-        const ty = Math.max(9, y - 8);
-        svg += '<text x="' + x.toFixed(1) + '" y="' + ty.toFixed(1) + '" text-anchor="' + anchor + '" fill="' + fill + '" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="700" pointer-events="none">' + escapeHtml(fmt(p.smash, 2)) + "</text>";
-      });
-      const firstLab = sessions[0] ? shortDate(sessions[0].date) : "";
-      const lastLab = sessions[nS - 1] ? shortDate(sessions[nS - 1].date) : "";
-      if (firstLab) svg += '<text x="' + xOf(0).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="' + (nS > 1 ? "start" : "middle") + '" fill="rgba(255,255,255,.4)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(firstLab) + "</text>";
-      if (lastLab && nS > 1) svg += '<text x="' + xOf(nS - 1).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="8.5" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(lastLab) + "</text>";
+    });
 
-      for (let i = 0; i < nS; i++) {
-        const cx = xOf(i);
-        const x0 = Math.max(padL - 2, cx - slot / 2);
-        const x1 = Math.min(W - padR + 2, cx + slot / 2);
-        const hit = row.pts.find((p) => p.i === i);
-        const date = shortDate(sessions[i].date);
-        let tip;
-        if (hit) {
-          tip = [
-            date,
-            "Smash " + fmt(hit.smash, 2) + "  (mark " + (row.threshLab || fmt(row.thresh, 2)) + ")",
-            hit.goodN + " good · " + hit.okN + " ok · " + hit.poorN + " poor",
-            hit.n + " shot" + (hit.n === 1 ? "" : "s")
-          ].join("\n");
-        } else {
-          tip = date + "\nNot hit this session";
-        }
-        svg += '<rect data-tip="' + escapeHtml(tip) + '" x="' + x0.toFixed(1) + '" y="' + padT + '" width="' + Math.max(2, x1 - x0).toFixed(1) + '" height="' + (H - padT - padB) + '" fill="transparent" cursor="pointer"/>';
+    let svg = '<div class="spd-legend">';
+    svg += '<span><i class="spd-leg-gap is-good"></i> Good strike</span>';
+    svg += '<span><i class="spd-leg-gap is-ok"></i> OK strike</span>';
+    svg += '<span><i class="spd-leg-gap is-poor"></i> Poor strike</span>';
+    svg += '<span style="color:var(--dim)">Good: 1.45 driver, 1.40 woods &amp; hybrids, 1.33 irons, 1.25 wedges</span>';
+    svg += "</div>";
+    svg += '<div class="strike-hero"><svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Strike quality over time">';
+    svg += '<defs><clipPath id="strikeClip"><rect id="strikeClipRect" x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>';
+    [0, 0.25, 0.5, 0.75, 1].forEach((p) => {
+      const y = yOf(p);
+      svg += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="rgba(255,255,255,.06)"/>';
+      if (p === 0 || p === 0.5 || p === 1) {
+        svg += '<text x="' + (padL - 6) + '" y="' + (y + 3).toFixed(1) + '" text-anchor="end" fill="rgba(255,255,255,.4)" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="600">' + Math.round(p * 100) + "%</text>";
       }
-      svg += "</svg>";
-      return svg;
-    }
-
-    function panelHtml(row) {
-      const first = row.pts[0], last = row.pts[row.pts.length - 1];
-      const over = last.smash >= row.thresh;
-      const toneCls = over ? " up" : "";
-      let h = '<article class="cons-panel' + (row.faint ? " is-faint" : "") + '" data-club="' + escapeHtml(row.club) + '">';
-      h += '<div class="cons-head"><h4 class="cons-club"><i class="perf-db-swatch" style="background:' + clubColor(row.club) + '"></i>' + escapeHtml(row.club) + "</h4>";
-      h += '<div class="cons-stat">';
-      h += '<span><strong class="cons-trend' + toneCls + '">Smash ' + escapeHtml(fmt(last.smash, 2)) + "</strong></span>";
-      if (row.faint) {
-        h += '<span class="cons-trend">1 session</span>';
-      } else if (first !== last) {
-        h += "<span>" + escapeHtml(fmt(first.smash, 2) + " → " + fmt(last.smash, 2)) + "</span>";
-      }
-      h += "</div></div>";
-      h += panelSvg(row);
-      h += "</article>";
-      return h;
-    }
-
-    let html = '<div class="spd-legend">';
-    html += '<span><i class="spd-leg-bar"></i> Average smash</span>';
-    html += '<span><i class="spd-leg-dash"></i> Good-strike mark</span>';
-    html += '<span><i class="spd-leg-hollow"></i> Fewer than 3 shots</span>';
-    html += "</div>";
-    html += '<div class="cons-grid">';
-    rows.forEach((row) => { html += panelHtml(row); });
-    html += "</div>";
-    el.innerHTML = html;
+    });
+    const dateStep = Math.max(1, Math.ceil(nS / 6));
+    cols.forEach((c, i) => {
+      if (i % dateStep !== 0 && i !== nS - 1) return;
+      const anchor = (i === 0 && nS > 1) ? "start" : (i === nS - 1 && nS > 1) ? "end" : "middle";
+      svg += '<text x="' + xOf(i).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="' + anchor + '" fill="rgba(255,255,255,.4)" font-size="10" font-family="Barlow Condensed, sans-serif" font-weight="600">' + escapeHtml(niceDate(c.date).replace(/ 20\d\d/, "")) + "</text>";
+    });
+    svg += '<g clip-path="url(#strikeClip)">' + areas + strokes + dots + "</g>";
+    svg += '<line id="strikePlayhead" x1="' + padL + '" x2="' + padL + '" y1="' + padT + '" y2="' + (H - padB) + '" stroke="var(--cyan)" stroke-width="1.5" stroke-opacity=".7" opacity="0"/>';
+    const slot = nS <= 1 ? (W - padL - padR) : ((W - padL - padR) / Math.max(1, nS - 1));
+    cols.forEach((c) => {
+      const cx = xOf(c.i);
+      const x0 = Math.max(padL - 2, cx - slot / 2);
+      const x1 = Math.min(W - padR + 2, cx + slot / 2);
+      const tip = escapeHtml([
+        niceDate(c.date),
+        c.tot ? (c.good + " good · " + c.ok + " ok · " + c.poor + " poor of " + c.tot) : "No smash data",
+        c.tot ? (Math.round((c.good / c.tot) * 100) + "% good strikes") : ""
+      ].filter(Boolean).join("\n"));
+      svg += '<rect data-tip="' + tip + '" x="' + x0.toFixed(1) + '" y="' + padT + '" width="' + Math.max(2, x1 - x0).toFixed(1) + '" height="' + (H - padT - padB) + '" fill="transparent" cursor="pointer"/>';
+    });
+    svg += "</svg></div>";
+    el.innerHTML = svg;
+    el._strike = { cols, xOf, nS, W, H, padL, clipX: null, ready: false };
     bindChartTips(el, "[data-tip]");
+  }
+
+  function syncStrikePlayhead(idx, animate) {
+    const el = $("#perfStrike");
+    const st = el && el._strike;
+    if (!st) return;
+    const nS = st.nS;
+    const i = Math.max(0, Math.min(nS - 1, idx));
+    const target = Math.min(st.W, st.xOf(i) + 10);
+    const clip = el.querySelector("#strikeClipRect");
+    const head = el.querySelector("#strikePlayhead");
+    if (head) {
+      const x = st.xOf(i);
+      head.setAttribute("x1", x.toFixed(1));
+      head.setAttribute("x2", x.toFixed(1));
+      head.setAttribute("opacity", nS > 1 ? "0.85" : "0");
+    }
+    el.querySelectorAll(".strike-dot").forEach((d) => {
+      const on = Number(d.getAttribute("data-si")) === i;
+      const hollow = (d.getAttribute("fill") || "") === "none";
+      d.setAttribute("r", on ? (hollow ? "3.2" : "3.2") : "2.2");
+    });
+    const headEl = $("#perfStrikeHead");
+    if (headEl) {
+      const first = st.cols.find((c) => c.tot);
+      let cur = null;
+      for (let k = i; k >= 0; k--) if (st.cols[k] && st.cols[k].tot) { cur = st.cols[k]; break; }
+      if (!cur) {
+        headEl.innerHTML = "";
+      } else {
+        const pct = (c) => Math.round((c.good / c.tot) * 100);
+        const now = pct(cur);
+        if (!first || first.i === cur.i) {
+          headEl.innerHTML = 'Good strikes <span>' + now + "%</span>";
+        } else {
+          const then = pct(first);
+          const tone = now > then ? "up" : now < then ? "down" : "flat";
+          headEl.innerHTML = "Good strikes <span class=\"" + tone + "\">" + then + "% → " + now + "%</span>";
+        }
+      }
+    }
+    const apply = (w) => { if (clip) clip.setAttribute("width", Math.max(0, w).toFixed(1)); };
+    const canAnim = animate && st.ready && !reduceMotion() && clip;
+    if (!canAnim) {
+      apply(target);
+      st.clipX = target;
+      st.ready = true;
+      return;
+    }
+    const from = st.clipX != null ? st.clipX : target;
+    if (perfPlay.strikeAnim) cancelAnimationFrame(perfPlay.strikeAnim);
+    const dur = 550;
+    const t0 = performance.now();
+    const step = (now) => {
+      const t = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - t, 2);
+      const w = from + (target - from) * e;
+      apply(w);
+      st.clipX = w;
+      if (t < 1) perfPlay.strikeAnim = requestAnimationFrame(step);
+      else perfPlay.strikeAnim = 0;
+    };
+    perfPlay.strikeAnim = requestAnimationFrame(step);
   }
 
   /* ---- What to work on ---- */
