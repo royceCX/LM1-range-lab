@@ -562,34 +562,34 @@ nav.tabs{flex-shrink:1}
 }
 
 
-.work-list{display:flex;flex-direction:column;gap:14px}
-.work-item{display:grid;grid-template-columns:140px minmax(0,1fr);gap:14px 16px;align-items:start;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:12px}
-.work-illu{background:#0c1319;border:1px solid var(--line);border-radius:10px;padding:6px;min-height:120px}
+
+.work-list{display:flex;flex-direction:column;gap:16px}
+.work-item{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(220px,.82fr);grid-template-rows:auto auto 1fr;grid-template-areas:"illu side" "illu try" "illu .";gap:10px 22px;align-items:stretch;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.work-illu{grid-area:illu;background:#0c1319;border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-height:280px;display:flex;align-items:center;justify-content:center}
 .work-illu svg{width:100%;height:auto;display:block}
-.work-body h4{margin:0 0 4px;font-family:var(--cond);font-size:18px;letter-spacing:.04em;font-weight:700}
-.work-yards{font-family:var(--cond);font-weight:700;font-size:20px;color:var(--lime);margin:0 0 8px;font-variant-numeric:tabular-nums}
+.work-side{grid-area:side;align-self:start;min-width:0;display:flex;flex-direction:column;gap:6px}
+.work-try{grid-area:try;align-self:start;min-width:0}
+.work-side h4{margin:0;font-family:var(--cond);font-size:22px;letter-spacing:.04em;font-weight:700;line-height:1.15}
+.work-yards{font-family:var(--cond);font-weight:700;font-size:22px;color:var(--lime);margin:0;font-variant-numeric:tabular-nums;line-height:1.1}
 .work-yards span{font-family:var(--font);font-size:11px;font-weight:650;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-left:6px}
-.work-evidence{font-size:13px;color:var(--text);margin:0 0 8px;line-height:1.45}
-.work-k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:8px 0 4px}
-.work-causes,.work-drills{margin:0;padding-left:18px;font-size:13px;color:var(--text);line-height:1.45}
+.work-evidence{font-size:13px;color:var(--text);margin:0;line-height:1.45}
+.work-k{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 4px}
+.work-drill{margin:0;font-size:13px;color:var(--text);line-height:1.45}
 .work-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:999px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(255,176,32,.35);vertical-align:middle}
 @media (max-width:640px){
   .perf-db{grid-template-columns:1fr auto;grid-template-areas:"name delta" "svg svg";gap:4px 8px;align-items:end}
   .perf-db-name{grid-area:name}
   .perf-db-delta{grid-area:delta;font-size:20px}
   .perf-db svg{grid-area:svg;height:52px}
-  .work-item{grid-template-columns:1fr;padding:10px}
-  .work-illu{max-width:220px}
+}
+@media (max-width:720px){
+  .work-item{grid-template-columns:1fr;grid-template-rows:auto auto auto;grid-template-areas:"side" "illu" "try";gap:10px;padding:12px}
+  .work-side,.work-try{align-self:stretch}
+  .work-illu{min-height:200px}
+  .work-side h4{font-size:20px}
 }
 @media (prefers-reduced-motion: reduce){
   .perf-db svg *,.perf-bag-stage svg *,.work-illu svg *,#perfTimeline svg *,#perfHeat svg *,#perfStrike svg *{transition:none !important;animation:none !important}
-}
-
-@keyframes perf-pulse {
-  0%,100%{opacity:.55} 50%{opacity:1}
-}
-@keyframes perf-impact {
-  0%,100%{transform:translate(0,0)} 40%{transform:translate(3px,-1px)}
 }
 
 #view-performance .card{scroll-margin-top: 88px}
@@ -816,9 +816,9 @@ nav.tabs{flex-shrink:1}
       </section>
       <section class="card" id="perf-work-card">
         <h3>What to work on <button type="button" class="help-btn" data-help="perf-work" aria-label="About what to work on">?</button></h3>
-        <p class="sub" id="perfWorkSub">Pattern-based suggestions from the stats the LM1 does measure. They are inferred, not a launch-monitor diagnosis.</p>
+        <p class="sub" id="perfWorkSub">Pattern-based suggestions from smash, speed and distance. Face marks are illustrative — the LM1 does not measure impact location.</p>
         <div id="perfWork"></div>
-        <p class="smash-foot">The LM1 doesn’t measure club path, face angle, spin, launch or dynamic loft; these are pattern-based suggestions, and a coach or a launch monitor with those metrics can confirm.</p>
+        <p class="smash-foot">The LM1 doesn’t measure impact location, club path, face angle, spin, launch or dynamic loft. Face marks are illustrative, based on smash; flight height is estimated. A coach or a fuller launch monitor can confirm.</p>
       </section>
     </section>
 
@@ -2567,7 +2567,7 @@ function fmtThresh(yd) {
       "perf-timeline": { title: "Speed & strike trends", body: "Each panel is one club. The grey line is how fast you swung, the coloured line is ball speed, and the shaded gap between them is smash — how well you struck it (ball speed ÷ club speed), so a wider gap means a better strike. A green smash number is at or above a typical good strike for that club (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges); a break in the line means you didn’t hit that club that day. Speeds stay in mph, whatever distance unit you have chosen." },
       "perf-heat": { title: "Consistency over time", body: "Each panel is one club. The soft band is where the middle 8 of 10 shots landed in each session (P10–P90 carry), in " + unitWord() + ". A thinner band means more repeatable distance; a wider band means the number jumped around. The thin line is the median carry. If a visit is missing, the band breaks — that club wasn’t hit, not a guess. The headline is half the latest band’s width, compared with the first session you have. Units follow the Yards / Metres toggle." },
       "perf-strike": { title: "Strike quality over time", body: "One chart for all selected clubs. The stacked areas are the share of poor, OK and good strikes in each session, using the same smash-factor thresholds as the smash gauges. Good is at or above the mark for that club (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges); OK is just below that — for example 1.35 for driver or 1.25 for irons — and poor is further under. A larger green share is a better day of contact. A hollow dot means fewer than 3 shots with smash that visit. Play or scrub the Bag evolution bar to watch the mix grow session by session. This uses smash only: the LM1 does not measure path, face or strike location." },
-      "perf-work": { title: "What to work on", body: "Pattern-based suggestions from the stats the LM1 does measure — distance, speed, smash and how tightly shots grouped. They are inferred, not a launch-monitor diagnosis: the LM1 does not measure path, face, spin, launch or loft. Treat each card as something to look at with a coach or a fuller monitor, not as a confirmed fault." },
+      "perf-work": { title: "What to work on", body: "Pattern-based suggestions from the stats the LM1 does measure — distance, speed, smash and how tightly shots grouped. They are inferred, not a launch-monitor diagnosis: the LM1 does not measure impact location, face angle, path, spin, launch or loft. The club-face marks are illustrative, based on smash against the usual good-strike targets (1.45 driver, 1.40 woods and hybrids, 1.33 irons, 1.25 wedges), not a measured strike location. Side-view flights use your carry and roll; height is estimated. Treat each card as something to look at with a coach or a fuller monitor, not as a confirmed fault." },
       "import": { title: "Import a range session", body: "Paste a shot table from the Shot Scope dashboard, or upload one or more .tsv / .csv files. A direct paste works even when each value is on its own line. Filenames like YYYY-MM-DD.tsv set the session date automatically. Preview the parsed shots before you save. Nothing leaves this browser." }
     };
     return all[key] || null;
@@ -5319,6 +5319,261 @@ function fmtThresh(yd) {
     return Math.max(0, newBall * ratio - row.avgCarry);
   }
 
+  function workClubType(club) {
+    const def = clubDef(club);
+    const kind = (def && def.kind) || "iron";
+    if (String(club) === "Driver") return "driver";
+    if (kind === "wood" || kind === "hybrid" || kind === "wedge") return kind;
+    return "iron";
+  }
+  function workMetrics(club, r, extra) {
+    const def = clubDef(club);
+    const m = {
+      club: club,
+      clubKind: workClubType(club),
+      short: (def && def.short) || club,
+      color: (def && def.color) || "#3ee0ff",
+      smash: r && r.avgSmash,
+      good: r && r.band && r.band.good,
+      chs: r && r.avgChs,
+      ball: r && r.avgBall,
+      carry: r && r.avgCarry,
+      total: r && r.avgTotal,
+      roll: r && r.avgRollRatio,
+      p10c: r && r.p10c,
+      p90c: r && r.p90c,
+      spread: r && r.spread,
+      n: r && r.n,
+      goodN: r && r.goodN
+    };
+    if (extra) Object.keys(extra).forEach((k) => { m[k] = extra[k]; });
+    return m;
+  }
+  function workTxt(x, y, text, opts) {
+    opts = opts || {};
+    const anchor = opts.anchor || "middle";
+    const fill = opts.fill || "rgba(255,255,255,.5)";
+    const size = opts.size || 8;
+    const fam = opts.sans ? "DM Sans, sans-serif" : "Barlow Condensed, sans-serif";
+    const weight = opts.weight || (opts.sans ? 500 : 700);
+    const ls = opts.ls != null ? ' letter-spacing="' + opts.ls + '"' : "";
+    return '<text x="' + Number(x).toFixed(1) + '" y="' + Number(y).toFixed(1) + '" text-anchor="' + anchor + '" fill="' + fill + '" font-size="' + size + '" font-family="' + fam + '" font-weight="' + weight + '"' + ls + ">" + text + "</text>";
+  }
+  function workFlightEst(club, carry, apexScale) {
+    const prof = flightProfile(club);
+    const c = Math.max(1, carry || 100);
+    const scale = apexScale == null ? 1 : apexScale;
+    const apex = Math.max(0.8, prof.ratio * c * scale);
+    const tPeak = prof.tPeak;
+    let m0 = Math.tan((prof.launch * Math.PI) / 180) * c * tPeak;
+    let m1 = -Math.tan((prof.land * Math.PI) / 180) * c * (1 - tPeak);
+    m0 = Math.min(m0, 2.2 * apex);
+    m1 = Math.max(m1, -2.2 * apex);
+    return { carry: c, apex: apex, tPeak: tPeak, launch: prof.launch, land: prof.land, m0: m0, m1: m1 };
+  }
+  function workClubFace(type, fx, fy, fw, uid) {
+    const isWood = type === "driver" || type === "wood" || type === "hybrid";
+    const fh = type === "driver" ? fw * 0.40
+      : type === "wood" ? fw * 0.44
+      : type === "hybrid" ? fw * 0.48
+      : type === "wedge" ? fw * 0.58
+      : fw * 0.56;
+    const clip = uid + "-face";
+    let svg = "";
+    function px(dx, dy) { return (fx + dx * fw / 2).toFixed(1) + " " + (fy + dy * fh / 2).toFixed(1); }
+    function hosel(x0, y0, x1, y1, thick) {
+      return '<line x1="' + x0.toFixed(1) + '" y1="' + y0.toFixed(1) + '" x2="' + x1.toFixed(1) + '" y2="' + y1.toFixed(1) + '" stroke="#c5d4cb" stroke-width="' + thick + '" stroke-linecap="round"/>' +
+        '<line x1="' + x0.toFixed(1) + '" y1="' + y0.toFixed(1) + '" x2="' + x1.toFixed(1) + '" y2="' + y1.toFixed(1) + '" stroke="#1c2620" stroke-width="' + (thick * 0.55) + '" stroke-linecap="round"/>';
+    }
+    if (isWood) {
+      const bulge = type === "driver" ? 1 : type === "hybrid" ? 0.88 : 0.94;
+      const top = type === "hybrid" ? -1.28 : -1.42;
+      svg += '<path d="M ' + px(-0.72, -0.85) +
+        " C " + px(-0.1, top) + " " + px(0.5, top) + " " + px(1.06 * bulge, -0.5) +
+        " C " + px(1.2 * bulge, 0.08) + " " + px(1.14 * bulge, 0.7) + " " + px(0.88, 1.12) +
+        " C " + px(0.28, 1.4) + " " + px(-0.38, 1.36) + " " + px(-0.92, 0.65) +
+        " C " + px(-1.12, 0.12) + " " + px(-1.06, -0.42) + " " + px(-0.72, -0.85) +
+        ' Z" fill="#141c18" stroke="#c5d4cb" stroke-width="1.4"/>';
+      svg += hosel(fx - fw * 0.46, fy - fh * 0.22, fx - fw * 0.58, fy - fh * 1.22, type === "hybrid" ? 7 : 8);
+      const rxF = fw * (type === "hybrid" ? 0.42 : 0.45);
+      const ryF = fh * (type === "hybrid" ? 0.48 : 0.46);
+      svg += '<ellipse cx="' + fx.toFixed(1) + '" cy="' + fy.toFixed(1) + '" rx="' + rxF.toFixed(1) + '" ry="' + ryF.toFixed(1) + '" fill="#24332a" stroke="rgba(255,255,255,.18)" stroke-width="1.1"/>';
+    } else {
+      const topW = 0.82, soleW = 0.98, topY = -0.95, soleY = 1.02;
+      svg += '<path d="M ' + px(-topW, topY) +
+        " L " + px(topW, topY + 0.08) +
+        " L " + px(soleW, soleY - 0.18) +
+        " C " + px(soleW * 0.55, soleY + 0.14) + " " + px(-soleW * 0.5, soleY + 0.14) + " " + px(-soleW, soleY - 0.12) +
+        " L " + px(-topW, topY) +
+        ' Z" fill="#161e1a" stroke="#c5d4cb" stroke-width="1.4" stroke-linejoin="round"/>';
+      if (type === "wedge") {
+        svg += '<path d="M ' + px(-0.9, 0.82) + " C " + px(-0.45, 1.2) + " " + px(0.45, 1.2) + " " + px(0.9, 0.82) +
+          " L " + px(0.86, 1.02) + " C " + px(0.4, 1.28) + " " + px(-0.4, 1.28) + " " + px(-0.86, 1.02) +
+          ' Z" fill="#1a2420" stroke="#c5d4cb" stroke-width="1"/>';
+      }
+      svg += hosel(fx - fw * 0.40, fy - fh * 0.46, fx - fw * 0.54, fy - fh * 1.15, 5.5);
+      svg += '<rect x="' + (fx - fw * 0.38).toFixed(1) + '" y="' + (fy - fh * 0.40).toFixed(1) + '" width="' + (fw * 0.76).toFixed(1) + '" height="' + (fh * 0.78).toFixed(1) + '" rx="' + (fw * 0.03).toFixed(1) + '" fill="#24332a" stroke="rgba(255,255,255,.16)" stroke-width="1"/>';
+    }
+    const nGroove = type === "wedge" ? 8 : type === "iron" ? 6 : type === "hybrid" ? 5 : 3;
+    const gTop = fy - fh * (isWood ? 0.28 : 0.34);
+    const gBot = fy + fh * (isWood ? 0.28 : 0.34);
+    const gLeft = fx - fw * (isWood ? 0.36 : 0.34);
+    const gRight = fx + fw * (isWood ? 0.36 : 0.34);
+    svg += '<clipPath id="' + clip + '"><rect x="' + gLeft.toFixed(1) + '" y="' + gTop.toFixed(1) + '" width="' + (gRight - gLeft).toFixed(1) + '" height="' + (gBot - gTop).toFixed(1) + '" rx="3"/></clipPath>';
+    let grooves = '<g clip-path="url(#' + clip + ')">';
+    for (let i = 0; i < nGroove; i++) {
+      const gy = gTop + (i + 1) * (gBot - gTop) / (nGroove + 1);
+      grooves += '<line x1="' + gLeft.toFixed(1) + '" y1="' + gy.toFixed(1) + '" x2="' + gRight.toFixed(1) + '" y2="' + gy.toFixed(1) + '" stroke="rgba(255,255,255,.16)" stroke-width="1"/>';
+    }
+    grooves += "</g>";
+    svg += grooves;
+    const rx = fw * (isWood ? 0.13 : 0.14);
+    const ry = fh * (isWood ? 0.22 : 0.18);
+    return { svg: svg, fx: fx, fy: fy, rx: rx, ry: ry, fw: fw, fh: fh };
+  }
+  function workSweetSpot(face) {
+    return '<ellipse cx="' + face.fx.toFixed(1) + '" cy="' + face.fy.toFixed(1) + '" rx="' + face.rx.toFixed(1) + '" ry="' + face.ry.toFixed(1) + '" fill="#3dff9a" fill-opacity="0.16" stroke="#3dff9a" stroke-width="1.4" stroke-dasharray="3.5 2.5"/>' +
+      workTxt(face.fx, face.fy + 3, "sweet spot", { fill: "#3dff9a", size: 7, sans: true });
+  }
+  function workOffCentreZone(face) {
+    const rx = face.rx * 2.15, ry = face.ry * 2.15;
+    let s = '<ellipse cx="' + face.fx.toFixed(1) + '" cy="' + face.fy.toFixed(1) + '" rx="' + rx.toFixed(1) + '" ry="' + ry.toFixed(1) + '" fill="#ff4d5a" fill-opacity="0.16" stroke="#ff4d5a" stroke-width="1.2" stroke-opacity="0.7"/>';
+    const dots = [[0.55, -0.15], [0.15, 0.55], [-0.5, 0.25], [0.4, 0.4], [-0.2, -0.5]];
+    dots.forEach((d) => {
+      const cx = face.fx + d[0] * face.rx * 2.4;
+      const cy = face.fy + d[1] * face.ry * 2.4;
+      s += '<ellipse cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" rx="' + (face.rx * 0.38).toFixed(1) + '" ry="' + (face.ry * 0.38).toFixed(1) + '" fill="#ff4d5a" fill-opacity="0.22" stroke="#ff4d5a" stroke-width="1" stroke-opacity="0.55"/>';
+    });
+    return s;
+  }
+  function workScatterZone(face) {
+    const dots = [[-0.85, -0.7], [0.7, -0.85], [-0.3, 0.9], [0.95, 0.35], [-0.95, 0.2], [0.25, -0.15], [0.55, 0.85], [-0.55, -0.2]];
+    let s = "";
+    dots.forEach((d) => {
+      const cx = face.fx + d[0] * face.fw * 0.32;
+      const cy = face.fy + d[1] * face.fh * 0.32;
+      s += '<ellipse cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" rx="' + (face.rx * 0.42).toFixed(1) + '" ry="' + (face.ry * 0.42).toFixed(1) + '" fill="#ff4d5a" fill-opacity="0.20" stroke="#ff4d5a" stroke-width="1" stroke-opacity="0.65"/>';
+    });
+    return s;
+  }
+  function workTightZone(face) {
+    const dots = [[-0.12, 0.08], [0.14, -0.06], [0.02, -0.16], [-0.08, -0.1], [0.1, 0.12]];
+    let s = "";
+    dots.forEach((d) => {
+      const cx = face.fx + d[0] * face.fw * 0.32;
+      const cy = face.fy + d[1] * face.fh * 0.32;
+      s += '<ellipse cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" rx="' + (face.rx * 0.28).toFixed(1) + '" ry="' + (face.ry * 0.28).toFixed(1) + '" fill="#3dff9a" fill-opacity="0.22" stroke="#3dff9a" stroke-width="1" stroke-opacity="0.7"/>';
+    });
+    return s;
+  }
+  function workHeelToe(face, y) {
+    return workTxt(face.fx - face.fw * 0.46, y, "HEEL", { anchor: "start", fill: "rgba(255,255,255,.5)", size: 9, ls: "0.08em" }) +
+      workTxt(face.fx + face.fw * 0.46, y, "TOE", { anchor: "end", fill: "rgba(255,255,255,.5)", size: 9, ls: "0.08em" });
+  }
+  function workSideFlight(x, y, w, h, uid, flights, caption) {
+    const padL = 28, padR = 10, padT = 16, padB = 28;
+    const ground = y + h - padB;
+    const top = y + padT;
+    let maxDist = 40, maxH = 8;
+    flights.forEach((f) => {
+      if (!f || !f.est) return;
+      maxDist = Math.max(maxDist, toDisp(f.est.carry), f.total != null ? toDisp(f.total) : 0);
+      maxH = Math.max(maxH, toDisp(f.est.apex || 0), 6);
+    });
+    maxDist = Math.max(40, maxDist * 1.08);
+    maxH = Math.max(6, maxH * 1.15);
+    const xOf = (disp) => x + padL + (disp / maxDist) * (w - padL - padR);
+    const yOf = (hDisp) => ground - (Math.max(0, hDisp) / maxH) * (ground - top);
+    let s = '<clipPath id="' + uid + '-sky"><rect x="' + (x + padL).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + (w - padL - padR).toFixed(1) + '" height="' + (ground - top).toFixed(1) + '"/></clipPath>';
+    s += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="8" fill="#0b1520"/>';
+    s += '<rect x="' + x.toFixed(1) + '" y="' + ground.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + padB.toFixed(1) + '" fill="#0b3a1c"/>';
+    s += '<rect x="' + x.toFixed(1) + '" y="' + ground.toFixed(1) + '" width="' + w.toFixed(1) + '" height="3" fill="#14733a"/>';
+    const tick = maxDist > 200 ? 50 : maxDist > 120 ? 25 : 20;
+    for (let d = 0; d <= maxDist; d += tick) {
+      if (d === 0) continue;
+      const xx = xOf(d);
+      s += '<line x1="' + xx.toFixed(1) + '" y1="' + top.toFixed(1) + '" x2="' + xx.toFixed(1) + '" y2="' + ground.toFixed(1) + '" stroke="rgba(255,255,255,.08)"/>';
+      s += workTxt(xx, ground + 14, String(Math.round(d)), { fill: "rgba(255,255,255,.45)", size: 9 });
+    }
+    s += '<g clip-path="url(#' + uid + '-sky)">';
+    flights.forEach((f) => {
+      if (!f || !f.est || !f.est.carry) return;
+      const pts = [];
+      for (let k = 0; k <= 36; k++) {
+        const tt = k / 36;
+        pts.push(xOf(toDisp(tt * f.est.carry)).toFixed(1) + "," + yOf(toDisp(flightHeight(tt, f.est))).toFixed(1));
+      }
+      const op = f.faint ? ".4" : ".95";
+      const sw = f.faint ? "1.4" : "2";
+      const dash = f.dashed ? ' stroke-dasharray="5 4"' : "";
+      s += '<polyline fill="none" stroke="' + (f.color || "#3dff9a") + '" stroke-width="' + sw + '" stroke-opacity="' + op + '" stroke-linecap="round" stroke-linejoin="round"' + dash + ' points="' + pts.join(" ") + '"/>';
+      if (f.total != null && f.total > f.est.carry) {
+        s += '<line x1="' + xOf(toDisp(f.est.carry)).toFixed(1) + '" y1="' + ground.toFixed(1) + '" x2="' + xOf(toDisp(f.total)).toFixed(1) + '" y2="' + ground.toFixed(1) + '" stroke="' + (f.color || "#3dff9a") + '" stroke-width="1.6" stroke-dasharray="4 3" stroke-opacity="' + (f.faint ? ".3" : ".75") + '"/>';
+      }
+      const mid = 16;
+      const mx = xOf(toDisp((mid / 36) * f.est.carry));
+      const my = yOf(toDisp(flightHeight(mid / 36, f.est)));
+      if (f.label) s += workTxt(mx, my - 8, f.label, { fill: f.color || "#3dff9a", size: 8, sans: true, anchor: f.faint ? "start" : "start" });
+    });
+    s += "</g>";
+    if (caption) s += workTxt(x + w / 2, y + h - 6, caption, { fill: "rgba(245,240,200,.5)", size: 7, sans: true });
+    return s;
+  }
+  function workTopSpread(x, y, w, h, m, caption) {
+    const padL = 28, padR = 12, padT = 20, padB = 24;
+    const midY = y + h / 2;
+    const carry = m.carry || 0;
+    const p10 = m.p10c != null ? m.p10c : carry;
+    const p90 = m.p90c != null ? m.p90c : carry;
+    const total = m.total != null ? m.total : carry;
+    const span = Math.max(8, (p90 || carry) - (p10 || carry));
+    const minYd = Math.max(0, Math.min(p10 || 0, carry || 0) - span * 0.8);
+    const maxYd = Math.max(minYd + 20, Math.max(total || 0, p90 || 0, carry || 0) + span * 0.8);
+    const xOf = (yd) => x + padL + ((toDisp(yd) - toDisp(minYd)) / Math.max(1, toDisp(maxYd) - toDisp(minYd))) * (w - padL - padR);
+    let s = '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="8" fill="#0c1f14"/>';
+    const spanDisp = toDisp(maxYd) - toDisp(minYd);
+    const tick = spanDisp > 80 ? 25 : spanDisp > 40 ? 10 : 5;
+    const start = Math.ceil(toDisp(minYd) / tick) * tick;
+    for (let d = start; d <= toDisp(maxYd) + 0.01; d += tick) {
+      const xx = x + padL + ((d - toDisp(minYd)) / Math.max(1, spanDisp)) * (w - padL - padR);
+      s += '<path d="M ' + xx.toFixed(1) + " " + (y + 10).toFixed(1) + " A " + (h * 0.95).toFixed(1) + " " + (h * 0.95).toFixed(1) + " 0 0 1 " + xx.toFixed(1) + " " + (y + h - 12).toFixed(1) + '" fill="none" stroke="rgba(255,255,255,.08)"/>';
+      s += workTxt(xx, y + h - 8, String(Math.round(d)), { fill: "rgba(255,255,255,.45)", size: 9 });
+    }
+    s += '<line x1="' + (x + padL).toFixed(1) + '" y1="' + midY.toFixed(1) + '" x2="' + (x + w - padR).toFixed(1) + '" y2="' + midY.toFixed(1) + '" stroke="rgba(255,255,255,.3)" stroke-width="1" stroke-dasharray="4 3"/>';
+    if (carry) {
+      const cx = xOf(carry);
+      const rx = Math.max(10, Math.abs(xOf(p90) - xOf(p10)) / 2);
+      const ry = Math.max(14, Math.min(h * 0.28, rx * 0.55));
+      s += '<ellipse cx="' + cx.toFixed(1) + '" cy="' + midY.toFixed(1) + '" rx="' + rx.toFixed(1) + '" ry="' + ry.toFixed(1) + '" fill="' + m.color + '" fill-opacity="0.18" stroke="' + m.color + '" stroke-width="1.4"/>';
+      s += '<circle cx="' + cx.toFixed(1) + '" cy="' + midY.toFixed(1) + '" r="3.2" fill="' + m.color + '"/>';
+      if (total > carry) {
+        s += '<line x1="' + cx.toFixed(1) + '" y1="' + midY.toFixed(1) + '" x2="' + xOf(total).toFixed(1) + '" y2="' + midY.toFixed(1) + '" stroke="' + m.color + '" stroke-dasharray="4 3" stroke-opacity=".7"/>';
+      }
+    }
+    s += workTxt(x + w / 2, y + 14, "Carry spread · from above", { fill: "rgba(255,255,255,.45)", size: 8, sans: true });
+    if (caption) s += workTxt(x + w / 2, y + h - 6, caption, { fill: "rgba(245,240,200,.5)", size: 7, sans: true });
+    return s;
+  }
+  function workSpeedRail(x, y, w, chs, ref) {
+    const parsed = String((ref && ref.band) || "").match(/(\d+)\s*[–-]\s*(\d+)/);
+    const lo = parsed ? +parsed[1] : (ref && ref.low) || 60;
+    const hi = parsed ? +parsed[2] : (ref && ref.mid || 70) + 8;
+    const min = Math.min(lo - 10, (chs != null ? chs : lo) - 8);
+    const max = Math.max(hi + 10, (chs != null ? chs : hi) + 8);
+    const xOf = (v) => x + ((v - min) / (max - min)) * w;
+    const mid = y + 10;
+    let s = '<line x1="' + x.toFixed(1) + '" y1="' + mid.toFixed(1) + '" x2="' + (x + w).toFixed(1) + '" y2="' + mid.toFixed(1) + '" stroke="rgba(255,255,255,.2)" stroke-width="2" stroke-linecap="round"/>';
+    s += '<rect x="' + xOf(lo).toFixed(1) + '" y="' + (mid - 7).toFixed(1) + '" width="' + Math.max(8, xOf(hi) - xOf(lo)).toFixed(1) + '" height="14" rx="3" fill="#3dff9a" fill-opacity="0.18" stroke="#3dff9a" stroke-width="1"/>';
+    s += workTxt((xOf(lo) + xOf(hi)) / 2, mid - 12, "typical " + (ref && ref.band ? ref.band : ""), { fill: "rgba(255,255,255,.5)", size: 8, sans: true });
+    if (chs != null) {
+      const inBand = chs >= lo && chs <= hi;
+      const col = inBand ? "#3dff9a" : "#ff4d5a";
+      s += '<circle cx="' + xOf(chs).toFixed(1) + '" cy="' + mid.toFixed(1) + '" r="5" fill="' + col + '" stroke="#0c1319" stroke-width="1.2"/>';
+      s += workTxt(xOf(chs), mid + 20, fmt(chs, 1) + " mph", { fill: col, size: 11 });
+    }
+    return s;
+  }
+
   function diagnosePerf(data, clubs) {
     const issues = [];
     const recentRows = [];
@@ -5338,39 +5593,39 @@ function fmtThresh(yd) {
         const yds = smashGainYards(r);
         issues.push({
           club, kind: "strike", yards: yds, illu: "strike",
+          metrics: workMetrics(club, r, { typCarry: r.avgBall != null ? typicalCarryPerBall(club) * r.avgBall : null, gain: yds }),
           title: "Off-centre strike with " + (def.short || club),
-          evidence: "Average smash is " + fmt(r.avgSmash, 2) + " against a good-strike target of " + fmt(r.band.good, 2) + ", with club speed " + fmt(r.avgChs, 1) + " mph — in a normal range (" + ref.band + "). " + (r.goodN ? (r.goodN + " of " + r.n + " recent shots were in the good band. ") : ("None of the " + r.n + " recent shots were in the good band. ")) + "Based on " + dates + ".",
-          causes: ["The face was probably missed — toe, heel, thin or heavy — so ball speed lagged the swing you made.", "A slightly closed or open face at the same speed can also cut smash, but the LM1 cannot tell those apart from a simple miss."],
-          drills: ["Dust the face with foot powder or a marker spray and hit ten balls. You’re looking for a mark in the middle, not a number on the watch.", "Slow the swing about 10% and only add speed back when the mark stays central."]
+          finding: "Smash " + fmt(r.avgSmash, 2) + " vs a " + fmt(r.band.good, 2) + " good-strike target — club speed is in a normal range (" + ref.band + "). " + (r.goodN ? (r.goodN + " of " + r.n + " recent shots were in the good band.") : ("None of the " + r.n + " recent shots were in the good band.")),
+          drill: "Dust the face with foot powder or a marker spray and hit ten balls, looking for a mark in the middle."
         });
       }
       if (r.avgChs != null && r.avgChs < ref.low && r.n >= 6) {
         const yds = speedGainYards(r, ref.mid);
         issues.push({
           club, kind: "speed", yards: yds, illu: "speed",
+          metrics: workMetrics(club, r, { ref: ref, mid: ref.mid, gain: yds }),
           title: "Club speed is down with " + (def.short || club),
-          evidence: "Average club speed is " + fmt(r.avgChs, 1) + " mph. A typical recreational range for this club is " + ref.band + ". Based on " + dates + ".",
-          causes: ["The body may not be rotating enough through the ball — hips and trail side stalling, arms doing the work.", "Tempo can be rushed from the top, so the sequence (ground, hips, torso, arms) never quite stacks."],
-          drills: ["Feet-together three-quarter swings, starting the downswing with the lead hip rather than the hands.", "A slow pump at the top: pause, shift, then swing — ten balls without chasing distance."]
+          finding: "Average club speed is " + fmt(r.avgChs, 1) + " mph. A typical recreational range for this club is " + ref.band + ".",
+          drill: "Feet-together three-quarter swings, starting the downswing with the lead hip rather than the hands."
         });
       }
       if ((kind === "iron" || kind === "wedge") && r.avgRollRatio != null && r.avgRollRatio > 0.10 && r.n >= 6) {
         const extra = (r.avgRollRatio - 0.10) * (r.avgCarry || 0);
         issues.push({
           club, kind: "deloft", yards: Math.max(0, extra * 0.5), illu: "deloft",
+          metrics: workMetrics(club, r),
           title: "A lot of roll on " + (def.short || club) + " — likely a low launch",
-          evidence: "Average roll is " + fmt((r.avgRollRatio || 0) * 100, 0) + "% of carry (about " + fmtDist((r.avgTotal || 0) - (r.avgCarry || 0)) + " " + unitShort() + " of run). More than about 10% on an iron usually means the ball came in lower and flatter than typical. Based on " + dates + ".",
-          causes: ["The shaft may be leaning too much at impact (delofted), or the strike is a little fat, both of which lower launch and often spin.", "The LM1 does not measure launch or spin — this is inferred from the carry-to-roll split."],
-          drills: ["Clip a tee just above the turf: you want a thin divot after the ball, not a deep chunk or a pick.", "Feel the handle only slightly ahead at impact — don’t pile on extra forward lean."]
+          finding: "Average roll is " + fmt((r.avgRollRatio || 0) * 100, 0) + "% of carry (about " + fmtDist((r.avgTotal || 0) - (r.avgCarry || 0)) + " " + unitShort() + " of run). More than about 10% on an iron usually means a lower, flatter landing.",
+          drill: "Clip a tee just above the turf: you want a thin divot after the ball, not a deep chunk or a pick."
         });
       }
       if (String(club) === "Driver" && r.avgRollRatio != null && r.avgRollRatio < 0.08 && r.avgCarry != null && r.n >= 6) {
         issues.push({
           club, kind: "steep", yards: Math.max(0, (0.15 - r.avgRollRatio) * r.avgCarry * 0.35), illu: "steep",
+          metrics: workMetrics(club, r),
           title: "Driver is flying short and not rolling — possibly too steep or too much spin",
-          evidence: "Carry averages " + fmtDist(r.avgCarry) + " " + unitShort() + " with only " + fmt((r.avgRollRatio || 0) * 100, 0) + "% roll. A driver that lands steep, often from a downward blow or extra spin, tends not to run. Based on " + dates + ".",
-          causes: ["A steep, chopping path into the ball can add spin and cut carry.", "Launch may be too high and steep, or too low with heavy spin — the LM1 cannot separate those."],
-          drills: ["Tee it a touch higher and feel the club sweeping through, not chopping down.", "A headcover just outside and behind the ball can discourage a steep, out-to-in chop — use it as a guide, not a measured path."]
+          finding: "Carry averages " + fmtDist(r.avgCarry) + " " + unitShort() + " with only " + fmt((r.avgRollRatio || 0) * 100, 0) + "% roll. A driver that lands steep, often from a downward blow or extra spin, tends not to run.",
+          drill: "Tee it a touch higher and feel the club sweeping through, not chopping down."
         });
       }
       const typ = typicalCarryPerBall(club);
@@ -5378,10 +5633,12 @@ function fmtThresh(yd) {
         const yds = Math.max(0, typ * r.avgBall - r.avgCarry);
         issues.push({
           club, kind: "window", yards: yds, illu: "window",
+          metrics: workMetrics(club, r, { typCarry: typ * r.avgBall, typ: typ }),
           title: "Carry is short for this ball speed with " + (def.short || club),
-          evidence: "You’re getting " + fmt(isMetres() ? r.carryPerBall * YD_TO_M : r.carryPerBall, 2) + " " + unitWord() + " of carry per mph of ball speed; a typical window is around " + fmt(isMetres() ? typ * YD_TO_M : typ, 2) + ". Ball speed is " + fmt(r.avgBall, 1) + " mph. Based on " + dates + ".",
-          causes: ["Launch or spin is probably outside the useful window — too low and the ball falls out, too high and it balloons.", "Those two look the same to the LM1, which does not measure launch or spin."],
-          drills: ["On irons, notice the divot: heavy (behind the ball) or thin (no divot) both shrink carry for the same ball speed.", "A mid-height tee drill: clip the tee without burying the head, then try the same feel off the turf."]
+          finding: "You’re getting " + fmt(isMetres() ? r.carryPerBall * YD_TO_M : r.carryPerBall, 2) + " " + unitWord() + " of carry per mph of ball speed; a typical window is around " + fmt(isMetres() ? typ * YD_TO_M : typ, 2) + ".",
+          drill: (kind === "iron" || kind === "wedge")
+            ? "On irons, notice the divot: heavy (behind the ball) or thin (no divot) both shrink carry for the same ball speed."
+            : "Tee it at a mid height and clip the tee without burying the head, then try the same feel when you want more carry from this ball speed."
         });
       }
       const spreadWide = r.spread != null && (r.spread > 18 || (r.avgCarry && r.spread > r.avgCarry * 0.22));
@@ -5390,14 +5647,13 @@ function fmtThresh(yd) {
         const shortSide = r.p10c != null && r.avgCarry != null ? Math.max(0, r.avgCarry - r.p10c) : 0;
         issues.push({
           club, kind: "inconsistent", yards: shortSide, illu: "scatter",
+          metrics: workMetrics(club, r, { chsSd: r.chsSd, speedWide: speedWide }),
           title: "The " + (def.short || club) + " numbers jump around",
-          evidence: (r.spread != null ? ("The middle 80% of carries spans " + fmtDist(r.spread) + " " + unitShort() + ". ") : "") + (speedWide ? ("Club speed varies by about " + fmt(r.chsSd, 1) + " mph (one standard deviation). ") : "") + r.n + " shots in " + dates + ".",
-          causes: ["Contact on the face is probably moving around, or the tempo is changing from swing to swing.", "A few mis-struck balls will also stretch the window — check the Flagged list if many are already marked."],
-          drills: ["One club, one 8-shot block, same routine and a quiet tempo count (for example 1–2). Don’t chase the long one.", "If you have face spray, use it for this block and keep only the swings with a central mark."]
+          finding: (r.spread != null ? ("The middle 80% of carries spans " + fmtDist(r.spread) + " " + unitShort() + ". ") : "") + (speedWide ? ("Club speed varies by about " + fmt(r.chsSd, 1) + " mph (one standard deviation). ") : "") + r.n + " shots in " + dates + ".",
+          drill: "One club, one 8-shot block, same routine and a quiet tempo count (for example 1–2). Don’t chase the long one."
         });
       }
     });
-    // gapping among selected clubs using the most recent appearance of each
     const latest = recentRows.map(({ club, pool }) => ({ club, carry: pool.row.avgCarry, short: clubDef(club).short || club })).filter((x) => x.carry != null).sort((a, b) => sortClubs(a.club, b.club));
     for (let i = 0; i < latest.length - 1; i++) {
       const a = latest[i], b = latest[i + 1];
@@ -5405,12 +5661,15 @@ function fmtThresh(yd) {
       if (gap < 8) {
         issues.push({
           club: a.club, kind: "gap", yards: Math.max(0, 12 - gap), illu: "gap",
+          metrics: workMetrics(a.club, null, {
+            clubB: b.club, shortA: a.short, shortB: b.short, carryA: a.carry, carryB: b.carry,
+            colorA: clubDef(a.club).color, colorB: clubDef(b.club).color, clubKindB: workClubType(b.club)
+          }),
           title: a.short + " and " + b.short + " are covering the same window",
-          evidence: gap <= 0
-            ? ( "Recent average carry is " + fmtDist(a.carry) + " " + unitShort() + " (" + a.short + ") and " + fmtDist(b.carry) + " " + unitShort() + " (" + b.short + "). " + b.short + " is carrying about " + fmtDist(Math.abs(gap)) + " " + unitShort() + " farther than " + a.short + " — they overlap. A healthy step is about " + fmtThreshRange(10, 15) + "." )
-            : ( "Recent average carry is " + fmtDist(a.carry) + " " + unitShort() + " (" + a.short + ") and " + fmtDist(b.carry) + " " + unitShort() + " (" + b.short + ") — a gap of only " + fmtDist(gap) + " " + unitShort() + ". A healthy step is about " + fmtThreshRange(10, 15) + "." ),
-          causes: ["The lofts, shafts or how each club is being struck may have drifted so two clubs fly a similar number.", "Until the gap opens, they are doing the same job on the course."],
-          drills: ["On the next range visit, hit both clubs in the same block and confirm the overlap still holds.", "If it does, think about a different loft or leaving one of them out of the bag on tighter courses."]
+          finding: gap <= 0
+            ? (a.short + " carries " + fmtDist(a.carry) + " " + unitShort() + " and " + b.short + " " + fmtDist(b.carry) + " " + unitShort() + " — they overlap. A healthy step is about " + fmtThreshRange(10, 15) + ".")
+            : (a.short + " carries " + fmtDist(a.carry) + " " + unitShort() + " and " + b.short + " " + fmtDist(b.carry) + " " + unitShort() + " — a gap of only " + fmtDist(gap) + " " + unitShort() + ". A healthy step is about " + fmtThreshRange(10, 15) + "."),
+          drill: "On the next range visit, hit both clubs in the same block and confirm the overlap still holds."
         });
       }
     }
@@ -5420,83 +5679,123 @@ function fmtThresh(yd) {
     return rest.concat(gaps.slice(0, 2)).sort((a, b) => (b.yards || 0) - (a.yards || 0)).slice(0, 7);
   }
 
-  function illuSvg(kind) {
-    const anim = reduceMotion() ? "" : ' class="is-anim"';
-    const stamp = '<text x="8" y="12" fill="rgba(245,240,200,.7)" font-size="8" font-family="Barlow Condensed, sans-serif" font-weight="700" letter-spacing="0.08em">ILLUSTRATION</text>';
-    if (kind === "strike") {
-      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Centre versus off-centre strike illustration">' + stamp +
-        '<rect x="22" y="32" width="156" height="68" rx="12" fill="#24332a" stroke="#c5d4cb" stroke-width="2"/>' +
-        '<rect x="30" y="40" width="140" height="52" rx="6" fill="#1a2620" stroke="rgba(255,255,255,.14)"/>' +
-        '<line x1="38" y1="52" x2="162" y2="52" stroke="rgba(255,255,255,.12)" />' +
-        '<line x1="38" y1="64" x2="162" y2="64" stroke="rgba(255,255,255,.12)" />' +
-        '<line x1="38" y1="76" x2="162" y2="76" stroke="rgba(255,255,255,.12)" />' +
-        '<ellipse cx="100" cy="66" rx="20" ry="14" fill="none" stroke="#3dff9a" stroke-width="2" stroke-dasharray="3 2"/>' +
-        '<text x="100" y="70" text-anchor="middle" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">centre</text>' +
-        '<text x="38" y="118" fill="rgba(255,255,255,.55)" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="700">HEEL</text>' +
-        '<text x="162" y="118" text-anchor="end" fill="rgba(255,255,255,.55)" font-size="9" font-family="Barlow Condensed, sans-serif" font-weight="700">TOE</text>' +
-        '<text x="100" y="128" text-anchor="middle" fill="rgba(245,240,200,.55)" font-size="7" font-family="DM Sans, sans-serif">angles are illustrative</text>' +
-        (reduceMotion() ? '<circle cx="156" cy="66" r="10" fill="#eef6f0" stroke="#c9b48a" stroke-width="1.4"/>' :
-          '<circle cx="156" cy="66" r="10" fill="#eef6f0" stroke="#c9b48a" stroke-width="1.4"><animate attributeName="cx" values="156;100;156" dur="2.8s" repeatCount="indefinite"/></circle>') +
+  function illuSvg(iss, idx) {
+    const kind = iss && iss.illu;
+    const m = (iss && iss.metrics) || workMetrics(iss && iss.club, null);
+    const uid = "wk" + (idx || 0) + String(m.club || kind || "x").replace(/\s+/g, "");
+    const type = m.clubKind || workClubType(m.club);
+    const W = 420, H = 250;
+
+    function frame(inner, aria, caption) {
+      return '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + escapeHtml(aria) + '">' +
+        '<defs>' + (inner.defs || "") + "</defs>" +
+        (inner.body || inner) +
+        (caption ? workTxt(W / 2, H - 8, caption, { fill: "rgba(245,240,200,.55)", size: 8, sans: true }) : "") +
         "</svg>";
     }
+
+    if (kind === "strike") {
+      const face = workClubFace(type, 128, 116, 228, uid);
+      let body = face.svg + workOffCentreZone(face) + workSweetSpot(face) + workHeelToe(face, 224);
+      const carry = m.carry;
+      const typ = (m.gain && carry) ? carry + m.gain : (m.typCarry || (carry ? carry * 1.08 : null));
+      if (carry) {
+        const flights = [];
+        if (typ && typ > carry) flights.push({ est: workFlightEst(m.club, typ, 1), total: typ, color: "#3dff9a", faint: true, dashed: true, label: "at target smash" });
+        flights.push({ est: workFlightEst(m.club, carry, 0.9), total: m.total, color: "#ff4d5a", faint: false, label: "your shot" });
+        body += workSideFlight(250, 28, 162, 186, uid, flights, "");
+      }
+      return frame(body, "Illustrative off-centre strike on a " + (m.short || "club") + " face", "illustrative, based on smash · height estimated");
+    }
+
     if (kind === "speed") {
-      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Body rotation and speed illustration">' + stamp +
-        '<line x1="88" y1="110" x2="88" y2="70" stroke="#8aa196" stroke-width="3" stroke-linecap="round"/>' +
-        '<circle cx="88" cy="58" r="8" fill="none" stroke="#eef6f0" stroke-width="2"/>' +
-        '<path d="M88 70 L88 90 L72 110" fill="none" stroke="#8aa196" stroke-width="3" stroke-linecap="round"/>' +
-        '<path d="M88 90 L104 110" fill="none" stroke="#8aa196" stroke-width="3" stroke-linecap="round"/>' +
-        '<path d="M88 78 L58 50" fill="none" stroke="#3ee0ff" stroke-width="2.4" stroke-linecap="round"/>' +
-        '<path d="M70 40 A46 46 0 0 1 150 78" fill="none" stroke="rgba(62,224,255,.55)" stroke-width="1.6" stroke-dasharray="4 3"/>' +
-        (reduceMotion() ? "" : '<circle r="3.5" fill="#3ee0ff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M70 40 A46 46 0 0 1 150 78"/></circle>') +
-        '<text x="130" y="44" fill="rgba(62,224,255,.8)" font-size="9" font-family="DM Sans, sans-serif">hips unwind</text></svg>';
+      const face = workClubFace(type, 210, 100, 200, uid);
+      let body = face.svg + workSweetSpot(face) + workHeelToe(face, 200);
+      body += workSpeedRail(50, 214, 320, m.chs, m.ref || speedRef(m.club));
+      return frame(body, "Club speed compared with a typical range for " + (m.short || "this club"), "speed is measured · face is a static reference");
     }
+
     if (kind === "deloft") {
-      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Delofted versus typical impact illustration">' + stamp +
-        '<line x1="20" y1="100" x2="180" y2="100" stroke="#14733a" stroke-width="6"/>' +
-        '<line x1="70" y1="28" x2="100" y2="100" stroke="#ff4d5a" stroke-width="3" stroke-linecap="round"/>' +
-        '<line x1="130" y1="36" x2="148" y2="100" stroke="#3dff9a" stroke-width="3" stroke-linecap="round"/>' +
-        '<path d="M100 96 Q128 86 160 92" fill="none" stroke="#ff4d5a" stroke-width="1.4" opacity=".7"/>' +
-        '<path d="M148 96 Q170 60 190 48" fill="none" stroke="#3dff9a" stroke-width="1.4" opacity=".85"/>' +
-        '<text x="58" y="22" fill="#ff4d5a" font-size="8" font-family="DM Sans, sans-serif">too much lean</text>' +
-        '<text x="132" y="22" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">typical</text>' +
-        '<text x="40" y="122" fill="rgba(255,255,255,.4)" font-size="8" font-family="DM Sans, sans-serif">angles are illustrative</text></svg>';
+      const carry = m.carry || 120;
+      const typCarry = carry;
+      const typTotal = carry * 1.08;
+      const flights = [
+        { est: workFlightEst(m.club, typCarry, 1), total: typTotal, color: "#3dff9a", faint: true, dashed: true, label: "typical window" },
+        { est: workFlightEst(m.club, carry, 0.68), total: m.total, color: "#ff4d5a", faint: false, label: "your shot" }
+      ];
+      const body = workSideFlight(16, 16, 388, 218, uid, flights, "");
+      return frame(body, "Estimated low, rolling iron flight compared with a typical window", "your carry and roll · flight height estimated");
     }
+
     if (kind === "steep") {
-      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Steep versus sweeping driver illustration">' + stamp +
-        '<line x1="20" y1="100" x2="180" y2="100" stroke="#14733a" stroke-width="6"/>' +
-        '<ellipse cx="108" cy="92" rx="8" ry="6" fill="#eef6f0" stroke="#c9b48a"/>' +
-        '<line x1="48" y1="20" x2="100" y2="92" stroke="#ff4d5a" stroke-width="3" stroke-linecap="round"/>' +
-        '<line x1="40" y1="70" x2="120" y2="92" stroke="#3dff9a" stroke-width="3" stroke-linecap="round" opacity=".85"/>' +
-        '<text x="44" y="18" fill="#ff4d5a" font-size="8" font-family="DM Sans, sans-serif">steep</text>' +
-        '<text x="24" y="68" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">sweep</text>' +
-        '<text x="40" y="122" fill="rgba(255,255,255,.4)" font-size="8" font-family="DM Sans, sans-serif">angles are illustrative</text></svg>';
+      const carry = m.carry || 200;
+      const typTotal = carry * 1.18;
+      const flights = [
+        { est: workFlightEst(m.club, carry * 1.04, 0.92), total: typTotal, color: "#3dff9a", faint: true, dashed: true, label: "more run" },
+        { est: workFlightEst(m.club, carry, 1.18), total: m.total, color: "#ff4d5a", faint: false, label: "your shot" }
+      ];
+      const body = workSideFlight(16, 16, 388, 218, uid, flights, "");
+      return frame(body, "Estimated steep driver flight with little roll compared with a running flight", "your carry and roll · flight height estimated");
     }
+
     if (kind === "window") {
-      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Launch window illustration">' + stamp +
-        '<line x1="16" y1="110" x2="190" y2="110" stroke="#14733a" stroke-width="5"/>' +
-        '<path d="M20 110 Q90 100 180 108" fill="none" stroke="rgba(255,77,90,.7)" stroke-width="1.6"/>' +
-        '<path d="M20 110 Q90 40 188 70" fill="none" stroke="#3dff9a" stroke-width="2"/>' +
-        '<path d="M20 110 Q80 8 170 20" fill="none" stroke="rgba(255,176,32,.75)" stroke-width="1.6"/>' +
-        '<text x="150" y="104" fill="rgba(255,77,90,.85)" font-size="8" font-family="DM Sans, sans-serif">too low</text>' +
-        '<text x="150" y="58" fill="#3dff9a" font-size="8" font-family="DM Sans, sans-serif">useful</text>' +
-        '<text x="148" y="18" fill="var(--amber)" font-size="8" font-family="DM Sans, sans-serif">too high</text></svg>';
+      const carry = m.carry || 120;
+      const typ = m.typCarry || carry * 1.12;
+      const flights = [
+        { est: workFlightEst(m.club, typ, 1), total: typ, color: "#3dff9a", faint: true, dashed: true, label: "typical window" },
+        { est: workFlightEst(m.club, carry, 0.8), total: m.total, color: "#ff4d5a", faint: false, label: "your shot" }
+      ];
+      const body = workSideFlight(16, 16, 388, 218, uid, flights, "");
+      return frame(body, "Measured carry compared with a typical window for this ball speed", "carry is measured · flight height estimated");
     }
+
     if (kind === "scatter") {
-      return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Inconsistent versus tight strike illustration">' + stamp +
-        '<rect x="24" y="28" width="70" height="80" rx="6" fill="#152018" stroke="rgba(255,255,255,.12)"/>' +
-        '<rect x="106" y="28" width="70" height="80" rx="6" fill="#152018" stroke="rgba(255,255,255,.12)"/>' +
-        '<circle cx="44" cy="50" r="4" fill="#ff4d5a"/><circle cx="70" cy="88" r="4" fill="#ff4d5a"/><circle cx="58" cy="66" r="4" fill="#ff4d5a"/><circle cx="80" cy="48" r="4" fill="#ff4d5a"/>' +
-        '<circle cx="136" cy="66" r="4" fill="#3dff9a"/><circle cx="142" cy="70" r="4" fill="#3dff9a"/><circle cx="140" cy="62" r="4" fill="#3dff9a"/><circle cx="146" cy="66" r="4" fill="#3dff9a"/>' +
-        '<text x="59" y="122" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">spread out</text>' +
-        '<text x="141" y="122" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">repeatable</text></svg>';
+      const face = workClubFace(type, 126, 116, 200, uid);
+      let body = face.svg + workScatterZone(face) + workSweetSpot(face) + workHeelToe(face, 224);
+      body += workTxt(118, 28, "illustrative face marks", { fill: "rgba(255,255,255,.4)", size: 8, sans: true });
+      body += workTopSpread(230, 28, 176, 190, m, "");
+      return frame(body, "Illustrative scattered strikes and measured carry spread for " + (m.short || "this club"), "face marks are illustrative · spread uses measured carry");
     }
-    return '<svg viewBox="0 0 200 130"' + anim + ' role="img" aria-label="Club gapping illustration">' + stamp +
-      '<line x1="40" y1="20" x2="40" y2="118" stroke="rgba(255,255,255,.2)"/>' +
-      '<circle cx="40" cy="50" r="7" fill="#00E8FF"/><circle cx="40" cy="58" r="7" fill="#FF2F7A" opacity=".9"/>' +
-      '<line x1="120" y1="20" x2="120" y2="118" stroke="rgba(255,255,255,.2)"/>' +
-      '<circle cx="120" cy="44" r="7" fill="#00E8FF"/><circle cx="120" cy="78" r="7" fill="#FF2F7A"/>' +
-      '<text x="56" y="56" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">overlap</text>' +
-      '<text x="136" y="64" fill="rgba(255,255,255,.5)" font-size="8" font-family="DM Sans, sans-serif">a useful gap</text></svg>';
+
+    // gap
+    const u = unitShort();
+    const aC = m.carryA, bC = m.carryB;
+    const aD = aC != null ? toDisp(aC) : 0, bD = bC != null ? toDisp(bC) : 0;
+    const maxDist = Math.max(40, Math.max(aD, bD) * 1.22);
+    const padL = 78, padR = 18;
+    const xOf = (disp) => padL + (disp / maxDist) * (W - padL - padR);
+    const yA = 78, yB = 138;
+    let body = "";
+    const tick = maxDist > 200 ? 50 : maxDist > 100 ? 25 : 20;
+    for (let d = 0; d <= maxDist; d += tick) {
+      const xx = xOf(d);
+      body += '<line x1="' + xx.toFixed(1) + '" y1="48" x2="' + xx.toFixed(1) + '" y2="188" stroke="rgba(255,255,255,.08)"/>';
+      if (d > 0) body += workTxt(xx, 204, String(Math.round(d)), { fill: "rgba(255,255,255,.45)", size: 9 });
+    }
+    body += workTxt(padL - 8, 204, "0", { fill: "rgba(255,255,255,.45)", size: 9, anchor: "end" });
+    function carryRow(y, disp, label, color) {
+      let s = workTxt(padL - 10, y + 5, escapeHtml(label || ""), { fill: color, size: 14, anchor: "end" });
+      s += '<line x1="' + padL.toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' + xOf(disp).toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="' + color + '" stroke-width="3" stroke-opacity=".55" stroke-linecap="round"/>';
+      s += '<circle cx="' + xOf(disp).toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6" fill="' + color + '" stroke="#0c1319" stroke-width="1.2"/>';
+      s += workTxt(xOf(disp), y - 14, fmt(disp, 0) + " " + u, { fill: color, size: 12 });
+      return s;
+    }
+    if (aC != null && bC != null) {
+      const left = xOf(Math.min(aD, bD)), right = xOf(Math.max(aD, bD));
+      body += '<rect x="' + left.toFixed(1) + '" y="58" width="' + Math.max(4, right - left).toFixed(1) + '" height="100" rx="6" fill="#ff4d5a" fill-opacity="0.14" stroke="#ff4d5a" stroke-width="1" stroke-opacity=".55"/>';
+      body += workTxt((left + right) / 2, (yA + yB) / 2 + 4, "overlap", { fill: "#ff4d5a", size: 9, sans: true });
+      body += carryRow(yA, aD, m.shortA || m.short, m.colorA || m.color);
+      body += carryRow(yB, bD, m.shortB || "", m.colorB || "#ff2f7a");
+      const useful = toDisp(12);
+      const ux = padL;
+      const uy = 222;
+      body += '<line x1="' + ux.toFixed(1) + '" y1="' + uy.toFixed(1) + '" x2="' + (ux + (useful / maxDist) * (W - padL - padR)).toFixed(1) + '" y2="' + uy.toFixed(1) + '" stroke="#3dff9a" stroke-width="2" stroke-linecap="round"/>';
+      body += '<line x1="' + ux.toFixed(1) + '" y1="' + (uy - 5).toFixed(1) + '" x2="' + ux.toFixed(1) + '" y2="' + (uy + 5).toFixed(1) + '" stroke="#3dff9a" stroke-width="2"/>';
+      const ux2 = ux + (useful / maxDist) * (W - padL - padR);
+      body += '<line x1="' + ux2.toFixed(1) + '" y1="' + (uy - 5).toFixed(1) + '" x2="' + ux2.toFixed(1) + '" y2="' + (uy + 5).toFixed(1) + '" stroke="#3dff9a" stroke-width="2"/>';
+      body += workTxt(ux2 + 8, uy + 4, "a useful gap is about " + fmtThreshRange(10, 15), { fill: "rgba(61,255,154,.8)", size: 8, sans: true, anchor: "start" });
+    }
+    return frame(body, "Average carry overlap between two clubs", "carries are measured averages");
   }
 
   function renderPerfWork(data, clubs) {
@@ -5508,19 +5807,19 @@ function fmtThresh(yd) {
       return;
     }
     let html = '<div class="work-list">';
-    issues.forEach((iss) => {
+    issues.forEach((iss, idx) => {
       html += '<article class="work-item" data-kind="' + escapeHtml(iss.kind) + '">';
-      html += '<div class="work-illu">' + illuSvg(iss.illu) + "</div><div class=\"work-body\">";
+      html += '<div class="work-illu">' + illuSvg(iss, idx) + "</div>";
+      html += '<div class="work-side">';
       html += "<h4>" + escapeHtml(iss.title) + "</h4>";
       if (iss.yards != null && iss.yards >= 0.5) {
         html += '<div class="work-yards">' + fmtDist(iss.yards) + " " + unitShort() + "<span>estimated on the table</span></div>";
       }
-      html += '<p class="work-evidence">' + escapeHtml(iss.evidence) + "</p>";
-      html += '<div class="work-k">Likely causes <span class="work-tag">inferred</span></div><ul class="work-causes">';
-      iss.causes.forEach((c) => { html += "<li>" + escapeHtml(c) + "</li>"; });
-      html += '</ul><div class="work-k">Try this</div><ul class="work-drills">';
-      iss.drills.forEach((c) => { html += "<li>" + escapeHtml(c) + "</li>"; });
-      html += "</ul></div></article>";
+      html += '<p class="work-evidence">' + escapeHtml(iss.finding || iss.evidence || "") + "</p>";
+      html += "</div>";
+      html += '<div class="work-try"><div class="work-k">Try this <span class="work-tag">inferred</span></div>';
+      html += '<p class="work-drill">' + escapeHtml(iss.drill || (iss.drills && iss.drills[0]) || "") + "</p></div>";
+      html += "</article>";
     });
     html += "</div>";
     el.innerHTML = html;
